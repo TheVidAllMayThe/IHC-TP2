@@ -18,45 +18,35 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" Grid.Column="0">
-
+        <Border x:Name="border1" Grid.Row="0" Grid.Column="0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" Margin="0,0,0,0.2">
             <Border.Background>
-
-                <ImageBrush ImageSource="magic_generic_5.jpg" AlignmentY="Top"/>
-
+                <ImageBrush x:Name="Image1" ImageSource="magic_generic_13.jpg" AlignmentY="Top"/>
             </Border.Background>
-            
-        </Border>
-
-        <Border Grid.Row="0" Grid.Column="1">
-
-            <Border.Background>
-
-                <ImageBrush ImageSource="magic_generic_9.jpg" AlignmentY="Top"/>
-
-            </Border.Background>
+            <Label x:Name="label" Content="Search Cards" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48" FontFamily="MagicMedieval" Foreground="#FFE5E5E5" Margin="406,10,0,0"/>
 
         </Border>
-
-        <Border Grid.Row="1" Grid.Column="0">
-
+        <Border x:Name="border2" Grid.Row="0" Grid.Column="1" MouseEnter="border2_MouseEnter" MouseLeave="border2_MouseLeave">
             <Border.Background>
-
-                <ImageBrush ImageSource="magic_generic_6.jpg" AlignmentY="Top"/>
-
+                <ImageBrush x:Name="Image2" ImageSource="magic_generic_14.jpg" AlignmentY="Top"/>
             </Border.Background>
-
+            <Label x:Name="label_Copy" Content="Search Decks" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48" FontFamily="MagicMedieval" Foreground="#FFEAEAEA" Margin="409,10,0,0"/>
         </Border>
 
-        <Border Grid.Row="1" Grid.Column="1">
+        <Border x:Name="border3" Grid.Row="1" Grid.Column="0" MouseEnter="border3_MouseEnter" MouseLeave="border3_MouseLeave">
             <Border.Background>
-
-                <ImageBrush ImageSource="magic_generic_7.jpg" AlignmentY="Top"/>
-
+                <ImageBrush x:Name="Image3" ImageSource="magic_generic_9.jpg" AlignmentY="Top"/>
             </Border.Background>
+            <Label x:Name="label_Copy1" Content="My decks" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48" FontFamily="MagicMedieval" Foreground="White" Margin="486,283,0,0"/>
+        </Border>
+
+        <Border x:Name="border4" Grid.Row="1" Grid.Column="1" MouseEnter="border4_MouseEnter" MouseLeave="border4_MouseLeave">
+            <Border.Background>
+                <ImageBrush x:Name="Image4" ImageSource="magic_generic_6.jpg" AlignmentY="Top"/>
+            </Border.Background>
+            <Label x:Name="label_Copy2" Content="Build Deck" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="48" FontFamily="MagicMedieval" Foreground="White" Margin="448,283,0,0"/>
         </Border>
 
     </Grid>
 
-    
+
 </Window>
