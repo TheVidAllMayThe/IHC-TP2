@@ -55,6 +55,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Home.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -63,12 +67,22 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Home.xaml.cs">
+      <DependentUpon>Home.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SearchCards.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SearchCards.xaml.cs">
+      <DependentUpon>SearchCards.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -124,6 +138,21 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="magic_generic_13.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Mana_G.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Mana_U.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Mana_W.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Mana_B.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Mana_R.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
