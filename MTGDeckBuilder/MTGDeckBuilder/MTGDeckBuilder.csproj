@@ -154,6 +154,15 @@
   <ItemGroup>
     <Resource Include="Mana_R.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Magic_generic_15.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mtg-card-back.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="magic_the_gathering.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

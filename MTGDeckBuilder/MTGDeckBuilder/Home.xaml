@@ -18,12 +18,15 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border x:Name="border1" Grid.Row="0" Grid.Column="0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" Margin="0,0,0,0.2">
+        <Border x:Name="search_cards_border" Grid.Row="0" Grid.Column="0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" Margin="0,0,0,0.2" MouseLeftButtonUp="search_cards_border_MouseLeftButtonUp" MouseLeftButtonDown="search_cards_border_MouseLeftButtonDown">
             <Border.Background>
                 <ImageBrush x:Name="Image1" ImageSource="magic_generic_13.jpg" AlignmentY="Top"/>
             </Border.Background>
             <Label x:Name="label" Content="Search Cards" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="48" FontFamily="MagicMedieval" Foreground="#FFE5E5E5" Margin="10,10,10,10"/>
 
+            <Border.InputBindings>
+                <MouseBinding MouseAction="LeftClick"/>
+            </Border.InputBindings>
         </Border>
         <Border x:Name="border2" Grid.Row="0" Grid.Column="1" MouseEnter="border2_MouseEnter" MouseLeave="border2_MouseLeave">
             <Border.Background>

@@ -27,7 +27,7 @@ namespace MTGDeckBuilder
 
         private void Border_MouseEnter(object sender, MouseEventArgs e)
         {
-            Image1.Opacity = 0.5;
+            Image1.Opacity = 0.8;
             label.Foreground = Brushes.Black;
         }
 
@@ -39,7 +39,7 @@ namespace MTGDeckBuilder
 
         private void border2_MouseEnter(object sender, MouseEventArgs e)
         {
-            Image2.Opacity = 0.5;
+            Image2.Opacity = 0.8;
             label_Copy.Foreground = Brushes.Black;
         }
 
@@ -52,7 +52,7 @@ namespace MTGDeckBuilder
 
         private void border3_MouseEnter(object sender, MouseEventArgs e)
         {
-            Image3.Opacity = 0.5;
+            Image3.Opacity = 0.8;
             label_Copy1.Foreground = Brushes.Black;
         }
 
@@ -64,7 +64,7 @@ namespace MTGDeckBuilder
 
         private void border4_MouseEnter(object sender, MouseEventArgs e)
         {
-            Image4.Opacity = 0.5;
+            Image4.Opacity = 0.8;
             label_Copy2.Foreground = Brushes.Black;
         }
 
@@ -72,6 +72,17 @@ namespace MTGDeckBuilder
         {
             Image4.Opacity = 1;
             label_Copy2.Foreground = Brushes.White;
+        }
+
+        private void search_cards_border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
+            NavigationService.Navigate(new Uri("SearchCards.xaml", UriKind.Relative));
+        }
+
+        private void search_cards_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ((Border)sender).Margin = new Thickness(3, 3, 3, 3);
         }
     }
 }
