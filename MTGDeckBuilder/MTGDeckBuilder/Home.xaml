@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:MTGDeckBuilder"
       mc:Ignorable="d" 
       d:DesignHeight="740" d:DesignWidth="1350"
+      Background="Black"
       Title="Home">
 
     <Grid>
@@ -28,7 +29,7 @@
                 <MouseBinding MouseAction="LeftClick"/>
             </Border.InputBindings>
         </Border>
-        <Border x:Name="border2" Grid.Row="0" Grid.Column="1" MouseEnter="border2_MouseEnter" MouseLeave="border2_MouseLeave">
+        <Border x:Name="border2" Grid.Row="0" Grid.Column="1" MouseEnter="border2_MouseEnter" MouseLeave="border2_MouseLeave" MouseLeftButtonUp="search_decks_border_MouseLeftButtonUp" MouseLeftButtonDown="search_decks_border_MouseLeftButtonDown">
             <Border.Background>
                 <ImageBrush x:Name="Image2" ImageSource="magic_generic_14.jpg" AlignmentY="Top"/>
             </Border.Background>

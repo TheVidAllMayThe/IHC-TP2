@@ -1,0 +1,67 @@
+﻿<Page x:Class="MTGDeckBuilder.Card"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MTGDeckBuilder"
+      mc:Ignorable="d" 
+      d:DesignHeight="740" d:DesignWidth="1350"
+      Title="Card">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Image Source="magic_the_gathering.png" Grid.Column="0" Margin="10,10,10,10"></Image>
+
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Name:" Grid.Column="0" Grid.Row="0" Foreground="White"/>
+            <Label Content="Verdant Automation" Grid.Column="1" Grid.Row="0" Foreground="White"/>
+
+            <Label Content="Type:" Grid.Column="0" Grid.Row="1" Foreground="White"/>
+            <Label Content="Artifact Creature" Grid.Column="1" Grid.Row="1" Foreground="White"/>
+
+            <Label Content="Subtype:" Grid.Column="0" Grid.Row="2" Foreground="White"/>
+            <Label Content="Construct" Grid.Column="1" Grid.Row="2" Foreground="White"/>
+
+            <Label Content="Power:" Grid.Column="0" Grid.Row="3" Foreground="White"/>
+            <Label Content="1" Grid.Column="1" Grid.Row="3" Foreground="White"/>
+
+            <Label Content="Toughness:" Grid.Column="0" Grid.Row="4" Foreground="White"/>
+            <Label Content="2" Grid.Column="1" Grid.Row="4" Foreground="White"/>
+
+            <Label Content="Text:" Grid.Column="0" Grid.Row="5" Foreground="White"/>
+            <Label Content="{}{3}{6}: Put a +1/+1 counter on Verdant Automations" Grid.Column="1" Grid.Row="5" Foreground="White"/>
+
+            <Label Content="Rarity:" Grid.Column="0" Grid.Row="6" Foreground="White"/>
+            <Label Content="Common" Grid.Column="1" Grid.Row="6" Foreground="White"/>
+
+            <Label Content="Legality:" Grid.Column="0" Grid.Row="7" Foreground="White"/>
+            <Label Content="Vintage, Legacy, Standard" Grid.Column="1" Grid.Row="7" Foreground="White"/>
+
+            <Label Content="Flavor:" Grid.Column="0" Grid.Row="8" Foreground="White"/>
+            <Label Content="&quot;A perfect fusion of natur and artifact&quot; -Irsi, hujav gardner" Grid.Column="1" Grid.Row="8" Foreground="White"/>
+
+            <Label Content="Artist:" Grid.Column="0" Grid.Row="9" Foreground="White"/>
+            <Label Content="Ryan Alexander Lec" Grid.Column="1" Grid.Row="9" Foreground="White"/>
+        </Grid>
+    </Grid>
+</Page>

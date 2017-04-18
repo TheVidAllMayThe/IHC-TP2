@@ -84,5 +84,17 @@ namespace MTGDeckBuilder
         {
             ((Border)sender).Margin = new Thickness(3, 3, 3, 3);
         }
+
+        private void search_decks_border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
+            NavigationService.Navigate(new Uri("SearchDecks.xaml", UriKind.Relative));
+        }
+
+        private void search_decks_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ((Border)sender).Margin = new Thickness(3, 3, 3, 3);
+        }
+
     }
 }

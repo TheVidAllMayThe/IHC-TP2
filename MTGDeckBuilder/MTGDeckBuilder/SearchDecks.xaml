@@ -1,0 +1,304 @@
+﻿<Page x:Class="MTGDeckBuilder.SearchDecks"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MTGDeckBuilder"
+      mc:Ignorable="d" 
+      d:DesignHeight="740" d:DesignWidth="1350"
+      Title="SearchDecks">
+
+    <Grid>
+        <Grid>
+            <Grid.Background>
+                <ImageBrush ImageSource="Magic_generic_15.jpg" Opacity="0.6"></ImageBrush>
+            </Grid.Background>
+        </Grid>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.07*"/>
+                <RowDefinition Height="0.93*"/>
+            </Grid.RowDefinitions>
+
+
+
+            <Grid Grid.Row="0" Margin="20,10,20,10">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+
+                </Grid.ColumnDefinitions>
+
+                <Viewbox MaxHeight="35">
+                    <TextBox  x:Name="searchBox" HorizontalAlignment="Left" Height="Auto" MinHeight="35" MinWidth="280" TextWrapping="NoWrap" Text="Search" VerticalAlignment="Center"  Margin="0,0,0,0" Grid.Column="0" Foreground="#FF7D7171" Background="White" GotFocus="searchBox_GotFocus" FontSize="24" LostFocus="searchBox_LostFocus"/>
+                </Viewbox>
+
+                <Button x:Name="button"   MaxWidth="35" Height="Auto" Width="Auto" HorizontalAlignment="Left" Grid.Column="1"  VerticalAlignment="Center" AutomationProperties.AcceleratorKey="Enter">
+                    <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                        <Canvas Name="Layer_1" Width="50" Height="50">
+                            <Canvas.RenderTransform>
+                                <TranslateTransform X="0" Y="0"/>
+                            </Canvas.RenderTransform>
+                            <Canvas.Resources/>
+                            <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="50" Height="50" Name="rect3680" RadiusY="24.8" RadiusX="24.8"/>
+                            <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="5" Canvas.Top="4" Width="32" Height="32" Name="circle3682" StrokeThickness="2" Stroke="#FF000000" StrokeMiterLimit="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="32.229" Y1="32.229" X2="45.5" Y2="45.5" Name="line3684" StrokeThickness="4" Stroke="#FF000000" StrokeMiterLimit="10"/>
+                        </Canvas>
+                    </Viewbox>
+                </Button>
+
+                <Viewbox MaxHeight="40" Margin="20,0,0,0" Grid.Column="2">
+                    <ComboBox x:Name="typeComboBox" Text="Legality"  IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
+                        <ComboBoxItem Content="Casual"/>
+                        <ComboBoxItem Content="Modern"/>
+                        <ComboBoxItem Content="Vintage"/>
+                        <ComboBoxItem Content="Standard"/>
+                    </ComboBox>
+                </Viewbox>
+
+                <CheckBox Grid.Column="3" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Margin="0,0,0,0" Source="Mana_G.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </CheckBox>
+
+                <CheckBox Grid.Column="4" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Margin="0,0,0,0" Source="Mana_U.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </CheckBox>
+
+                <CheckBox Grid.Column="5" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image  Margin="0,0,0,0" Source="Mana_W.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </CheckBox>
+
+                <CheckBox Grid.Column="6" Margin="20,0,0,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image  Margin="0,0,0,0" Source="Mana_R.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </CheckBox>
+
+                <CheckBox Grid.Column="7" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image  Margin="0,0,0,0" Source="Mana_B.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                </CheckBox>
+
+                <Viewbox Grid.Column="8" HorizontalAlignment="Right">
+                    <Label MouseLeftButtonUp="Label_MouseLeftButtonUp">
+                        <TextBlock TextDecorations="Underline">
+                            <Hyperlink x:Name="More_Options" Click="More_Options_Click" > More Options ▼ </Hyperlink>
+                        </TextBlock>
+                    </Label>
+
+                </Viewbox>
+            </Grid>
+
+
+
+            <!-- Card Zone -->
+            <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+
+            <Border Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+
+
+                    <Border Grid.Row="0" Grid.Column="0" BorderThickness="1.5" CornerRadius="8,0,0,0">
+                        <Label Content="First Black and White deck" Foreground="White"/>
+                    </Border>
+
+                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="White" BorderThickness="1.5" CornerRadius="0,0,0,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
+                        <Label Content="User321" Foreground="White"/>
+                    </Border>
+
+                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,8,0,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
+
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,0,0,8" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
+
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,0,0,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
+
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,0,8,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
+
+                    </Border>
+
+
+                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+
+                </Grid>
+            </Border>
+
+
+        </Grid>
+
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.07*"/>
+                <RowDefinition Height="0.18*"/>
+                <RowDefinition Height="0.75*"/>
+            </Grid.RowDefinitions>
+
+            <Border x:Name="more_options_border"  Grid.Row="1" Background="Black" Opacity="0.8" Margin="10,0,10,0" CornerRadius="4,4,4,4" Visibility="Hidden">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Contains: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="contains_box" Grid.Column="1" MinWidth="300" MaxHeight="20" Text="Abilities/Creatures..." Foreground="Gray" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
+                        </Grid>
+                    </Viewbox>
+
+                    <Viewbox Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Minimum # Mana: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="min_mana_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="2" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+                    <Viewbox Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Maximum # Mana: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="max_mana_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="3" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+                    <Viewbox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Minimum % Creatures: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="min_creatures_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="1" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+                    <Viewbox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Maximum % Creatures: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="max_creatures_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="1" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+
+                    <Viewbox Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Max % Spells: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="max_spells_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="2" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+                    <Viewbox Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Min % Spells: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="min_spells_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="3" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+
+                    <Viewbox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Minimum % Artifacts: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="min_artifacts_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="1" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+
+                    <Viewbox Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" Margin="5,5,0,0" HorizontalAlignment="Center" MaxHeight="55">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Maximum % artifacts: " Foreground="White" Grid.Column="0"/>
+                            <TextBox x:Name="max_artifacts_box" PreviewTextInput="NumberValidationTextBox" Grid.Column="1" MinWidth="20" MaxHeight="20"  Foreground="Gray"/>
+                        </Grid>
+                    </Viewbox>
+
+                    <Viewbox Grid.Column="3" Grid.Row="2" Margin="10,10,10,10">
+                        <Button x:Name="advanced_search_button" Content="Search"/>
+                    </Viewbox>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+
+
+
+
+    </Grid>
+</Page>
