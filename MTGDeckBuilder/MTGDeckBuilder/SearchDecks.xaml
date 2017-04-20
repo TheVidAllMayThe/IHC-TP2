@@ -6,12 +6,13 @@
       xmlns:local="clr-namespace:MTGDeckBuilder"
       mc:Ignorable="d" 
       d:DesignHeight="740" d:DesignWidth="1350"
-      Title="SearchDecks">
+      Title="SearchDecks"
+      Background="Black">
 
     <Grid>
         <Grid>
             <Grid.Background>
-                <ImageBrush ImageSource="Magic_generic_15.jpg" Opacity="0.6"></ImageBrush>
+                <ImageBrush ImageSource="Magic_generic_16.jpg" Opacity="0.6"></ImageBrush>
             </Grid.Background>
         </Grid>
 
@@ -122,39 +123,16 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-
-
-                    <Border Grid.Row="0" Grid.Column="0" BorderThickness="1.5" CornerRadius="8,0,0,0">
-                        <Label Content="First Black and White deck" Foreground="White"/>
-                    </Border>
-
-                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="White" BorderThickness="1.5" CornerRadius="0,0,0,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
-                        <Label Content="User321" Foreground="White"/>
-                    </Border>
-
-                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,8,0,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
-
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,0,0,8" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
-
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,0,0,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
-
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  BorderThickness="1.5" CornerRadius="0,0,8,0" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
-
-                    </Border>
-
-
-                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="0" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,8,0,0"></Border>
+                    <Border Grid.Row="1" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="2" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="4" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="5" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="6" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="7" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="8" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="9" Grid.ColumnSpan="4" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,8,8"></Border>
 
                 </Grid>
             </Border>

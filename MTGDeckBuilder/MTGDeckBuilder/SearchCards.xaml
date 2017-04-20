@@ -10,8 +10,8 @@
       Title="Search Cards"
       Background="Black">
 
-    
-    
+
+
     <Grid>
         <Grid>
             <Grid.Background>
@@ -21,24 +21,24 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.10*"/>
-                <RowDefinition Height="0.90*"/>
+                <RowDefinition Height="0.07*"/>
+                <RowDefinition Height="0.93*"/>
             </Grid.RowDefinitions>
 
 
 
-            <Grid Grid.Row="0" Margin="40,20,40,20">
+            <Grid Grid.Row="0" Margin="20,10,20,10">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
 
                 </Grid.ColumnDefinitions>
 
@@ -60,8 +60,8 @@
                     </Viewbox>
                 </Button>
 
-                <Viewbox MaxHeight="40" Margin="40,0,0,0" Grid.Column="2">
-                    <ComboBox x:Name="typeComboBox" Text="Type"  IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
+                <Viewbox MaxHeight="40" Margin="20,0,0,0" Grid.Column="2">
+                    <ComboBox x:Name="typeComboBox" Text="Legality"  IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
                         <ComboBoxItem Content="Casual"/>
                         <ComboBoxItem Content="Modern"/>
                         <ComboBoxItem Content="Vintage"/>
@@ -69,27 +69,27 @@
                     </ComboBox>
                 </Viewbox>
 
-                <CheckBox Grid.Column="3" Margin="0,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Margin="5,0,0,0" Source="Mana_G.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                <CheckBox Grid.Column="3" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Margin="0,0,0,0" Source="Mana_G.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="4" Margin="0,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Margin="5,0,0,0" Source="Mana_U.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                <CheckBox Grid.Column="4" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Margin="0,0,0,0" Source="Mana_U.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="5" Margin="0,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image  Margin="5,0,0,0" Source="Mana_W.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                <CheckBox Grid.Column="5" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image  Margin="0,0,0,0" Source="Mana_W.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="6" Margin="0,0,0,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image  Margin="5,0,0,0" Source="Mana_R.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                <CheckBox Grid.Column="6" Margin="20,0,0,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image  Margin="0,0,0,0" Source="Mana_R.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="7" Margin="0,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image  Margin="5,0,0,0" Source="Mana_B.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
+                <CheckBox Grid.Column="7" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image  Margin="0,0,0,0" Source="Mana_B.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <Viewbox Grid.Column="8">
+                <Viewbox Grid.Column="8" HorizontalAlignment="Right">
                     <Label MouseLeftButtonUp="Label_MouseLeftButtonUp">
                         <TextBlock TextDecorations="Underline">
                             <Hyperlink x:Name="More_Options" Click="More_Options_Click" > More Options ▼ </Hyperlink>
@@ -99,18 +99,20 @@
                 </Viewbox>
             </Grid>
 
-            
-            
+
+
+
+
             <!-- Card Zone -->
             <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
 
             <Border Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8">
-                <Grid>
+                <Grid Margin="2,0,-1.6,0">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -118,11 +120,11 @@
                     </Grid.ColumnDefinitions>
 
 
-                    
+
                     <Border  BorderThickness="1.5" CornerRadius="8,0,0,0">
                         <Grid>
                             <Grid.RowDefinitions>
-                                
+
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
@@ -131,7 +133,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Image Source="magic_the_gathering.png" Grid.Column="0" Margin="10,10,10,10"></Image>
-                            
+
                         </Grid>
                     </Border>
 
@@ -157,11 +159,11 @@
 
 
                     <Border Grid.Row="0" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,8,0,0"></Border>
+                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,8"></Border>
+                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,8,0"></Border>
 
                 </Grid>
             </Border>
@@ -301,22 +303,12 @@
                         </Grid>
                     </Viewbox>
 
-                    <Viewbox Grid.Column="3" Grid.Row="2" Margin="10,10,10,10">                    
+                    <Viewbox Grid.Column="3" Grid.Row="2" Margin="10,10,10,10">
                         <Button x:Name="advanced_search_button" Content="Search"/>
                     </Viewbox>
 
                 </Grid>
             </Border>
         </Grid>
-        
-
-         
-   
-    
     </Grid>
-    
-    
-
-    
-
 </Page>

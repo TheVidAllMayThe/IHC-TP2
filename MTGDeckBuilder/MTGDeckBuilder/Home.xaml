@@ -6,13 +6,14 @@
       xmlns:local="clr-namespace:MTGDeckBuilder"
       mc:Ignorable="d" 
       d:DesignHeight="740" d:DesignWidth="1350"
-      Background="Black"
+      Background="White"
       Title="Home">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

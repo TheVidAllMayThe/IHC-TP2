@@ -1,3 +1,7 @@
+CREATE DATABASE Magic;
+
+go
+
 use Magic;
 
 go
@@ -12,7 +16,7 @@ PRIMARY KEY (email)
 
 CREATE TABLE Edition (
 [name] VARCHAR(MAX) not null,
-code INT,
+code VARCHAR(255),
 gathererCode INT,
 releaseDate DATE,
 legality VARCHAR(MAX),
@@ -28,7 +32,7 @@ manaCost TINYINT,
 [name] VARCHAR(MAX) not null,
 rarity VARCHAR(255) not null,
 [text] TEXT,
-edition INT not null,
+edition VARCHAR(255),
 PRIMARY KEY (id),
 FOREIGN KEY (edition) REFERENCES Edition(code) ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -162,7 +166,7 @@ FOREIGN KEY (card) REFERENCES CardInDeck([card]),
 FOREIGN KEY (Player) REFERENCES Player([user])
 );
 
-go
+
 
 CREATE TABLE Stack(
 ability VARCHAR(255),
@@ -173,3 +177,6 @@ PRIMARY KEY (ability, phase),
 FOREIGN KEY ([card], ability) REFERENCES Ability([card], ability),
 FOREIGN KEY (playerPriority) REFERENCES Player([user])
 );
+
+go
+
