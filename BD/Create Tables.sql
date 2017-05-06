@@ -17,7 +17,7 @@ PRIMARY KEY (email)
 CREATE TABLE Edition (
 [name] VARCHAR(MAX) not null,
 code VARCHAR(255),
-gathererCode INT,
+gathererCode VARCHAR(255),
 releaseDate DATE,
 legality VARCHAR(MAX),
 mkm_id INT,
@@ -28,14 +28,22 @@ CREATE TABLE [Card] (
 artist VARCHAR(MAX),
 id INTEGER,
 imageName VARCHAR(MAX),
-manaCost TINYINT,
+manaCost varchar(100),
 [name] VARCHAR(MAX) not null,
 rarity VARCHAR(255) not null,
 [text] TEXT,
 edition VARCHAR(255),
+cmc int,
 PRIMARY KEY (id),
 FOREIGN KEY (edition) REFERENCES Edition(code) ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+CREATE TABLE Creature(
+[card] int,
+power int,
+toughness int,
+primary key ([card]),
+foreign key ([card]) references [Card](ID));
 
 CREATE TABLE ColorIdentity(
 [card] INT,
@@ -97,8 +105,8 @@ PRIMARY KEY (deck, [user])
 
 CREATE TABLE Flavor(
 card INTEGER,
-flavor VARCHAR(255),
-PRIMARY KEY (card, flavor),
+flavor TEXT,
+PRIMARY KEY (card),
 FOREIGN KEY (card) REFERENCES Card(id)
 );
 
@@ -109,6 +117,7 @@ Ability VARCHAR(255),
 PRIMARY KEY (card, Ability),
 FOREIGN KEY (card) REFERENCES Card(id)
 );
+
 
 CREATE TABLE Player(
 lp TINYINT not null,
