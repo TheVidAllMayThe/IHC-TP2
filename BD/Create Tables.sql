@@ -72,19 +72,21 @@ FOREIGN KEY (card) REFERENCES Card(id)
 );
 
 CREATE TABLE Deck(
-name VARCHAR(MAX) not null,
-id INTEGER,
+[name] VARCHAR(255) not null,
+id INTEGER IDENTITY(1,1),
 creator VARCHAR(255) not null,
 rating float,
+UNIQUE(creator, [name]),
 PRIMARY KEY (id),
 FOREIGN KEY (creator) REFERENCES [User](email)
 );
 
 CREATE TABLE CardInDeck(
 deck INTEGER,
-[card] INTEGER unique,
+[card] INTEGER,
+amount INTEGER not null,
 isSideboard BIT not null,
-PRIMARY KEY (deck, [card]),
+PRIMARY KEY (deck, [card], isSideboard),
 FOREIGN KEY (deck) REFERENCES Deck (id),
 FOREIGN KEY ([card]) REFERENCES [Card] (id)
 );
@@ -121,7 +123,7 @@ PRIMARY KEY (card, Ability),
 FOREIGN KEY (card) REFERENCES Card(id)
 );
 
-
+/*
 CREATE TABLE Player(
 lp TINYINT not null,
 pc TINYINT not null,
@@ -189,6 +191,25 @@ PRIMARY KEY (ability, phase),
 FOREIGN KEY ([card], ability) REFERENCES Ability([card], ability),
 FOREIGN KEY (playerPriority) REFERENCES Player([user])
 );
+*/
+go
+
+CREATE VIEW DeckMainBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card) AS c
+ON cid.card = c.id
 
 go
 
+CREATE VIEW DeckSideBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card) AS c
+ON cid.card = c.id
