@@ -98,9 +98,34 @@
                         </TextBlock>
                     </Label>
                 </Viewbox>
+
+                
+                
+                
             </Grid>
 
+            <Viewbox Grid.ColumnSpan="9" Grid.Row="2" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Label>
+                        <TextBlock TextDecorations="Underline">
+                                <Hyperlink x:Name="previousPage" Click="previousPageClick"> &lt;&lt; </Hyperlink>
+                        </TextBlock>
+                    </Label>
+                    
+                    <Viewbox Stretch="Uniform">
+                        <TextBox x:Name="pageTextBox"  Text="Test" />
+                    </Viewbox>
 
+                    <Label x:Name="maxPage"  Content="/#" Foreground="LightGray"/>
+
+                    <Label>
+                        <TextBlock TextDecorations="Underline">
+                                <Hyperlink x:Name="nextPage" Click="nextPageClick">&gt;&gt;</Hyperlink>
+                        </TextBlock>
+                    </Label>
+
+                </StackPanel>
+            </Viewbox>
 
 
 

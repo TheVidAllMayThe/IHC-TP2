@@ -34,6 +34,9 @@ namespace MTGDeckBuilder
         Label[] titles;
         Label[][] contentsOfBorder;
         Image[] images;
+        String currentQuerry;
+        DataTable table;
+        BitmapImage[] bis;
 
 
         public Page1()
@@ -112,8 +115,8 @@ namespace MTGDeckBuilder
                 contentsOfBorder[k] = tmp;
 
             }
-
-            setCards("SELECT * FROM Card ORDER BY ID DESC");
+            currentQuerry = "SELECT * FROM Card ORDER BY ID DESC";
+            setCards(currentQuerry);
            
         }
         
@@ -129,32 +132,59 @@ namespace MTGDeckBuilder
 
             SqlCommand selectCard = new SqlCommand(getData, thisConnection);
 
-            DataTable table = new DataTable("cards");
+            table = new DataTable("cards");
             SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
             adapt.Fill(table);
 
-            Console.WriteLine(table.Rows.Count);
+            bis = new BitmapImage[table.Rows.Count];
 
-            for (int i = 0; i < 6; i++)
+            setPage(1);
+        }
+
+        private void setPage(int page)
+        {
+            for (int i = page * 6 - 6; i < page * 6; i++)
             {
-                borders[i] = new Border();
-                borders[i].BorderThickness = new Thickness(1.5);
+                borders[i % 6] = new Border();
+                borders[i % 6].BorderThickness = new Thickness(1.5);
 
                 if (table.Rows[i]["multiverseID"] != null)
                 {
-                    string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + table.Rows[i]["multiverseID"] + @"&type=card";
-                    BitmapImage bi = new BitmapImage();
-                    bi.BeginInit();
-                    bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
-                    bi.EndInit();
-                    
-                    images[i].Source = bi;
+                    if (bis[i] is null)
+                    {
+                        string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + table.Rows[i]["multiverseID"] + @"&type=card";
+                        BitmapImage bi = new BitmapImage();
+                        bi.BeginInit();
+                        bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
+                        bi.EndInit();
+                        bis[i] = bi;
+                        images[i % 6].Source = bis[i];
+                    }
+
+                    else
+                        images[i % 6].Source = bis[i];
+
                 }
 
-                titles[i].Content = table.Rows[i]["name"];
-
+                titles[i % 6].Content = table.Rows[i]["name"];
             }
-            more_options_border.Visibility = Visibility.Hidden;
+
+            var maxP = table.Rows.Count / 6;
+
+            maxPage.Content = "/" + maxP;
+
+            pageTextBox.Text = "" + page;
+
+            if (page == maxP)
+                nextPage.IsEnabled = false;
+            else
+                nextPage.IsEnabled = true;
+
+            if (page == 1)
+                previousPage.IsEnabled = false;
+            else
+                previousPage.IsEnabled = true;
+
         }
 
 
@@ -263,9 +293,20 @@ namespace MTGDeckBuilder
             ((Border)sender).Opacity = 0.2;
         }
 
+
         private void Border_MouseLeave(object sender, MouseEventArgs e)
         {
             ((Border)sender).Opacity = 0;
+        }
+
+        private void nextPageClick(object sender, RoutedEventArgs e)
+        {
+            setPage(int.Parse(pageTextBox.Text)+1);
+        }
+
+        private void previousPageClick(object sender, RoutedEventArgs e)
+        {
+            setPage(int.Parse(pageTextBox.Text) - 1);
         }
     }
 }
