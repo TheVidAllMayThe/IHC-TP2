@@ -161,7 +161,7 @@ keyword_abilities = [("Deathtouch"),
 ("Vanishing"),
 ("Wither")]
 
-ConnectionString = r"DRIVER={ODBC Driver 13 for SQL Server};SERVER=DESKTOP-H3IDCPD\SQLEXPRESS;Database=Magic;Trusted_Connection=yes"
+ConnectionString = r"DRIVER={ODBC Driver 13 for SQL Server};SERVER=localhost\SQLEXPRESS;Database=Magic;Trusted_Connection=yes"
 
 conn = pypyodbc.connect(ConnectionString)
 c = conn.cursor()
@@ -171,7 +171,7 @@ SQL = 'SELECT * FROM <YOURTABLE>'
 c.execute('USE Magic')
 c.execute("SELECT * FROM [User]")
 
-f = open(r"C:\Users\David\Desktop\AllSets.json", "r", encoding="utf8")
+f = open(r".\AllSets.json", "r", encoding="utf8")
 
 magic_data = json.loads(f.read())
 
