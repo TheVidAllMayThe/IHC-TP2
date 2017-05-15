@@ -194,6 +194,29 @@ FOREIGN KEY (playerPriority) REFERENCES Player([user])
 */
 go
 
+CREATE VIEW DeckBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card) AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW SideDeckBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card) AS c
+ON cid.card = c.id
+
+
+go
+
 CREATE VIEW LandMainBoard AS
 SELECT deck, card, name, amount
 FROM (SELECT deck, card, amount

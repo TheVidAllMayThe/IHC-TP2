@@ -10,10 +10,17 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
 
-
         <Style x:Key="Card Property Style" TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
+
+        <DataTemplate x:Key="deck_list_template">
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}"/>
+                <Label Style="{StaticResource Card Property Style}" Content="x "/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Name}"/>
+            </StackPanel>
+        </DataTemplate>
     </Application.Resources>
 </Application>

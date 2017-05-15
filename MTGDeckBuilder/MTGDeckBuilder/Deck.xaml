@@ -6,17 +6,21 @@
       xmlns:local="clr-namespace:MTGDeckBuilder"
       mc:Ignorable="d" 
       d:DesignHeight="740" d:DesignWidth="1350"
-      Title="Deck">
+      Title="Deck"
+      Background="Black">
 
     <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Magic_generic_15.jpg" Opacity="0.6"></ImageBrush>
+        </Grid.Background>
         <!-- Tabs -->
         <Grid>
-            <TabControl>
+            <TabControl Background="Transparent">
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="Deck"/>
+                        <Label Content="Deck"/>
                     </TabItem.Header>
-                    
+
                     <!-- Deck tab content -->
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -25,67 +29,92 @@
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel Orientation="Vertical" Grid.Column="0">
-                            <TextBlock x:Name="deck_title" HorizontalAlignment="Center" Text="First Black and White Deck" FontWeight="Bold" TextDecorations="{x:Null}" FontSize="24"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="Main(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_cards" Text="60" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Lands(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_lands" Text="21" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
-                            </StackPanel>
-                            <StackPanel x:Name="deck_lands" Orientation="Vertical"/>
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Creatures(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_creatures" Text="26" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
+                            <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" FontWeight="Bold" FontSize="24"/>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Label Content="Main(" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                <Label x:Name="deck_number_of_cards" Content="60" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
                             </StackPanel>
-                            <StackPanel x:Name="deck_creatures" Orientation="Vertical"/>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Sorceries(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_sorceries" Text="8" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
-                            </StackPanel>
-                            <StackPanel x:Name="deck_sorceries" Orientation="Vertical"/>
+                                <StackPanel Orientation="Vertical" Grid.Column="0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="Lands(" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                        <Label x:Name="deck_number_of_lands" Content="21" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                        <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="deck_lands" ItemTemplate="{StaticResource deck_list_template}" />
 
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Artifacts(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_artifacts" Text="8" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
-                            </StackPanel>
-                            <StackPanel x:Name="deck_artifacts" Orientation="Vertical"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource Card Title Style}" Content="Creatures(" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_creatures" Content="26" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="deck_creatures" ItemTemplate="{StaticResource deck_list_template}" />
 
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Instants(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_instants" Text="4" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
-                            </StackPanel>
-                            <StackPanel x:Name="deck_instants" Orientation="Vertical"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource Card Title Style}" Content="Enchantments(" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_enchantments" Content="1" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="deck_enchantments" ItemTemplate="{StaticResource deck_list_template}" />
+                                </StackPanel>
 
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Enchantments(" FontSize="20"/>
-                                <TextBlock x:Name="deck_number_of_enchantments" Text="1" FontSize="20"/>
-                                <TextBlock Text=")" FontSize="20"/>
+                                <StackPanel Orientation="Vertical" Grid.Column="1">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource Card Title Style}" Content="Sorceries(" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_sorceries" Content="8" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="deck_sorceries" ItemTemplate="{StaticResource deck_list_template}" />
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource Card Title Style}" Content="Artifacts(" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_artifacts" Content="8" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="deck_artifacts" ItemTemplate="{StaticResource deck_list_template}" />
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Style="{StaticResource Card Title Style}" Content="Instants(" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_instants" Content="4" FontSize="20"/>
+                                        <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="deck_instants" ItemTemplate="{StaticResource deck_list_template}" />
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                        <StackPanel Grid.Column="1" Orientation="Vertical">
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Label Style="{StaticResource Card Title Style}" Content="Sideboard(" FontSize="20"/>
+                                <Label Style="{StaticResource Card Title Style}" x:Name="side_deck_number_of_cards" Content="60" FontSize="20"/>
+                                <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                             </StackPanel>
-                            <StackPanel x:Name="deck_enchantments" Orientation="Vertical"/>
+                            <ItemsControl x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}" />
                         </StackPanel>
                     </Grid>
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="Details"/>
+                        <Label Content="Details"/>
                     </TabItem.Header>
 
                     <!-- Details tab content -->
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="Starting Hand"/>
+                        <Label Content="Starting Hand"/>
                     </TabItem.Header>
 
                     <!-- Starting Hand tab content -->
