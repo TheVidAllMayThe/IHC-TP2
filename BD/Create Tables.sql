@@ -194,22 +194,157 @@ FOREIGN KEY (playerPriority) REFERENCES Player([user])
 */
 go
 
-CREATE VIEW DeckMainBoard AS
+CREATE VIEW LandMainBoard AS
 SELECT deck, card, name, amount
 FROM (SELECT deck, card, amount
 	FROM CardInDeck
 	WHERE isSideboard = 0) AS cid
 JOIN (SELECT id, name
-	FROM Card) AS c
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Land') AS c
 ON cid.card = c.id
 
 go
 
-CREATE VIEW DeckSideBoard AS
+CREATE VIEW LandSideBoard AS
 SELECT deck, card, name, amount
 FROM (SELECT deck, card, amount
 	FROM CardInDeck
 	WHERE isSideboard = 1) AS cid
 JOIN (SELECT id, name
-	FROM Card) AS c
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Land') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW CreatureMainBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Creature') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW CreatureSideBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Creature') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW SorceryMainBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Sorcery') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW SorcerySideBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Sorcery') AS c
+ON cid.card = c.id
+
+go
+
+
+CREATE VIEW ArtifactMainBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Artifact') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW ArtifactSideBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Artifact') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW InstantMainBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Instant') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW InstantSideBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Instant') AS c
+ON cid.card = c.id
+
+GO
+
+CREATE VIEW EnchantmentMainBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 0) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Enchantment') AS c
+ON cid.card = c.id
+
+go
+
+CREATE VIEW EnchantmentSideBoard AS
+SELECT deck, card, name, amount
+FROM (SELECT deck, card, amount
+	FROM CardInDeck
+	WHERE isSideboard = 1) AS cid
+JOIN (SELECT id, name
+	FROM Card
+	JOIN TypeOfCard
+	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Enchantment') AS c
 ON cid.card = c.id

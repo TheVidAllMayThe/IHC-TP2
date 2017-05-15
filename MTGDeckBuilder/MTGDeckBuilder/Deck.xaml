@@ -54,6 +54,13 @@
                             <StackPanel x:Name="deck_sorceries" Orientation="Vertical"/>
 
                             <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Artifacts(" FontSize="20"/>
+                                <TextBlock x:Name="deck_number_of_artifacts" Text="8" FontSize="20"/>
+                                <TextBlock Text=")" FontSize="20"/>
+                            </StackPanel>
+                            <StackPanel x:Name="deck_artifacts" Orientation="Vertical"/>
+
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Instants(" FontSize="20"/>
                                 <TextBlock x:Name="deck_number_of_instants" Text="4" FontSize="20"/>
                                 <TextBlock Text=")" FontSize="20"/>
