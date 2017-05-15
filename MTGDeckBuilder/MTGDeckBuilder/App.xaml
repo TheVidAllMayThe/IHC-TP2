@@ -4,6 +4,16 @@
              xmlns:local="clr-namespace:MTGDeckBuilder"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="Card Title Style" TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="Honeydew" />
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+
+        <Style x:Key="Card Property Style" TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
     </Application.Resources>
 </Application>

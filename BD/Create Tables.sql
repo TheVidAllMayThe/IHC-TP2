@@ -26,8 +26,10 @@ PRIMARY KEY (code)
 
 CREATE TABLE [Card] ( 
 artist VARCHAR(MAX),
-id INTEGER,
+id INTEGER IDENTITY(1,1),
 imageName VARCHAR(MAX),
+gathererID int,
+multiverseID int,
 manaCost varchar(100),
 [name] VARCHAR(MAX) not null,
 rarity VARCHAR(255) not null,
@@ -114,6 +116,7 @@ FOREIGN KEY (card) REFERENCES Card(id)
 CREATE TABLE Ability(
 card INTEGER,
 Ability VARCHAR(255),
+action bit,
 PRIMARY KEY (card, Ability),
 FOREIGN KEY (card) REFERENCES Card(id)
 );

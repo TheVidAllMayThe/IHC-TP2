@@ -213,11 +213,11 @@ for f in magic_data:
     cards = set['cards'];
     print(set['name'])
     for card in cards:
-        for param in ['artist', 'imageName', 'cmc', 'name', 'rarity', 'text', 'manaCost']:
+        for param in ['artist', 'imageName', 'cmc', 'name', 'rarity', 'text', 'manaCost', 'multiverseid']:
             if param not in card.keys():
                 card[param] = None
  
-        c.execute("Insert INTO Card (artist, imageName, cmc, manaCost, name, rarity, text, edition) values (?, ?, ?, ?, ?, ?, ?, ?)", [card['artist'], card['imageName'], card['cmc'], card['manaCost'], card['name'], card['rarity'], card['text'], set['code']])
+        c.execute("Insert INTO Card (artist, imageName, cmc, manaCost, multiverseID, name, rarity, text, edition) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", [card['artist'], card['imageName'], card['cmc'], card['manaCost'],card['multiverseid'], card['name'], card['rarity'], card['text'], set['code']])
         c.execute("select @@IDENTITY")
         
         cardID = int(c.fetchone()[0])
