@@ -15,108 +15,149 @@ using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace MTGDeckBuilder
 {
+
     /// <summary>
     /// Interaction logic for Page1.xaml
     /// </summary>
+
+
     public partial class Page1 : Page
     {
+
+        
         SqlConnection thisConnection;
         Border[] borders;
+        Label[] titles;
+        Label[][] contentsOfBorder;
+        Image[] images;
+
+
         public Page1()
         {
             InitializeComponent();
 
-            
+            borders = new Border[6];
+            titles = new Label[6];
+            images = new Image[6];
+            contentsOfBorder = new Label[6][];
+
+            for (int k = 0; k<6; k++)
+            {
+                Grid grid = new Grid();
+
+                borders[k] = new Border();
+                borders[k].BorderThickness = new Thickness(1.5);
+
+                Viewbox viewBox = new Viewbox();
+
+                images[k] = new Image();
+                images[k].Margin = new Thickness(10, 10, 10, 10);
+
+                BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
+                images[k].Source = image;
+
+                viewBox.Child = images[k];
+
+                grid.Children.Add(viewBox);
+                Grid.SetRow(viewBox, 0);
+                Grid.SetColumn(viewBox, 0);
+                Grid.SetRowSpan(viewBox, 7);
+
+                titles[k] = new Label();
+                titles[k].Style = Application.Current.Resources["Card Title Style"] as Style;
+                titles[k].Content = "Cena";
+
+                viewBox = new Viewbox();
+                viewBox.Child = titles[k];
+                viewBox.HorizontalAlignment = HorizontalAlignment.Left;
+
+
+                grid.Children.Add(viewBox);
+                Grid.SetRow(viewBox, 0);
+                Grid.SetColumn(viewBox, 1);
+
+                Label[] tmp = new Label[6];
+
+                for (int w = 0; w < 2; w++)
+                    grid.ColumnDefinitions.Add(new ColumnDefinition());
+                for (int w = 0; w < 7; w++)
+                    grid.RowDefinitions.Add(new RowDefinition());
+
+                for (int w=0 ; w<6 ; w++)
+                {
+                    Label tmpp = new Label();
+                    tmpp.Style = Application.Current.Resources["Card Property Style"] as Style;
+                    tmpp.Content = "Test";
+                    tmp[w] = tmpp;
+
+                    viewBox = new Viewbox();
+                    viewBox.Child = tmpp;
+                    viewBox.HorizontalAlignment = HorizontalAlignment.Left;
+                    grid.Children.Add(viewBox);
+                    Grid.SetRow(viewBox, w + 1);
+                    Grid.SetColumn(viewBox, 1);
+
+                }
+
+                borders[k].Child = grid;
+                mainGrid.Children.Add(borders[k]);
+                Grid.SetRow(borders[k], k / 3);
+                Grid.SetColumn(borders[k], k % 3);
+
+
+                contentsOfBorder[k] = tmp;
+
+            }
+
+            setCards("SELECT * FROM Card ORDER BY ID DESC");
+           
+        }
+        
+
+        private void setCards(String querry)
+        {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-            
 
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "SELECT TOP 6 * FROM Card ORDER BY ID DESC";
+            string getData = querry;
 
             SqlCommand selectCard = new SqlCommand(getData, thisConnection);
-            SqlDataReader reader = selectCard.ExecuteReader();
-            
-            borders = new Border[6];
-            
 
-            for(int i = 0; i<6; i++)
+            DataTable table = new DataTable("cards");
+            SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
+            adapt.Fill(table);
+
+            Console.WriteLine(table.Rows.Count);
+
+            for (int i = 0; i < 6; i++)
             {
-                reader.Read();
                 borders[i] = new Border();
                 borders[i].BorderThickness = new Thickness(1.5);
-                Grid grid = new Grid();
-                for (int k = 0; k < 2; k++)
-                    grid.ColumnDefinitions.Add(new ColumnDefinition());
-                for (int k = 0; k < 7; k++)
-                    grid.RowDefinitions.Add(new RowDefinition());
 
-                Image img = new Image();
-                img.Margin = new Thickness(10, 10, 10, 10);
-                if (reader["multiverseID"] != null)
+                if (table.Rows[i]["multiverseID"] != null)
                 {
-                    string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + reader["multiverseID"] + @"&type=card";
+                    string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + table.Rows[i]["multiverseID"] + @"&type=card";
                     BitmapImage bi = new BitmapImage();
                     bi.BeginInit();
                     bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
                     bi.EndInit();
-                    img.Source = bi;
-
+                    
+                    images[i].Source = bi;
                 }
 
-                else {
-                    BitmapImage image = new BitmapImage(new Uri("/MTGDeckBuilder;component/Images/magic_the_gathering.png", UriKind.Relative));
-                    img.Source = image;
-                }
+                titles[i].Content = table.Rows[i]["name"];
 
-                Label nameOfCard = new Label();
-
-                Label[] content = new Label[6];
-
-                Viewbox viewBox;
-
-                for (int k = 0; k<6; k++) { 
-                    content[k] = new Label();
-                    content[k].Style = Application.Current.Resources["Card Property Style"] as Style;
-                    content[k].Content = "Test";
-                    viewBox = new Viewbox();
-                    viewBox.Child = content[k];
-                    viewBox.HorizontalAlignment = HorizontalAlignment.Left;
-                    grid.Children.Add(viewBox);
-                    Grid.SetRow(viewBox, k + 1);
-                    Grid.SetColumn(viewBox, 1);
-                }
-
-                nameOfCard.Style = Application.Current.Resources["Card Title Style"] as Style;
-                nameOfCard.Content = reader["name"];
-                viewBox = new Viewbox();
-                viewBox.Child = nameOfCard;
-                viewBox.HorizontalAlignment = HorizontalAlignment.Left;
-                grid.Children.Add(viewBox);
-
-                Grid.SetRow(viewBox, 0);
-                Grid.SetColumn(viewBox, 1);
-
-                grid.Children.Add(img);
-                Grid.SetRow(img, 0);
-                Grid.SetRowSpan(img, 7);
-                Grid.SetColumn(img, 0);
-
-                borders[i].Child = grid;
-                mainGrid.Children.Add(borders[i]);
-                Grid.SetRow(borders[i], i / 3);
-                Grid.SetColumn(borders[i], i %3);
             }
-            Console.WriteLine(reader["name"]);
-
-
             more_options_border.Visibility = Visibility.Hidden;
-           
         }
+
+
 
         private void searchBox_GotFocus(object sender, RoutedEventArgs e)
         {
