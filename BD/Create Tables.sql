@@ -371,3 +371,40 @@ JOIN (SELECT id, name
 	JOIN TypeOfCard
 	ON Card.id = TypeOfCard.card AND TypeOfCard.type = 'Enchantment') AS c
 ON cid.card = c.id
+
+go
+
+CREATE FUNCTION search_cards (@type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns Table
+AS
+	RETURN(SELECT seven.*
+	FROM(
+		SELECT six.*
+		FROM(
+			SELECT five.*
+			FROM(
+				SELECT four.*
+				FROM(
+					SELECT three.*
+					FROM(
+						SELECT two.*
+						FROM (
+							SELECT one.*
+							FROM (
+								SELECT Card.*
+								FROM Card
+								JOIN TypeOfCard
+								ON Card.id = TypeOfCard.card AND (TypeOfCard.type = @type OR @type = null)) AS one
+							JOIN ColorIdentity
+							ON one.id = ColorIdentity.card AND (ColorIdentity.color = 'G' OR @green = null)) AS two
+						JOIN ColorIdentity
+						ON two.id = ColorIdentity.card AND (ColorIdentity.color = 'U' OR @blue = null)) AS three
+					JOIN ColorIdentity
+					ON three.id = ColorIdentity.card AND (ColorIdentity.color = 'W' OR @white = null)) AS four
+				JOIN ColorIdentity
+				ON four.id = ColorIdentity.card AND (ColorIdentity.color = 'R' OR @red = null)) AS five
+			JOIN ColorIdentity
+			ON five.id = ColorIdentity.card AND (ColorIdentity.color = 'B' OR @black = null)) AS six
+		JOIN Edition
+		ON six.edition =Edition.code AND (Edition.name = @edition OR @edition = null)) AS seven
+	LEFT JOIN Creature
+	ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower = null) AND (Creature.power <= @MaxPower  or @MaxPower = null) AND (Creature.toughness >= @MinTough  or @MinTough = null) AND (Creature.toughness <= @MaxTough  or @MaxTough = null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity = null));
