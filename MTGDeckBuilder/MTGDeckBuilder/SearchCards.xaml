@@ -48,7 +48,7 @@
                     <TextBox  x:Name="searchBox" HorizontalAlignment="Left" Height="Auto" MinHeight="35" MinWidth="280" TextWrapping="NoWrap" Text="Search" VerticalAlignment="Center"  Margin="0,0,0,0" Grid.Column="0" Foreground="#FF7D7171" Background="White" GotFocus="searchBox_GotFocus" FontSize="24" LostFocus="searchBox_LostFocus"/>
                 </Viewbox>
 
-                <Button x:Name="button"   MaxWidth="35" Height="Auto" Width="Auto" HorizontalAlignment="Left" Grid.Column="1"  VerticalAlignment="Center" AutomationProperties.AcceleratorKey="Enter">
+                <Button x:Name="button" Click="SearchButton_Click" MaxWidth="35" Height="Auto" Width="Auto" HorizontalAlignment="Left" Grid.Column="1"  VerticalAlignment="Center" AutomationProperties.AcceleratorKey="Enter">
                     <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
                         <Canvas Name="Layer_1" Width="50" Height="50">
                             <Canvas.RenderTransform>
@@ -63,31 +63,38 @@
                 </Button>
 
                 <Viewbox MaxHeight="40" Margin="20,0,0,0" Grid.Column="2">
-                    <ComboBox x:Name="typeComboBox" Text="Legality"  IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
-                        <ComboBoxItem Content="Casual"/>
-                        <ComboBoxItem Content="Modern"/>
-                        <ComboBoxItem Content="Vintage"/>
-                        <ComboBoxItem Content="Standard"/>
+                    <ComboBox x:Name="typeComboBox" Text="Type"  IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
+                        <ComboBoxItem Content="None"/>
+                        <ComboBoxItem Content="Sorcery"/>
+                        <ComboBoxItem Content="Planeswalker"/>
+                        <ComboBoxItem Content="Plane"/>
+                        <ComboBoxItem Content="Land"/>
+                        <ComboBoxItem Content="Creature"/>
+                        <ComboBoxItem Content="Ever"/>
+                        <ComboBoxItem Content="Artifact"/>
+                        <ComboBoxItem Content="Instant"/>
+                        <ComboBoxItem Content="Enchantment"/>
+                        <ComboBoxItem Content="Enchant"/>
                     </ComboBox>
                 </Viewbox>
 
-                <CheckBox Grid.Column="3" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox x:Name="GCheckBox" Grid.Column="3" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Margin="0,0,0,0" Source="Mana_G.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="4" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox x:Name="UCheckBox" Grid.Column="4" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Margin="0,0,0,0" Source="Mana_U.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="5" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox x:Name="WCheckBox" Grid.Column="5" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_W.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="6" Margin="20,0,0,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox x:Name="RCheckBox" Grid.Column="6" Margin="20,0,0,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_R.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Grid.Column="7" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox x:Name="BCheckBox" Grid.Column="7" Margin="20,0,0,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_B.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
@@ -113,7 +120,7 @@
                     </Label>
                     
                     <Viewbox Stretch="Uniform">
-                        <TextBox x:Name="pageTextBox"  Text="Test" />
+                        <TextBox x:Name="pageTextBox" PreviewTextInput="NumberValidationTextBox" Text="Test" KeyDown="pageTextBox_KeyDown" />
                     </Viewbox>
 
                     <Label x:Name="maxPage"  Content="/#" Foreground="LightGray"/>
@@ -291,7 +298,7 @@
                     </Viewbox>
 
                     <Viewbox Grid.Column="3" Grid.Row="2" Margin="10,10,10,10">
-                        <Button x:Name="advanced_search_button" Content="Search"/>
+                        <Button Click="SearchButton_Click" x:Name="advanced_search_button" Content="Search"/>
                     </Viewbox>
 
                 </Grid>

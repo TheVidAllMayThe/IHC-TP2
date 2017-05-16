@@ -37,6 +37,7 @@ namespace MTGDeckBuilder
         String currentQuerry;
         DataTable table;
         BitmapImage[] bis;
+        
 
 
         public Page1()
@@ -78,7 +79,6 @@ namespace MTGDeckBuilder
                 viewBox.Child = titles[k];
                 viewBox.HorizontalAlignment = HorizontalAlignment.Left;
 
-
                 grid.Children.Add(viewBox);
                 Grid.SetRow(viewBox, 0);
                 Grid.SetColumn(viewBox, 1);
@@ -115,26 +115,29 @@ namespace MTGDeckBuilder
                 contentsOfBorder[k] = tmp;
 
             }
-            currentQuerry = "SELECT * FROM Card ORDER BY ID DESC";
-            setCards(currentQuerry);
+
+//            currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
+            currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
+            setCards();
            
         }
         
 
-        private void setCards(String querry)
+        private void setCards()
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = querry;
+            string getData = currentQuerry;
 
             SqlCommand selectCard = new SqlCommand(getData, thisConnection);
 
             table = new DataTable("cards");
             SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
             adapt.Fill(table);
+            
 
             bis = new BitmapImage[table.Rows.Count];
 
@@ -150,7 +153,7 @@ namespace MTGDeckBuilder
 
                 if (table.Rows[i]["multiverseID"] != null)
                 {
-                    if (bis[i] is null)
+                    if (bis[i] == null)
                     {
                         string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + table.Rows[i]["multiverseID"] + @"&type=card";
                         BitmapImage bi = new BitmapImage();
@@ -166,8 +169,76 @@ namespace MTGDeckBuilder
 
                 }
 
-                titles[i % 6].Content = table.Rows[i]["name"];
+                titles[i % 6].Content = table.Rows[i]["cardName"];
+
+                contentsOfBorder[i%6][0].Content = table.Rows[i]["editionName"];
+
+                contentsOfBorder[i%6][1].Content = table.Rows[i]["rarity"];
+
+                var querry = "SELECT * FROM TypeOfCard where card = " + table.Rows[i]["id"];
+                SqlCommand selectTypes = new SqlCommand(querry, thisConnection);
+                DataTable types = new DataTable("types");
+                SqlDataAdapter adapt = new SqlDataAdapter(selectTypes);
+
+                adapt.Fill(types);
+
+                if (types.Rows.Count == 0)
+                    contentsOfBorder[i % 6][2].Content = "---";
+                else
+                {
+                    contentsOfBorder[i % 6][2].Content = "";
+                    foreach (DataRow row in types.Rows)
+                    {
+                        contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString() + row["type"] + ", ";
+                    }
+                    contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString().Substring(0, contentsOfBorder[i % 6][2].Content.ToString().Length - 2); 
+                }
+
+                querry = "SELECT * FROM SubTypeOfCard where card = " + table.Rows[i]["id"];
+                selectTypes = new SqlCommand(querry, thisConnection);
+                DataTable subtypes = new DataTable("types");
+                adapt = new SqlDataAdapter(selectTypes);
+                adapt.Fill(subtypes);
+
+                if (types.Rows.Count == 0)
+                    contentsOfBorder[i % 6][3].Content = "---";
+                else
+                {
+                    contentsOfBorder[i % 6][3].Content = "";
+                    foreach (DataRow row in subtypes.Rows)
+                    {
+                        contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString() + row["subtype"] + ", ";
+                    }
+
+                    Console.WriteLine(contentsOfBorder[i % 6][3].Content);
+                    if(contentsOfBorder[i % 6][3].Content.ToString().Trim().Equals(""))
+                        contentsOfBorder[i % 6][3].Content = "---";
+                    else
+                        contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString().Substring(0, contentsOfBorder[i % 6][3].Content.ToString().Length - 2);
+                }
+
+               if(contentsOfBorder[i % 6][2].ToString().Contains("Creature"))
+               {
+                    querry = "SELECT * FROM Creature where card = " + table.Rows[i]["id"];
+                    SqlCommand powerselect = new SqlCommand(querry, thisConnection);
+                    DataTable power = new DataTable("power");
+                    SqlDataReader querryCommandReader = powerselect.ExecuteReader();
+                    querryCommandReader.Read();
+                    contentsOfBorder[i % 6][4].Content = "Power: " + querryCommandReader["power"];
+                    contentsOfBorder[i % 6][5].Content = "Toughness: " + querryCommandReader["toughness"];
+                }
+                else
+                {
+                    contentsOfBorder[i % 6][4].Content = ""; 
+                    contentsOfBorder[i % 6][5].Content = "";
+                }
+
+
+
+
             }
+
+
 
             var maxP = table.Rows.Count / 6;
 
@@ -283,10 +354,19 @@ namespace MTGDeckBuilder
 
         
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            
+            Regex regex = new Regex("[^0-9]+");
+            
+            if (regex.IsMatch(e.Text))
             {
-                Regex regex = new Regex("[^0-9]+");
-                e.Handled = regex.IsMatch(e.Text);
+                e.Handled = true;
             }
+          
+           
+
+
+        }
 
         private void Border_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -307,6 +387,74 @@ namespace MTGDeckBuilder
         private void previousPageClick(object sender, RoutedEventArgs e)
         {
             setPage(int.Parse(pageTextBox.Text) - 1);
+        }
+
+        private void pageTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (int.Parse(((TextBox)sender).Text) == 0)
+                {
+                    setPage(1);
+                    e.Handled = true;
+                    return;
+                }
+
+                if (int.Parse(((TextBox)sender).Text) > int.Parse(maxPage.Content.ToString().Substring(1)))
+                {
+                    MessageBoxResult result = MessageBox.Show("You have selected an invalid page", "Wrong Page", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    e.Handled = true;
+                    return;
+                }
+
+                setPage(int.Parse(pageTextBox.Text));
+                e.Handled = true;
+            }
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            String type = typeComboBox.Text.Equals("Type") || typeComboBox.Text.Equals("None") ? "null":edition_box.Text;
+            String b, g, u, w, r;
+            b = BCheckBox.IsChecked.Value ? "1":"null";
+            g = GCheckBox.IsChecked.Value ? "1":"null";
+            u = UCheckBox.IsChecked.Value ? "1":"null";
+            w = WCheckBox.IsChecked.Value ? "1":"null";
+            r = RCheckBox.IsChecked.Value ? "1":"null";
+            String edition = edition_box.Text.Equals("Edition") ? "null":edition_box.Text;
+            String minPower, maxPower, minTough, maxTough, minCMC, maxCMC;
+
+            if (!min_power_box.Text.Equals(""))
+                minPower = (min_power_box.Text);
+            else
+                minPower = "null";
+            if (!max_power_box.Text.Equals(""))
+                maxPower = (max_power_box.Text);
+            else
+                maxPower = "null";
+            if (!min_toughness_box.Text.Equals(""))
+                minTough = (min_toughness_box.Text);
+            else
+                minTough = "null";
+            if (!max_toughness_box.Text.Equals(""))
+                maxTough = (max_toughness_box.Text);
+            else
+                maxTough = "null";
+            if (!min_cmc_box.Text.Equals(""))
+                minCMC = (min_cmc_box.Text);
+            else
+                minCMC = "null";
+            if (!max_cmc_box.Text.Equals(""))
+                maxCMC = (max_cmc_box.Text);
+            else
+                maxCMC = "null";
+
+
+            string rarity = rarity_combo_box.Text.Equals("Rarity") ? "null" : rarity_combo_box.Text;
+
+            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : searchBox.Text) + ", " + type + ", " + g + ", " + b + ", " + w + ", " + r + ", " + b + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
+            Console.WriteLine(currentQuerry);
+            
         }
     }
 }
