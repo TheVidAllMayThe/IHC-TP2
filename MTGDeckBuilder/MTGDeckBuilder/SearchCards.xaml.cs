@@ -37,17 +37,18 @@ namespace MTGDeckBuilder
         String currentQuerry;
         DataTable table;
         BitmapImage[] bis;
-        
+        string abilitiesStartingText;
 
 
         public Page1()
         {
             InitializeComponent();
-
+            abilitiesStartingText = abilities_box.Text;
             borders = new Border[6];
             titles = new Label[6];
             images = new Image[6];
             contentsOfBorder = new Label[6][];
+
 
             for (int k = 0; k<6; k++)
             {
@@ -130,9 +131,8 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = currentQuerry;
-
-            SqlCommand selectCard = new SqlCommand(getData, thisConnection);
+            MessageBox.Show(currentQuerry);
+            SqlCommand selectCard = new SqlCommand(currentQuerry, thisConnection);
 
             table = new DataTable("cards");
             SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
@@ -146,7 +146,8 @@ namespace MTGDeckBuilder
 
         private void setPage(int page)
         {
-            for (int i = page * 6 - 6; i < page * 6; i++)
+            int maxPageInt = table.Rows.Count / 6 + (table.Rows.Count % 6 == 0 ? 0 : 1);
+            for (int i = page * 6 - 6; i < (page == maxPageInt ? table.Rows.Count:page * 6); i++)
             {
                 borders[i % 6] = new Border();
                 borders[i % 6].BorderThickness = new Thickness(1.5);
@@ -240,13 +241,13 @@ namespace MTGDeckBuilder
 
 
 
-            var maxP = table.Rows.Count / 6;
+            
 
-            maxPage.Content = "/" + maxP;
+            maxPage.Content = "/" + maxPageInt;
 
             pageTextBox.Text = "" + page;
 
-            if (page == maxP)
+            if (page == maxPageInt)
                 nextPage.IsEnabled = false;
             else
                 nextPage.IsEnabled = true;
@@ -414,14 +415,14 @@ namespace MTGDeckBuilder
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            String type = typeComboBox.Text.Equals("Type") || typeComboBox.Text.Equals("None") ? "null":edition_box.Text;
+            String type = typeComboBox.Text.Equals("Type") || typeComboBox.Text.Equals("None") ? "null": "'"+typeComboBox.Text+ "'";
             String b, g, u, w, r;
             b = BCheckBox.IsChecked.Value ? "1":"null";
             g = GCheckBox.IsChecked.Value ? "1":"null";
             u = UCheckBox.IsChecked.Value ? "1":"null";
             w = WCheckBox.IsChecked.Value ? "1":"null";
             r = RCheckBox.IsChecked.Value ? "1":"null";
-            String edition = edition_box.Text.Equals("Edition") ? "null":edition_box.Text;
+            String edition = edition_box.Text.Equals("Edition") ? "null": "'" + edition_box.Text + "'";
             String minPower, maxPower, minTough, maxTough, minCMC, maxCMC;
 
             if (!min_power_box.Text.Equals(""))
@@ -449,12 +450,25 @@ namespace MTGDeckBuilder
             else
                 maxCMC = "null";
 
+            string abilities = abilities_box.Text.Equals(abilitiesStartingText) ? "null" : "'" + abilities_box.Text + "'";
 
-            string rarity = rarity_combo_box.Text.Equals("Rarity") ? "null" : rarity_combo_box.Text;
+            string rarity = rarity_combo_box.Text.Equals("Rarity") ? "null" : "'" + rarity_combo_box.Text + "'";
 
-            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : searchBox.Text) + ", " + type + ", " + g + ", " + b + ", " + w + ", " + r + ", " + b + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
-            Console.WriteLine(currentQuerry);
-            
+            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + b + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
+
+            BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
+            for(int i = 0; i<6; i++)
+            {
+                images[i].Source = image;
+                titles[i].Content = "";
+                for(int k = 0; k < 6; k++)
+                {
+                    contentsOfBorder[i][k].Content = "";
+                }               
+            }
+
+            setCards();
+
         }
     }
 }
