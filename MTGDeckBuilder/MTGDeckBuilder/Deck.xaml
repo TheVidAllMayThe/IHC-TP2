@@ -1,4 +1,4 @@
-﻿<Page x:Class="MTGDeckBuilder.Properties.Deck"
+﻿<Page x:Class="MTGDeckBuilder.Deck"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,6 +9,18 @@
       Title="Deck"
       Background="Black">
 
+    <Page.Resources>
+        <DataTemplate x:Key="deck_list_template">
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}"/>
+                <Label Style="{StaticResource Card Property Style}" Content="x "/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Name}"/>
+                <Button Click="Add_Card">+</Button>
+                <Button Click="Remove_Card">-</Button>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
+    
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="Magic_generic_15.jpg" Opacity="0.6"></ImageBrush>

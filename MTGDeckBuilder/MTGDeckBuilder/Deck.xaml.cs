@@ -14,8 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Collections.ObjectModel;
 
-namespace MTGDeckBuilder.Properties
+namespace MTGDeckBuilder
 {
     /// <summary>
     /// Interaction logic for Deck.xaml
@@ -23,10 +24,13 @@ namespace MTGDeckBuilder.Properties
     /// 
     public class Card_listing
     {
+        private int _deck;
         private int _id;
         private string _name;
         private int _amount;
-        
+        private bool _isSideDeck;
+
+        public int Deck { get { return _deck; } set { _deck = value; } }
         public int Id { get { return _id; } set { _id = value; } }
         public string Name { get { return _name; } set { _name = value; } }
         public int Amount
@@ -34,16 +38,53 @@ namespace MTGDeckBuilder.Properties
             get { return _amount; }
             set { _amount = value; }
         }
+        public bool IsSideDeck { get { return _isSideDeck; } set { _isSideDeck = value; } }
     }
 
     public partial class Deck : Page
     {
         SqlConnection thisConnection;
         int deck_id;
-        public Deck()
+
+        private void Add_Card(object sender, RoutedEventArgs e)
         {
-            InitializeComponent();
-            deck_id = 1;
+            Button button = sender as Button;
+            Card_listing card = button.DataContext as Card_listing;
+
+            SqlConnection thisConnection;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "UPDATE CardInDeck SET amount = amount + 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
+            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+
+            thisConnection.Close();
+            showDeck();
+        }
+
+        private void Remove_Card(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            Card_listing card = button.DataContext as Card_listing;
+
+            SqlConnection thisConnection;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "UPDATE CardInDeck SET amount = amount - 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
+            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+
+            thisConnection.Close();
+            card.Amount -= 1;
+            showDeck();
+        }
+
+        public void showDeck()
+        {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
             thisConnection = new SqlConnection(@cs);
@@ -55,7 +96,7 @@ namespace MTGDeckBuilder.Properties
             deck_title.Content = dr.GetString(0);
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id +" AND isSideBoard = 0";
+            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 0";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_cards.Content = dr.GetInt32(0).ToString();
@@ -67,13 +108,13 @@ namespace MTGDeckBuilder.Properties
             deck_number_of_lands.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM LandMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM LandMainBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            List<Card_listing> temp = new List<Card_listing>();
+            ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false });
             }
             deck_lands.ItemsSource = temp;
             dr.Close();
@@ -84,13 +125,13 @@ namespace MTGDeckBuilder.Properties
             deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM CreatureMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM CreatureMainBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            temp = new List<Card_listing>();
+            temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false });
             }
             deck_creatures.ItemsSource = temp;
             dr.Close();
@@ -101,13 +142,13 @@ namespace MTGDeckBuilder.Properties
             deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM SorceryMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM SorceryMainBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            temp = new List<Card_listing>();
+            temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false });
             }
             deck_sorceries.ItemsSource = temp;
             dr.Close();
@@ -118,13 +159,13 @@ namespace MTGDeckBuilder.Properties
             deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM ArtifactMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM ArtifactMainBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            temp = new List<Card_listing>();
+            temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false });
             }
             deck_artifacts.ItemsSource = temp;
             dr.Close();
@@ -135,13 +176,13 @@ namespace MTGDeckBuilder.Properties
             deck_number_of_instants.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM InstantMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM InstantMainBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            temp = new List<Card_listing>();
+            temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false });
             }
             deck_instants.ItemsSource = temp;
             dr.Close();
@@ -152,13 +193,13 @@ namespace MTGDeckBuilder.Properties
             deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM EnchantmentMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM EnchantmentMainBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            temp = new List<Card_listing>();
+            temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false });
             }
             deck_enchantments.ItemsSource = temp;
             dr.Close();
@@ -169,18 +210,24 @@ namespace MTGDeckBuilder.Properties
             side_deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount FROM SideDeckBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck FROM SideDeckBoard WHERE deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            temp = new List<Card_listing>();
+            temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = true });
             }
             side_deck.ItemsSource = temp;
             dr.Close();
 
             thisConnection.Close();
+        }
+        public Deck()
+        {
+            InitializeComponent();
+            deck_id = 1;
+            showDeck();
         }
     }
 }

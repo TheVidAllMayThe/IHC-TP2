@@ -14,8 +14,7 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
-
-        <DataTemplate x:Key="deck_list_template">
+        <DataTemplate x:Key="deck_list_template_owner">
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}"/>
                 <Label Style="{StaticResource Card Property Style}" Content="x "/>
