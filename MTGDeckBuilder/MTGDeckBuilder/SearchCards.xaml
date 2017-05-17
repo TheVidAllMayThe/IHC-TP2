@@ -152,12 +152,12 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     
-                    <Border Grid.Row="0" Grid.ZIndex="2" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
-                    <Border Grid.Row="0" Grid.ZIndex="2" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
-                    <Border Grid.Row="0" Grid.ZIndex="2" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,8,0,0"></Border>
-                    <Border Grid.Row="1" Grid.ZIndex="2" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,8"></Border>
-                    <Border Grid.Row="1" Grid.ZIndex="2" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
-                    <Border Grid.Row="1" Grid.ZIndex="2" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,8,0"></Border>
+                    <Border x:Name="border0" MouseLeftButtonUp="border_MouseLeftButtonUp" Grid.Row="0" Grid.ZIndex="2" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="8,0,0,0"></Border>
+                    <Border x:Name="border1" MouseLeftButtonUp="border_MouseLeftButtonUp" Grid.Row="0" Grid.ZIndex="2" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border x:Name="border2" MouseLeftButtonUp="border_MouseLeftButtonUp" Grid.Row="0" Grid.ZIndex="2" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,8,0,0"></Border>
+                    <Border x:Name="border3" MouseLeftButtonUp="border_MouseLeftButtonUp" Grid.Row="1" Grid.ZIndex="2" Grid.Column="0" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,8"></Border>
+                    <Border x:Name="border4" MouseLeftButtonUp="border_MouseLeftButtonUp" Grid.Row="1" Grid.ZIndex="2" Grid.Column="1" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,0,0"></Border>
+                    <Border x:Name="border5" MouseLeftButtonUp="border_MouseLeftButtonUp" Grid.Row="1" Grid.ZIndex="2" Grid.Column="2" BorderBrush="White" Background="White" Opacity="0"  MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" CornerRadius="0,0,8,0"></Border>
 
                 </Grid>
             </Border>

@@ -23,8 +23,11 @@ namespace MTGDeckBuilder
     
     public partial class Card : Page
     {
-        private int card_id;
+        private static int card_id;
         private SqlConnection thisConnection;
+
+        public static int Card_id { get => card_id; set => card_id = value; }
+
         public void show_card()
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
@@ -32,7 +35,7 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "SELECT name, text, rarity, artist, edition, multiverseID FROM Card WHERE id = " + card_id;
+            string getData = "SELECT name, text, rarity, artist, edition, multiverseID FROM Card WHERE id = " + Card_id;
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             name.Content = dr.GetString(0);
@@ -54,27 +57,27 @@ namespace MTGDeckBuilder
             }
 
 
-            getData = "SELECT flavor FROM Flavor WHERE card = " + card_id;
+            getData = "SELECT flavor FROM Flavor WHERE card = " + Card_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             if (dr.Read()) flavor.Content = dr.GetString(0);
             else flavor.Content = "---";
             while (dr.Read()) type.Content += ", " + dr.GetString(0);
             dr.Close();
 
-            getData = "SELECT type FROM TypeOfCard WHERE card = " + card_id;
+            getData = "SELECT type FROM TypeOfCard WHERE card = " + Card_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             if (dr.Read()) type.Content = dr.GetString(0);
             else type.Content = "---";
             while (dr.Read()) type.Content += ", " + dr.GetString(0);
             dr.Close();
 
-            getData = "SELECT subtype FROM SubtypeOfCard WHERE card = " + card_id;
+            getData = "SELECT subtype FROM SubtypeOfCard WHERE card = " + Card_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             if(dr.Read()) subtype.Content = dr.GetString(0);
             while (dr.Read()) subtype.Content += ", " + dr.GetString(0);
             dr.Close();
 
-            getData = "SELECT power, toughness FROM Creature WHERE card = " + card_id;
+            getData = "SELECT power, toughness FROM Creature WHERE card = " + Card_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             if (dr.Read())
             {
@@ -96,7 +99,6 @@ namespace MTGDeckBuilder
         public Card()
         {
             InitializeComponent();
-            card_id = 2;
             show_card();
         }
     }

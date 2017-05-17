@@ -38,7 +38,7 @@ namespace MTGDeckBuilder
         DataTable table;
         BitmapImage[] bis;
         string abilitiesStartingText;
-
+        private static int currentPage;
 
         public Page1()
         {
@@ -48,7 +48,7 @@ namespace MTGDeckBuilder
             titles = new Label[6];
             images = new Image[6];
             contentsOfBorder = new Label[6][];
-
+           
 
             for (int k = 0; k<6; k++)
             {
@@ -131,14 +131,14 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            MessageBox.Show(currentQuerry);
+            
             SqlCommand selectCard = new SqlCommand(currentQuerry, thisConnection);
 
             table = new DataTable("cards");
             SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
             adapt.Fill(table);
-            
 
+            
             bis = new BitmapImage[table.Rows.Count];
 
             setPage(1);
@@ -147,101 +147,118 @@ namespace MTGDeckBuilder
         private void setPage(int page)
         {
             int maxPageInt = table.Rows.Count / 6 + (table.Rows.Count % 6 == 0 ? 0 : 1);
-            for (int i = page * 6 - 6; i < (page == maxPageInt ? table.Rows.Count:page * 6); i++)
+            currentPage = page;
+            Console.WriteLine(currentQuerry);
+
+            if(page == maxPageInt)
             {
-                borders[i % 6] = new Border();
-                borders[i % 6].BorderThickness = new Thickness(1.5);
-
-                if (table.Rows[i]["multiverseID"] != null)
+                BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
+                for (int i = 0; i < 6; i++)
                 {
-                    if (bis[i] == null)
+                    images[i].Source = image;
+                    titles[i].Content = "";
+                    for (int k = 0; k < 6; k++)
                     {
-                        string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + table.Rows[i]["multiverseID"] + @"&type=card";
-                        BitmapImage bi = new BitmapImage();
-                        bi.BeginInit();
-                        bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
-                        bi.EndInit();
-                        bis[i] = bi;
-                        images[i % 6].Source = bis[i];
+                        contentsOfBorder[i][k].Content = "";
                     }
-
-                    else
-                        images[i % 6].Source = bis[i];
-
                 }
-
-                titles[i % 6].Content = table.Rows[i]["cardName"];
-
-                contentsOfBorder[i%6][0].Content = table.Rows[i]["editionName"];
-
-                contentsOfBorder[i%6][1].Content = table.Rows[i]["rarity"];
-
-                var querry = "SELECT * FROM TypeOfCard where card = " + table.Rows[i]["id"];
-                SqlCommand selectTypes = new SqlCommand(querry, thisConnection);
-                DataTable types = new DataTable("types");
-                SqlDataAdapter adapt = new SqlDataAdapter(selectTypes);
-
-                adapt.Fill(types);
-
-                if (types.Rows.Count == 0)
-                    contentsOfBorder[i % 6][2].Content = "---";
-                else
-                {
-                    contentsOfBorder[i % 6][2].Content = "";
-                    foreach (DataRow row in types.Rows)
-                    {
-                        contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString() + row["type"] + ", ";
-                    }
-                    contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString().Substring(0, contentsOfBorder[i % 6][2].Content.ToString().Length - 2); 
-                }
-
-                querry = "SELECT * FROM SubTypeOfCard where card = " + table.Rows[i]["id"];
-                selectTypes = new SqlCommand(querry, thisConnection);
-                DataTable subtypes = new DataTable("types");
-                adapt = new SqlDataAdapter(selectTypes);
-                adapt.Fill(subtypes);
-
-                if (types.Rows.Count == 0)
-                    contentsOfBorder[i % 6][3].Content = "---";
-                else
-                {
-                    contentsOfBorder[i % 6][3].Content = "";
-                    foreach (DataRow row in subtypes.Rows)
-                    {
-                        contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString() + row["subtype"] + ", ";
-                    }
-
-                    Console.WriteLine(contentsOfBorder[i % 6][3].Content);
-                    if(contentsOfBorder[i % 6][3].Content.ToString().Trim().Equals(""))
-                        contentsOfBorder[i % 6][3].Content = "---";
-                    else
-                        contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString().Substring(0, contentsOfBorder[i % 6][3].Content.ToString().Length - 2);
-                }
-
-               if(contentsOfBorder[i % 6][2].ToString().Contains("Creature"))
-               {
-                    querry = "SELECT * FROM Creature where card = " + table.Rows[i]["id"];
-                    SqlCommand powerselect = new SqlCommand(querry, thisConnection);
-                    DataTable power = new DataTable("power");
-                    SqlDataReader querryCommandReader = powerselect.ExecuteReader();
-                    querryCommandReader.Read();
-                    contentsOfBorder[i % 6][4].Content = "Power: " + querryCommandReader["power"];
-                    contentsOfBorder[i % 6][5].Content = "Toughness: " + querryCommandReader["toughness"];
-                }
-                else
-                {
-                    contentsOfBorder[i % 6][4].Content = ""; 
-                    contentsOfBorder[i % 6][5].Content = "";
-                }
-
-
-
-
             }
 
+            if (table.Rows.Count != 0)
+            {
+                for (int i = page * 6 - 6; i < (page == maxPageInt ? table.Rows.Count : page * 6); i++)
+                {
+                    borders[i % 6] = new Border();
+                    borders[i % 6].BorderThickness = new Thickness(1.5);
+
+                    if (table.Rows[i]["multiverseID"] != null)
+                    {
+                        if (bis[i] == null)
+                        {
+                            string fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + table.Rows[i]["multiverseID"] + @"&type=card";
+                            BitmapImage bi = new BitmapImage();
+                            bi.BeginInit();
+                            bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
+                            bi.EndInit();
+                            bis[i] = bi;
+                            images[i % 6].Source = bis[i];
+                        }
+
+                        else
+                            images[i % 6].Source = bis[i];
+
+                    }
+
+                    titles[i % 6].Content = table.Rows[i]["cardName"];
+
+                    contentsOfBorder[i % 6][0].Content = table.Rows[i]["editionName"];
+
+                    contentsOfBorder[i % 6][1].Content = table.Rows[i]["rarity"];
+
+                    var querry = "SELECT * FROM TypeOfCard where card = " + table.Rows[i]["id"];
+                    SqlCommand selectTypes = new SqlCommand(querry, thisConnection);
+                    DataTable types = new DataTable("types");
+                    SqlDataAdapter adapt = new SqlDataAdapter(selectTypes);
+
+                    adapt.Fill(types);
+
+                    if (types.Rows.Count == 0)
+                        contentsOfBorder[i % 6][2].Content = "---";
+                    else
+                    {
+                        contentsOfBorder[i % 6][2].Content = "";
+                        foreach (DataRow row in types.Rows)
+                        {
+                            contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString() + row["type"] + ", ";
+                        }
+                        contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString().Substring(0, contentsOfBorder[i % 6][2].Content.ToString().Length - 2);
+                    }
+
+                    querry = "SELECT * FROM SubTypeOfCard where card = " + table.Rows[i]["id"];
+                    selectTypes = new SqlCommand(querry, thisConnection);
+                    DataTable subtypes = new DataTable("types");
+                    adapt = new SqlDataAdapter(selectTypes);
+                    adapt.Fill(subtypes);
+
+                    if (types.Rows.Count == 0)
+                        contentsOfBorder[i % 6][3].Content = "---";
+                    else
+                    {
+                        contentsOfBorder[i % 6][3].Content = "";
+                        foreach (DataRow row in subtypes.Rows)
+                        {
+                            contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString() + row["subtype"] + ", ";
+                        }
+
+                        Console.WriteLine(contentsOfBorder[i % 6][3].Content);
+                        if (contentsOfBorder[i % 6][3].Content.ToString().Trim().Equals(""))
+                            contentsOfBorder[i % 6][3].Content = "---";
+                        else
+                            contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString().Substring(0, contentsOfBorder[i % 6][3].Content.ToString().Length - 2);
+                    }
+
+                    if (contentsOfBorder[i % 6][2].ToString().Contains("Creature"))
+                    {
+                        querry = "SELECT * FROM Creature where card = " + table.Rows[i]["id"];
+                        SqlCommand powerselect = new SqlCommand(querry, thisConnection);
+                        DataTable power = new DataTable("power");
+                        SqlDataReader querryCommandReader = powerselect.ExecuteReader();
+                        querryCommandReader.Read();
+                        contentsOfBorder[i % 6][4].Content = "Power: " + querryCommandReader["power"];
+                        contentsOfBorder[i % 6][5].Content = "Toughness: " + querryCommandReader["toughness"];
+                    }
+                    else
+                    {
+                        contentsOfBorder[i % 6][4].Content = "";
+                        contentsOfBorder[i % 6][5].Content = "";
+                    }
 
 
-            
+
+
+                }
+            }
+
 
             maxPage.Content = "/" + maxPageInt;
 
@@ -457,18 +474,28 @@ namespace MTGDeckBuilder
             currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + b + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
 
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
-            for(int i = 0; i<6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 images[i].Source = image;
                 titles[i].Content = "";
-                for(int k = 0; k < 6; k++)
+                for (int k = 0; k < 6; k++)
                 {
                     contentsOfBorder[i][k].Content = "";
-                }               
+                }
             }
 
             setCards();
 
+        }
+
+        private void border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            int borderPressed = int.Parse(((Border)sender).Name.Substring(6));
+
+            Card.Card_id = (int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"];
+
+            MessageBox.Show("" + Card.Card_id);
+            NavigationService.Navigate(new Uri("Card.xaml", UriKind.Relative));
         }
     }
 }

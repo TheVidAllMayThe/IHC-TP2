@@ -13,13 +13,13 @@
             <ImageBrush ImageSource="Magic_generic_15.jpg" Opacity="0.6"></ImageBrush>
         </Grid.Background>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
         <Image x:Name="image" Source="magic_the_gathering.png" Grid.Column="0" Margin="10,10,10,10"></Image>
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Margin="10,10,10,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
@@ -37,35 +37,85 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label Content="Name:" Grid.Column="0" Grid.Row="0" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="name" Content="Verdant Automation" Grid.Column="1" Grid.Row="0" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="0" Grid.Row="0">
+            <Label Content="Name:"  Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Type:" Grid.Column="0" Grid.Row="1" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="type" Content="Artifact Creature" Grid.Column="1" Grid.Row="1" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left">
+            <Label x:Name="name" Content="Verdant Automation" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Subtype:" Grid.Column="0" Grid.Row="2" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="subtype" Content="Construct" Grid.Column="1" Grid.Row="2" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="0" Grid.Row="1">
+                <Label Content="Type:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Power:" Grid.Column="0" Grid.Row="3" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="power" Content="1" Grid.Column="1" Grid.Row="3" Style="{StaticResource Card Title Style}"/>
+            <Viewbox  Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left">
+                <Label x:Name="type" Content="Artifact Creature" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Toughness:" Grid.Column="0" Grid.Row="4" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="toughness" Content="2" Grid.Column="1" Grid.Row="4" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="0" Grid.Row="2">
+                <Label Content="Subtype:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Text:" Grid.Column="0" Grid.Row="5" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="text" Content="{}{3}{6}: Put a +1/+1 counter on Verdant Automations" Grid.Column="1" Grid.Row="5" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left">
+                <Label x:Name="subtype" Content="Construct" Grid.Column="1" Grid.Row="2" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Rarity:" Grid.Column="0" Grid.Row="6" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="rarity" Content="Common" Grid.Column="1" Grid.Row="6" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="0" Grid.Row="3">
+                <Label Content="Power:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Legality:" Grid.Column="0" Grid.Row="7" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="legality" Content="Vintage, Legacy, Standard" Grid.Column="1" Grid.Row="7" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left">
+                <Label x:Name="power" Content="1" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Flavor:" Grid.Column="0" Grid.Row="8" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="flavor" Content="&quot;A perfect fusion of natur and artifact&quot; -Irsi, hujav gardner" Grid.Column="1" Grid.Row="8" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="0" Grid.Row="4">
+                <Label Content="Toughness:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
 
-            <Label Content="Artist:" Grid.Column="0" Grid.Row="9" Style="{StaticResource Card Title Style}"/>
-            <Label x:Name="artist" Content="Ryan Alexander Lec" Grid.Column="1" Grid.Row="9" Style="{StaticResource Card Title Style}"/>
+            <Viewbox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left">
+                <Label x:Name="toughness" Content="2" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="0" Grid.Row="5">
+                <Label Content="Text:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left">
+                <Label x:Name="text" Content="{}{3}{6}: Put a +1/+1 counter on Verdant Automations" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="0" Grid.Row="6">
+                <Label Content="Rarity:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left">
+                <Label x:Name="rarity" Content="Common" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="0" Grid.Row="7">
+                <Label Content="Legality:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="1" Grid.Row="7" HorizontalAlignment="Left">
+                <Label x:Name="legality" Content="Vintage, Legacy, Standard" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="0" Grid.Row="8">
+                <Label Content="Flavor:" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="1" Grid.Row="8" HorizontalAlignment="Left">
+                <Label x:Name="flavor" Content="&quot;A perfect fusion of natur and artifact&quot; -Irsi, hujav gardner" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="0" Grid.Row="9">
+                <Label Content="Artist:" Grid.Column="0" Grid.Row="9" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
+
+            <Viewbox Grid.Column="1" Grid.Row="9" HorizontalAlignment="Left">
+                <Label x:Name="artist" Content="Ryan Alexander Lec" Style="{StaticResource Card Title Style}"/>
+            </Viewbox>
         </Grid>
     </Grid>
 </Page>
