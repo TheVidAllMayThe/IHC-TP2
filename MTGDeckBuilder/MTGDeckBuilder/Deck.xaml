@@ -131,6 +131,21 @@
                     </TabItem.Header>
 
                     <!-- Starting Hand tab content -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel x:Name="upper_panel" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        </StackPanel>
+                        <StackPanel x:Name="lower_panel" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Margin="10,10,10,10" Click="New_Hand" Height="30" Width="90">New Hand</Button>
+                            <Button Margin="10,10,10,10" Click="Mulligan" Height="30" Width="90">Mulligan</Button>
+                        </StackPanel>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>

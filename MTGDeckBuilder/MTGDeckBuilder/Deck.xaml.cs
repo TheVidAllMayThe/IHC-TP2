@@ -47,7 +47,88 @@ namespace MTGDeckBuilder
     {
         SqlConnection thisConnection;
         int deck_id;
+        int starting_hand_cards;
+        static Random rnd;
 
+        private void New_Hand(object sender, RoutedEventArgs e)
+        {
+            starting_hand_cards = 7;
+            show_hand();
+        }
+
+        private void Mulligan(object sender, RoutedEventArgs e)
+        {
+            if(starting_hand_cards > 1) starting_hand_cards -= 1;
+            show_hand();
+        }
+
+        private void show_hand()
+        {
+            upper_panel.Children.Clear();
+            lower_panel.Children.Clear();
+            Image img;
+            string fullFilePath;
+            BitmapImage bi;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            String getData = "SELECT amount, multiverseID FROM CardInDeck JOIN Card ON CardInDeck.card = Card.id AND deck = " + deck_id + " AND isSideBoard = 0";
+            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+
+            List<int> list = new List<int>();
+            while (dr.Read())
+            {
+                for(int i=0; i< dr.GetInt32(0); i++) list.Add(dr.GetInt32(1));
+            }
+
+            Console.Write(list.Count());
+            int picked;
+            for (int i = 0; i < 4 && i < starting_hand_cards && list.Count() > 0; i++)
+            {
+                img = new Image();
+                img.Margin = new Thickness(10, 10, 10, 10);
+                picked = rnd.Next(list.Count);
+                if (picked != null)
+                {
+                    fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + list[picked] + @"&type=card";
+                }
+                else
+                {
+                    fullFilePath = "magic_the_gathering.png";
+                }
+                list.Remove(picked);
+                bi = new BitmapImage();
+                bi.BeginInit();
+                bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
+                bi.EndInit();
+                img.Source = bi;
+                upper_panel.Children.Add(img);
+            }
+            for (int i = 4; i < starting_hand_cards && list.Count() > 0; i++)
+            {
+                img = new Image();
+                img.Margin = new Thickness(10, 10, 10, 10);
+                picked = rnd.Next(list.Count);
+                if (picked != null)
+                {
+                    fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + list[picked] + @"&type=card";
+                }
+                else
+                {
+                    fullFilePath = "magic_the_gathering.png";
+                }
+                list.Remove(picked);
+                bi = new BitmapImage();
+                bi.BeginInit();
+                bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
+                bi.EndInit();
+                img.Source = bi;
+                lower_panel.Children.Add(img);
+            }
+            dr.Close();
+        }
         private void Add_Card(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
@@ -245,7 +326,10 @@ namespace MTGDeckBuilder
         {
             InitializeComponent();
             deck_id = 1;
+            starting_hand_cards = 7;
+            rnd = new Random();
             showDeck();
+            show_hand();
         }
     }
 }
