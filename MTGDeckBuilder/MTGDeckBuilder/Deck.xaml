@@ -14,7 +14,7 @@
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}"/>
                 <Label Style="{StaticResource Card Property Style}" Content="x "/>
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Name}"/>
+                <Label MouseEnter="showImage" Style="{StaticResource Card Property Style}" Content="{Binding Name}"/>
                 <Button Click="Add_Card">+</Button>
                 <Button Click="Remove_Card">-</Button>
             </StackPanel>
@@ -115,6 +115,7 @@
                             </StackPanel>
                             <ItemsControl x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}" />
                         </StackPanel>
+                        <Image x:Name="image" Source="magic_the_gathering.png" Grid.Column="2" Margin="10,10,10,10"></Image>
                     </Grid>
                 </TabItem>
                 <TabItem>
