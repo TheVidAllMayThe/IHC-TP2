@@ -113,20 +113,20 @@
 
             <Viewbox Grid.ColumnSpan="9" Grid.Row="2" HorizontalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
-                    <Label>
-                        <TextBlock TextDecorations="Underline">
-                                <Hyperlink x:Name="previousPage" Click="previousPageClick"> &lt;&lt; </Hyperlink>
+                    <Label VerticalAlignment="Center">
+                        <TextBlock TextDecorations="Underline" VerticalAlignment="Center">
+                                <Hyperlink x:Name="previousPage"  Click="previousPageClick"> &lt;&lt; </Hyperlink>
                         </TextBlock>
                     </Label>
-                    
-                    <Viewbox Stretch="Uniform">
+
+                    <Viewbox VerticalAlignment="Center" Stretch="Uniform">
                         <TextBox x:Name="pageTextBox" PreviewTextInput="NumberValidationTextBox" Text="Test" KeyDown="pageTextBox_KeyDown" />
                     </Viewbox>
 
                     <Label x:Name="maxPage"  Content="/#" Foreground="LightGray"/>
 
-                    <Label>
-                        <TextBlock TextDecorations="Underline">
+                    <Label VerticalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center" TextDecorations="Underline">
                                 <Hyperlink x:Name="nextPage" Click="nextPageClick">&gt;&gt;</Hyperlink>
                         </TextBlock>
                     </Label>

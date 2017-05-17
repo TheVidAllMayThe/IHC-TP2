@@ -54,6 +54,30 @@ namespace MTGDeckBuilder
             {
                 Grid grid = new Grid();
 
+                Grid buttongrid = new Grid();
+
+                for (int w = 0; w < 2; w++)
+                    grid.ColumnDefinitions.Add(new ColumnDefinition());
+                for (int w = 0; w < 7; w++)
+                    grid.RowDefinitions.Add(new RowDefinition());
+
+                ColumnDefinition col = new ColumnDefinition();
+
+                col.Width = new GridLength(1, GridUnitType.Auto);
+
+                grid.ColumnDefinitions.Add(col);
+
+                for (int w = 0; w < 2; w++)
+                    buttongrid.ColumnDefinitions.Add(new ColumnDefinition());
+                for (int w = 0; w < 7; w++)
+                    buttongrid.RowDefinitions.Add(new RowDefinition());
+
+                col = new ColumnDefinition();
+
+                col.Width = new GridLength(1, GridUnitType.Auto);
+                grid.ColumnDefinitions.Add(col);
+
+
                 borders[k] = new Border();
                 borders[k].BorderThickness = new Thickness(1.5);
 
@@ -83,13 +107,11 @@ namespace MTGDeckBuilder
                 grid.Children.Add(viewBox);
                 Grid.SetRow(viewBox, 0);
                 Grid.SetColumn(viewBox, 1);
+                Grid.SetColumnSpan(viewBox, 2);
 
                 Label[] tmp = new Label[6];
 
-                for (int w = 0; w < 2; w++)
-                    grid.ColumnDefinitions.Add(new ColumnDefinition());
-                for (int w = 0; w < 7; w++)
-                    grid.RowDefinitions.Add(new RowDefinition());
+                
 
                 for (int w=0 ; w<6 ; w++)
                 {
@@ -104,20 +126,44 @@ namespace MTGDeckBuilder
                     grid.Children.Add(viewBox);
                     Grid.SetRow(viewBox, w + 1);
                     Grid.SetColumn(viewBox, 1);
+                    Grid.SetColumnSpan(viewBox, 2);
 
                 }
+
+                Button button = newCircularButton();
+                button.Background = Brushes.Green;
+                button.Foreground = Brushes.White;
+                button.Width = 50;
+                button.Height = 50;
+                button.Content = "+";
+                button.Click += new RoutedEventHandler(this.addButton_Click);
+                button.Name = "AddButton" + k;
+                viewBox = new Viewbox();
+                viewBox.Child = button;
+                viewBox.Margin = new Thickness(5, 5, 5, 5);
+                viewBox.HorizontalAlignment = HorizontalAlignment.Right;
+
+                buttongrid.Children.Add(viewBox);
+                Grid.SetRow(viewBox, 6);
+                Grid.SetColumn(viewBox, 2);
+                Grid.SetZIndex(viewBox, 3);
 
                 borders[k].Child = grid;
                 mainGrid.Children.Add(borders[k]);
                 Grid.SetRow(borders[k], k / 3);
                 Grid.SetColumn(borders[k], k % 3);
 
+                mainGrid.Children.Add(buttongrid);
+                Grid.SetRow(buttongrid, k / 3);
+                Grid.SetColumn(buttongrid, k % 3);
+
+                Grid.SetZIndex(buttongrid, 5);
+
 
                 contentsOfBorder[k] = tmp;
 
             }
 
-//            currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
             currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
             setCards();
            
@@ -241,7 +287,6 @@ namespace MTGDeckBuilder
                     {
                         querry = "SELECT * FROM Creature where card = " + table.Rows[i]["id"];
                         SqlCommand powerselect = new SqlCommand(querry, thisConnection);
-                        DataTable power = new DataTable("power");
                         SqlDataReader querryCommandReader = powerselect.ExecuteReader();
                         querryCommandReader.Read();
                         contentsOfBorder[i % 6][4].Content = "Power: " + querryCommandReader["power"];
@@ -380,10 +425,6 @@ namespace MTGDeckBuilder
             {
                 e.Handled = true;
             }
-          
-           
-
-
         }
 
         private void Border_MouseEnter(object sender, MouseEventArgs e)
@@ -494,8 +535,49 @@ namespace MTGDeckBuilder
 
             Card.Card_id = (int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"];
 
-            MessageBox.Show("" + Card.Card_id);
+            
             NavigationService.Navigate(new Uri("Card.xaml", UriKind.Relative));
+        }
+
+        private void addButton_Click(object sender, RoutedEventArgs e)
+        {
+            int buttonPressed = int.Parse(((Button)sender).Name.Substring(9));
+            int rowNumber = (currentPage - 1) * 6 + buttonPressed;
+            Card.Card_id = (int)table.Rows[rowNumber]["id"];
+            addCardDialog add = new addCardDialog((BitmapImage)images[rowNumber].Source);
+            add.ShowDialog();
+        }
+
+        public Button newCircularButton()
+        {
+            Button circleButton = new Button();
+            
+            ControlTemplate circleButtonTemplate = new ControlTemplate(typeof(Button));
+
+            // Create the circle
+            FrameworkElementFactory circle = new FrameworkElementFactory(typeof(Ellipse));
+            circle.SetValue(Ellipse.FillProperty, Brushes.Black);
+            circle.SetValue(Ellipse.StrokeProperty, Brushes.Green);
+            circle.SetValue(Ellipse.StrokeThicknessProperty, 1.0);
+
+            // Create the ContentPresenter to show the Button.Content
+            FrameworkElementFactory presenter = new FrameworkElementFactory(typeof(ContentPresenter));
+            presenter.SetValue(ContentPresenter.ContentProperty, new TemplateBindingExtension(Button.ContentProperty));
+            presenter.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            presenter.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
+            
+            // Create the Grid to hold both of the elements
+            FrameworkElementFactory grid = new FrameworkElementFactory(typeof(Grid));
+            grid.AppendChild(circle);
+            grid.AppendChild(presenter);
+
+            // Set the Grid as the ControlTemplate.VisualTree
+            circleButtonTemplate.VisualTree = grid;
+
+            // Set the ControlTemplate as the Button.Template
+            circleButton.Template = circleButtonTemplate;
+
+            return circleButton;
         }
     }
 }
