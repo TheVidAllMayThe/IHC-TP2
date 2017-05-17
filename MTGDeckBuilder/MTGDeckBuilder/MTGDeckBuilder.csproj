@@ -56,6 +56,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="addCardDialog.xaml.cs">
+      <DependentUpon>addCardDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
@@ -68,6 +71,10 @@
     <Compile Include="SearchDecks.xaml.cs">
       <DependentUpon>SearchDecks.xaml</DependentUpon>
     </Compile>
+    <Page Include="addCardDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Card.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

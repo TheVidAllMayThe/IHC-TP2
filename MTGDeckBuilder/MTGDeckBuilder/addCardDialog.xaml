@@ -21,12 +21,22 @@
 
         <Image x:Name="CardImage"  Grid.Column="0" Grid.RowSpan="3"  MaxHeight="75" MaxWidth="60" Margin="10,10,20,10" />
 
-        <Label VerticalAlignment="Center" Name="lblQuestion" Grid.Column="1">Deck:</Label>
+        <Label VerticalAlignment="Center" Name="lblQuestion" Grid.Column="1" Content="Deck"> </Label>
+        <Label VerticalAlignment="Center" Name="sideBoardQuestion" Grid.Column="1" Grid.Row="1" Content="Sideboard:"></Label>
         <ComboBox x:Name="decksCombo" VerticalAlignment="Center" MinWidth="100" MaxHeight="20" Grid.Column="2" SelectionChanged="decksCombo_SelectionChanged"></ComboBox>
 
         
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
-            <Label>
+        
+
+        <WrapPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button IsDefault="True" x:Name="btnDialogOk" Click="btnDialogOk_Click" MinWidth="60" Margin="0,0,10,0">_Ok</Button>
+            <Button IsCancel="True" MinWidth="60">_Cancel</Button>
+        </WrapPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <RadioButton x:Name="Yes" Content="Yes" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            <RadioButton x:Name="No" IsChecked="True" Content="No" Margin="10,0,0,0" VerticalAlignment="Center"/>
+            <Label Margin="10,0,0,0">
                 <TextBlock TextDecorations="Underline">
                             <Hyperlink x:Name="lessCard" Click="lessCard_Click"> - </Hyperlink>
                 </TextBlock>
@@ -43,10 +53,6 @@
             </Label>
 
         </StackPanel>
-
-        <WrapPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" HorizontalAlignment="Right" Margin="0,15,0,0">
-            <Button IsDefault="True" x:Name="btnDialogOk" Click="btnDialogOk_Click" MinWidth="60" Margin="0,0,10,0">_Ok</Button>
-            <Button IsCancel="True" MinWidth="60">_Cancel</Button>
-        </WrapPanel>
+        
     </Grid>
 </Window>

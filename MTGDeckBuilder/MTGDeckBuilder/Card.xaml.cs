@@ -49,12 +49,13 @@ namespace MTGDeckBuilder
             string getData = "SELECT name, text, rarity, artist, edition, multiverseID FROM Card WHERE id = " + Card_id;
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
-            name.Content = dr.GetString(0);
-            text.Content = dr.GetString(1);
-            rarity.Content = dr.GetString(2);
-            artist.Content = dr.GetString(3);
-            String editionKey = dr.GetString(4);
-            int multiverseID = dr.GetInt32(5);
+            
+            name.Content = dr.GetString(0) == null? "---" : dr.GetString(0);
+            text.Content = dr.GetString(1) == null ? "---" : dr.GetString(1);
+            rarity.Content = dr.GetString(2) == null ? "---" : dr.GetString(2);
+            artist.Content = dr.GetString(3) == null ? "---" : dr.GetString(3);
+            String editionKey = dr.GetString(4) == null ? "---" : dr.GetString(4);
+            int multiverseID = dr.GetInt32(5) == 0 ? 0 : dr.GetInt32(5);
             dr.Close();
 
             if (multiverseID != null)

@@ -23,10 +23,70 @@ namespace MTGDeckBuilder
     /// </summary>
     public partial class addCardDialog : Window
     {
-        
-        public addCardDialog(BitmapImage image)
+        private bool isBasicLand;
+        private int limit;
+        private int amount;
+        private int deckID;
+        List<string> decknames;
+        List<int> deckids;
+        private bool sideBoard;
+
+        public int Amount
         {
+            get
+            {
+                return amount;
+            }
+
+            set
+            {
+                amount = value;
+            }
+        }
+        public int DeckID
+        {
+            get
+            {
+                return deckID;
+            }
+
+            set
+            {
+                deckID = value;
+            }
+        }
+        public bool SideBoard
+        {
+            get
+            {
+                return sideBoard;
+            }
+
+            set
+            {
+                sideBoard = value;
+            }
+        }
+
+        public addCardDialog(BitmapImage image, bool isBasicLand)
+        {
+
             InitializeComponent();
+            Amount = 0;
+            this.isBasicLand = isBasicLand;
+
+
+            if (isBasicLand)
+            {
+                limit = 99;
+                numberOfCards.MaxLength = 2;
+            }
+            else
+            {
+                limit = 4;
+                numberOfCards.MaxLength = 1;
+            }
+
             CardImage.Source = image;
 
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
@@ -36,8 +96,8 @@ namespace MTGDeckBuilder
             SqlCommand decksSelect = new SqlCommand(querry, thisConnection);
             SqlDataReader querryCommandReader = decksSelect.ExecuteReader();
 
-            List<string> decknames = new List<string>();
-            List<int> deckids = new List<int>();
+            decknames = new List<string>();
+            deckids = new List<int>();
 
             while (querryCommandReader.Read())
             {
@@ -49,9 +109,11 @@ namespace MTGDeckBuilder
             btnDialogOk.IsEnabled = false;
         }
 
-        public addCardDialog(BitmapImage image, String deckname)
+        public addCardDialog(BitmapImage image, String deckname, bool isBasicLand)
         {
+
             InitializeComponent();
+            this.isBasicLand = isBasicLand;
             CardImage.Source = image;
             decksCombo.Text = deckname;
             decksCombo.IsEnabled = false;
@@ -60,12 +122,12 @@ namespace MTGDeckBuilder
 
         private void btnDialogOk_Click(object sender, RoutedEventArgs e)
         {
+            this.Amount = int.Parse(numberOfCards.Text);
             this.DialogResult = true;
-
+            this.deckID = deckids[decknames.FindIndex(a => a == decksCombo.Text)];
+            this.sideBoard = (bool)Yes.IsChecked;
+            
         }
-
-       
-
 
         private void lessCard_Click(object sender, RoutedEventArgs e)
         {
@@ -75,14 +137,14 @@ namespace MTGDeckBuilder
 
         private void moreCard_Click(object sender, RoutedEventArgs e)
         {
-            if ((int.Parse(numberOfCards.Text) + 1 != 5))
+            if ((int.Parse(numberOfCards.Text) + 1 <= limit))
                 numberOfCards.Text = "" + (int.Parse(numberOfCards.Text) + 1);
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
+            Regex regex = !isBasicLand?new Regex("[^1-4]"):new Regex("[^0-9]");
 
-            Regex regex = new Regex("[^1-4]");
 
             if (regex.IsMatch(e.Text))
             {

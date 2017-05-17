@@ -135,12 +135,17 @@ namespace MTGDeckBuilder
                 button.Foreground = Brushes.White;
                 button.Width = 50;
                 button.Height = 50;
-                button.Content = "+";
+                Label plus = new Label();
+                plus.Content = "+";
+                plus.Foreground = Brushes.White;
+                plus.FontSize = 25;
+                plus.FontWeight = FontWeights.Bold;
+                button.Content = plus;
                 button.Click += new RoutedEventHandler(this.addButton_Click);
                 button.Name = "AddButton" + k;
                 viewBox = new Viewbox();
                 viewBox.Child = button;
-                viewBox.Margin = new Thickness(5, 5, 5, 5);
+                viewBox.Margin = new Thickness(0, 0, 15, 15);
                 viewBox.HorizontalAlignment = HorizontalAlignment.Right;
 
                 buttongrid.Children.Add(viewBox);
@@ -512,7 +517,7 @@ namespace MTGDeckBuilder
 
             string rarity = rarity_combo_box.Text.Equals("Rarity") ? "null" : "'" + rarity_combo_box.Text + "'";
 
-            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + b + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
+            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
 
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
             for (int i = 0; i < 6; i++)
@@ -544,8 +549,10 @@ namespace MTGDeckBuilder
             int buttonPressed = int.Parse(((Button)sender).Name.Substring(9));
             int rowNumber = (currentPage - 1) * 6 + buttonPressed;
             Card.Card_id = (int)table.Rows[rowNumber]["id"];
-            addCardDialog add = new addCardDialog((BitmapImage)images[rowNumber].Source);
+            addCardDialog add = (table.Rows[rowNumber]["rarity"].ToString().Equals("Basic Land") ? new addCardDialog((BitmapImage)images[rowNumber].Source, true): new addCardDialog((BitmapImage)images[rowNumber].Source, false));
             add.ShowDialog();
+            if(add.DialogResult == true)
+                Add_Card((int)table.Rows[rowNumber]["id"], add.DeckID, add.Amount, add.SideBoard);
         }
 
         public Button newCircularButton()
@@ -578,6 +585,28 @@ namespace MTGDeckBuilder
             circleButton.Template = circleButtonTemplate;
 
             return circleButton;
+        }
+
+        private void Add_Card(int cardID, int deckID, int amount, bool sideboard)
+        {
+            
+            SqlConnection thisConnection;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "EXEC addCardToDeck " + cardID + ", " + deckID + ", " + amount + ", " + (sideboard?1:0);
+            try
+            {
+                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+            }
+            catch (SqlException e) {
+                MessageBox.Show(e.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+                thisConnection.Close();
+            MessageBox.Show("Successfully added card");
         }
     }
 }
