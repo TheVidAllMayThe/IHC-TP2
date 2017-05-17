@@ -414,11 +414,22 @@ go
 
 CREATE PROC addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
 AS
-	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck)
+	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck AND isSideboard = @sideboard)
 	BEGIN
 		UPDATE CardInDeck SET amount = amount + @amount WHERE deck = @deck AND card = @cardId AND isSideboard = @sideboard;
 	END;
 	ELSE
 	BEGIN
 		INSERT INTO CardInDeck(deck,card,amount,isSideboard) VALUES (@deck, @cardId, @amount, @sideboard);
+	END;
+
+go
+
+CREATE TRIGGER valid_amount_cards ON CardInDeck
+AFTER UPDATE, INSERT
+AS
+	IF EXISTS(SELECT * FROM inserted JOIN Card ON inserted.card = Card.id AND rarity != 'Basic Land' AND amount > 4)
+	BEGIN
+		RAISERROR('Cannot have more than 4 of the same non basic lands on a deck',0,0);
+		ROLLBACK TRAN;	
 	END;
