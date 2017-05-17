@@ -62,6 +62,9 @@
     <Compile Include="Deck.xaml.cs">
       <DependentUpon>Deck.xaml</DependentUpon>
     </Compile>
+    <Compile Include="newDeckDialog.xaml.cs">
+      <DependentUpon>newDeckDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SearchDecks.xaml.cs">
       <DependentUpon>SearchDecks.xaml</DependentUpon>
     </Compile>
@@ -89,6 +92,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Deck.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="newDeckDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,7 +184,7 @@
     <Resource Include="Mana_R.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Magic_generic_15.jpg" />
+    <Resource Include="magic_generic_15.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="mtg-card-back.jpg" />
@@ -187,6 +194,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="magic_generic_16.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="magic_generic_10.jpg" />
+    <Resource Include="magic_generic_11.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

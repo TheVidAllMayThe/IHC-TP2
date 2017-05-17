@@ -44,7 +44,7 @@
             <Label x:Name="label_Copy1" Content="My decks" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="48" FontFamily="MagicMedieval" Foreground="White" Margin="10,10,10,10"/>
         </Border>
 
-        <Border x:Name="border4" Grid.Row="1" Grid.Column="1" MouseEnter="border4_MouseEnter" MouseLeave="border4_MouseLeave">
+        <Border x:Name="border4" Grid.Row="1" Grid.Column="1" MouseEnter="border4_MouseEnter" MouseLeave="border4_MouseLeave" MouseLeftButtonUp="build_deck_border_MouseLeftButtonUp" MouseLeftButtonDown="build_deck_border_MouseLeftButtonDown">
             <Border.Background>
                 <ImageBrush x:Name="Image4" ImageSource="magic_generic_6.jpg" AlignmentY="Top"/>
             </Border.Background>

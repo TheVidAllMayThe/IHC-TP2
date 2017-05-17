@@ -17,6 +17,20 @@ namespace MTGDeckBuilder
     /// 
     public partial class App : Application
     {
+        private static String user = "ola123@ua.pt";
+
+        public static string User
+        {
+            get
+            {
+                return user;
+            }
+
+            set
+            {
+                user = value;
+            }
+        }
     }
 
 }

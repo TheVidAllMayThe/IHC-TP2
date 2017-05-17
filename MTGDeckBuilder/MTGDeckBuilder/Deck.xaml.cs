@@ -46,9 +46,22 @@ namespace MTGDeckBuilder
     public partial class Deck : Page
     {
         SqlConnection thisConnection;
-        int deck_id;
+        private static int deck_id;
         int starting_hand_cards;
         static Random rnd;
+
+        public static int Deck_id
+        {
+            get
+            {
+                return deck_id;
+            }
+
+            set
+            {
+                deck_id = value;
+            }
+        }
 
         private void New_Hand(object sender, RoutedEventArgs e)
         {
@@ -74,7 +87,7 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            String getData = "SELECT amount, multiverseID FROM CardInDeck JOIN Card ON CardInDeck.card = Card.id AND deck = " + deck_id + " AND isSideBoard = 0";
+            String getData = "SELECT amount, multiverseID FROM CardInDeck JOIN Card ON CardInDeck.card = Card.id AND deck = " + Deck_id + " AND isSideBoard = 0";
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             List<int> list = new List<int>();
@@ -189,25 +202,25 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "SELECT name FROM Deck WHERE id = " + deck_id;
+            string getData = "SELECT name FROM Deck WHERE id = " + Deck_id;
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_title.Content = dr.GetString(0);
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 0";
+            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + Deck_id + " AND isSideBoard = 0";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM LandMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM LandMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_lands.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM LandMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM LandMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
@@ -218,13 +231,13 @@ namespace MTGDeckBuilder
             deck_lands.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM CreatureMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM CreatureMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM CreatureMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM CreatureMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -235,13 +248,13 @@ namespace MTGDeckBuilder
             deck_creatures.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM SorceryMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM SorceryMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM SorceryMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM SorceryMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -252,13 +265,13 @@ namespace MTGDeckBuilder
             deck_sorceries.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM ArtifactMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM ArtifactMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM ArtifactMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM ArtifactMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -269,13 +282,13 @@ namespace MTGDeckBuilder
             deck_artifacts.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM InstantMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM InstantMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_instants.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM InstantMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM InstantMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -286,13 +299,13 @@ namespace MTGDeckBuilder
             deck_instants.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM EnchantmentMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM EnchantmentMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM EnchantmentMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM EnchantmentMainBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -303,13 +316,13 @@ namespace MTGDeckBuilder
             deck_enchantments.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 1";
+            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + Deck_id + " AND isSideBoard = 1";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             side_deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM SideDeckBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM SideDeckBoard WHERE deck = " + Deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -325,7 +338,6 @@ namespace MTGDeckBuilder
         public Deck()
         {
             InitializeComponent();
-            deck_id = 1;
             starting_hand_cards = 7;
             rnd = new Random();
             showDeck();

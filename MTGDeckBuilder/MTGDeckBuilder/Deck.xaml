@@ -23,7 +23,7 @@
     
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="Magic_generic_15.jpg" Opacity="0.6"></ImageBrush>
+            <ImageBrush ImageSource="magic_generic_10.jpg" Opacity="0.6"></ImageBrush>
         </Grid.Background>
         <!-- Tabs -->
         <Grid>

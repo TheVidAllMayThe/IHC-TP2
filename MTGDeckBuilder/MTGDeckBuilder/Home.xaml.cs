@@ -96,5 +96,18 @@ namespace MTGDeckBuilder
             ((Border)sender).Margin = new Thickness(3, 3, 3, 3);
         }
 
+        private void build_deck_border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
+            newDeckDialog dialog = new newDeckDialog();
+            dialog.ShowDialog();
+            if(dialog.DialogResult == true) NavigationService.Navigate(new Uri("Deck.xaml", UriKind.Relative));
+        }
+
+        private void build_deck_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ((Border)sender).Margin = new Thickness(3, 3, 3, 3);
+        }
+
     }
 }

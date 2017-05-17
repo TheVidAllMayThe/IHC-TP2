@@ -26,7 +26,18 @@ namespace MTGDeckBuilder
         private static int card_id;
         private SqlConnection thisConnection;
 
-        public static int Card_id { get => card_id; set => card_id = value; }
+        public static int Card_id
+        {
+            get
+            {
+                return card_id;
+            }
+
+            set
+            {
+                card_id = value;
+            }
+        }
 
         public void show_card()
         {
@@ -81,8 +92,8 @@ namespace MTGDeckBuilder
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             if (dr.Read())
             {
-                power.Content = dr.GetString(0);
-                toughness.Content = dr.GetString(1);
+                power.Content = dr.GetInt32(0);
+                toughness.Content = dr.GetInt32(1);
             }
             else
             {
