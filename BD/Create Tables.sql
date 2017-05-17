@@ -409,3 +409,16 @@ AS
 		ON six.edition =Edition.code AND (Edition.name = @edition OR @edition is null)) AS seven
 	LEFT JOIN Creature
 	ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity is null) where upper(' '+seven.name+' ') Like upper('% '+@name+' %') or @name is null);
+
+go
+
+CREATE PROC addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
+AS
+	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck)
+	BEGIN
+		UPDATE CardInDeck SET amount = amount + @amount WHERE deck = @deck AND card = @cardId AND isSideboard = @sideboard;
+	END;
+	ELSE
+	BEGIN
+		INSERT INTO CardInDeck(deck,card,amount,isSideboard) VALUES (@deck, @cardId, @amount, @sideboard);
+	END;
