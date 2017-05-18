@@ -46,7 +46,7 @@ namespace MTGDeckBuilder
     public partial class Deck : Page
     {
         SqlConnection thisConnection;
-        private static int deck_id;
+        private static int deck_id = 1;
         int starting_hand_cards;
         static Random rnd;
 
@@ -73,6 +73,12 @@ namespace MTGDeckBuilder
         {
             if(starting_hand_cards > 1) starting_hand_cards -= 1;
             show_hand();
+        }
+
+        private void search_cards(object sender, RoutedEventArgs e)
+        {
+            Page1.Deck_id = deck_id;
+            NavigationService.Navigate(new Uri("SearchCards.xaml", UriKind.Relative));
         }
 
         private void show_hand()
@@ -154,7 +160,15 @@ namespace MTGDeckBuilder
             thisConnection.Open();
 
             string getData = "UPDATE CardInDeck SET amount = amount + 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
-            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+            try
+            {
+                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+            }
+            catch (SqlException sqle)
+            {
+                MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             thisConnection.Close();
             showDeck();

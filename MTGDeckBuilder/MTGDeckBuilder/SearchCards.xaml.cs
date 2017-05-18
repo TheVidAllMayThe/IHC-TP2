@@ -39,6 +39,7 @@ namespace MTGDeckBuilder
         BitmapImage[] bis;
         string abilitiesStartingText;
         private static int currentPage;
+        public static int Deck_id = -1; 
 
         public Page1()
         {
@@ -553,7 +554,13 @@ namespace MTGDeckBuilder
             add.ShowDialog();
             if(add.DialogResult == true)
                 Add_Card((int)table.Rows[rowNumber]["id"], add.DeckID, add.Amount, add.SideBoard);
+            if (Deck_id > 0)
+            {
+                Deck_id = -1;
+                NavigationService.Navigate(new Uri("Deck.xaml", UriKind.Relative));
+            }
         }
+
 
         public Button newCircularButton()
         {
@@ -606,7 +613,8 @@ namespace MTGDeckBuilder
                 return;
             }
                 thisConnection.Close();
-            MessageBox.Show("Successfully added card");
+
+            if(Deck_id < 0) MessageBox.Show("Successfully added card");
         }
     }
 }

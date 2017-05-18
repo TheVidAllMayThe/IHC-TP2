@@ -11,13 +11,22 @@
 
     <Page.Resources>
         <DataTemplate x:Key="deck_list_template">
-            <StackPanel Orientation="Horizontal">
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}"/>
-                <Label Style="{StaticResource Card Property Style}" Content="x "/>
-                <Label MouseEnter="showImage" Style="{StaticResource Card Property Style}" Content="{Binding Name}"/>
-                <Button Click="Add_Card">+</Button>
-                <Button Click="Remove_Card">-</Button>
-            </StackPanel>
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}"/>
+                    <Label Style="{StaticResource Card Property Style}" Content="x "/>
+                    <Label MouseEnter="showImage" Style="{StaticResource Card Property Style}" Content="{Binding Name}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button HorizontalAlignment="Right" Click="Add_Card" Width="15">+</Button>
+                    <Button HorizontalAlignment="Right" Click="Remove_Card" Width="15">-</Button>
+                </StackPanel>
+            </Grid>
+
         </DataTemplate>
     </Page.Resources>
     
@@ -36,46 +45,49 @@
                     <!-- Deck tab content -->
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
 
-                        <Grid Grid.Column="0">
+                        <Button Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Click="search_cards" Width="100" Height="30" Margin="10,10,10,10">Add Card</Button>
+                        <Grid Grid.Column="1">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" FontWeight="Bold" FontSize="24"/>
-                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Label Content="Main(" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                 <Label x:Name="deck_number_of_cards" Content="60" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                 <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
                             </StackPanel>
-                            <Grid Grid.Row="2">
+                            <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
-
+                                <Border Background="Black" Opacity="0.4" Grid.ColumnSpan="2" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
                                 <StackPanel Orientation="Vertical" Grid.Column="0">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Label Content="Lands(" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                         <Label x:Name="deck_number_of_lands" Content="21" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                         <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                     </StackPanel>
                                     <ItemsControl x:Name="deck_lands" ItemTemplate="{StaticResource deck_list_template}" />
 
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Label Style="{StaticResource Card Title Style}" Content="Creatures(" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_creatures" Content="26" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                     </StackPanel>
                                     <ItemsControl x:Name="deck_creatures" ItemTemplate="{StaticResource deck_list_template}" />
 
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Label Style="{StaticResource Card Title Style}" Content="Enchantments(" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_enchantments" Content="1" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
@@ -84,21 +96,21 @@
                                 </StackPanel>
 
                                 <StackPanel Orientation="Vertical" Grid.Column="1">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Label Style="{StaticResource Card Title Style}" Content="Sorceries(" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_sorceries" Content="8" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                     </StackPanel>
                                     <ItemsControl x:Name="deck_sorceries" ItemTemplate="{StaticResource deck_list_template}" />
 
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Label Style="{StaticResource Card Title Style}" Content="Artifacts(" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_artifacts" Content="8" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                     </StackPanel>
                                     <ItemsControl x:Name="deck_artifacts" ItemTemplate="{StaticResource deck_list_template}" />
 
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Label Style="{StaticResource Card Title Style}" Content="Instants(" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_instants" Content="4" FontSize="20"/>
                                         <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
@@ -107,15 +119,30 @@
                                 </StackPanel>
                             </Grid>
                         </Grid>
-                        <StackPanel Grid.Column="1" Orientation="Vertical">
-                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Label Style="{StaticResource Card Title Style}" Content="Sideboard(" FontSize="20"/>
                                 <Label Style="{StaticResource Card Title Style}" x:Name="side_deck_number_of_cards" Content="60" FontSize="20"/>
                                 <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                             </StackPanel>
-                            <ItemsControl x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}" />
-                        </StackPanel>
-                        <Image x:Name="image" Source="magic_the_gathering.png" Grid.Column="2" Margin="10,10,10,10"></Image>
+                            <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+                            <ItemsControl Grid.Row="1" x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}"/>
+                        </Grid>
+                        
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+                            <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" FontWeight="Bold" FontSize="24"/>
+                            <Image Grid.Row="1" x:Name="image" Source="magic_the_gathering.png" Grid.Column="2" Margin="10,10,10,10"></Image>
+                        </Grid>
                     </Grid>
                 </TabItem>
                 <TabItem>

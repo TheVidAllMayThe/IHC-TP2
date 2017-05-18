@@ -18,7 +18,6 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Image Source="MessageBoxImage.Question" Grid.Column="0"/>
         <Label Name="lblQuestion" Grid.Column="1">Name of the new deck:</Label>
         <TextBox Name="txtAnswer" Grid.Column="1" Grid.Row="1" MinWidth="250">deckName</TextBox>
 
