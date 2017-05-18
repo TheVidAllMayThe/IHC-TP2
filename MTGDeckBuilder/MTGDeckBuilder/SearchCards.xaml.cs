@@ -216,7 +216,7 @@ namespace MTGDeckBuilder
                 }
             }
 
-            if (table.Rows.Count != 0)
+            if (table.Rows.Count > 0)
             {
                 for (int i = page * 6 - 6; i < (page == maxPageInt ? table.Rows.Count : page * 6); i++)
                 {
@@ -352,31 +352,73 @@ namespace MTGDeckBuilder
 
         }
 
-        private void More_Options_Click(object sender, RoutedEventArgs e)
+        private void Clear(object sender, RoutedEventArgs e)
         {
-            var run = More_Options.Inlines.FirstOrDefault() as Run;
-            string text = run == null ? string.Empty : run.Text;
+            typeComboBox.SelectionChanged -= this.Search;
+            GCheckBox.Checked -= this.Search;
+            UCheckBox.Checked -= this.Search;
+            RCheckBox.Checked -= this.Search;
+            WCheckBox.Checked -= this.Search;
+            BCheckBox.Checked -= this.Search;
+            rarity_combo_box.SelectionChanged -= this.Search;
 
-            if (text.Equals("More Options ▲"))
+            searchBox.Text = "Search";
+            typeComboBox.SelectedIndex = 0;
+            GCheckBox.IsChecked = false;
+            UCheckBox.IsChecked = false;
+            RCheckBox.IsChecked = false;
+            WCheckBox.IsChecked = false;
+            BCheckBox.IsChecked = false;
+            abilities_box.Text = abilitiesStartingText;
+            edition_box.Text = "Edition";
+            rarity_combo_box.SelectedIndex = 0;
+            min_power_box.Text = "";
+            max_power_box.Text = "";
+            min_toughness_box.Text = "";
+            max_toughness_box.Text = "";
+            min_cmc_box.Text = "";
+            max_cmc_box.Text = "";
+
+            typeComboBox.SelectionChanged += this.Search;
+            GCheckBox.Checked += this.Search;
+            UCheckBox.Checked += this.Search;
+            RCheckBox.Checked += this.Search;
+            WCheckBox.Checked += this.Search;
+            BCheckBox.Checked += this.Search;
+            rarity_combo_box.SelectionChanged += this.Search;
+
+        }
+        private void AdvancedSearchToggle(object sender, RoutedEventArgs e)
+        {
+            PointCollection pc = new PointCollection();
+            System.Windows.Point p1;
+            System.Windows.Point p2;
+            System.Windows.Point p3;
+            if (more_options_row.Height == new GridLength(0))
             {
-                More_Options.Inlines.Clear();
-                More_Options.Inlines.Add("More Options ▼");
-                more_options_border.Visibility = Visibility.Hidden;
+                more_options_row.Height = GridLength.Auto;
+                p1 = new System.Windows.Point(25, 4.5);
+                p2 = new System.Windows.Point(4.5, 45.5);
+                p3 = new System.Windows.Point(45.5, 45.5);
             }
 
             else
             {
-                More_Options.Inlines.Clear();
-                More_Options.Inlines.Add("More Options ▲");
-                more_options_border.Visibility = Visibility.Visible;
+                more_options_row.Height = new GridLength(0);
+                p1 = new System.Windows.Point(25, 45.5);
+                p2 = new System.Windows.Point(4.5, 4.5);
+                p3 = new System.Windows.Point(45.5, 4.5);
             }
-
+            pc.Add(p1);
+            pc.Add(p2);
+            pc.Add(p3);
+            triangle.Points = pc;
 
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (abilities_box.Text.Equals("Abilities (ex: \"Flying\", \"Double Strike\")    "))
+            if (abilities_box.Text.Equals(abilitiesStartingText))
             {
 
                 abilities_box.Foreground = Brushes.Black;
@@ -389,7 +431,7 @@ namespace MTGDeckBuilder
             if (abilities_box.Text.Trim().Equals(""))
             {
                 abilities_box.Foreground = Brushes.Gray;
-                abilities_box.Text = "Abilities (ex: \"Flying\", \"Double Strike\")    ";
+                abilities_box.Text = abilitiesStartingText;
             }
         }
 
@@ -398,7 +440,7 @@ namespace MTGDeckBuilder
             if (searchBox.Text.Trim().Equals(""))
             {
                 searchBox.Foreground = Brushes.Gray;
-                searchBox.Text = "Search";
+                searchBox.Text = "Name";
             }
         }
 
@@ -477,9 +519,9 @@ namespace MTGDeckBuilder
             }
         }
 
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        private void Search(object sender, RoutedEventArgs e)
         {
-            String type = typeComboBox.Text.Equals("Type") || typeComboBox.Text.Equals("None") ? "null": "'"+typeComboBox.Text+ "'";
+            String type = typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("") ? "null": "'"+typeComboBox.Text+ "'";
             String b, g, u, w, r;
             b = BCheckBox.IsChecked.Value ? "1":"null";
             g = GCheckBox.IsChecked.Value ? "1":"null";
@@ -516,9 +558,9 @@ namespace MTGDeckBuilder
 
             string abilities = abilities_box.Text.Equals(abilitiesStartingText) ? "null" : "'" + abilities_box.Text + "'";
 
-            string rarity = rarity_combo_box.Text.Equals("Rarity") ? "null" : "'" + rarity_combo_box.Text + "'";
+            string rarity = rarity_combo_box.Text.Equals("Any") ? "null" : "'" + rarity_combo_box.Text + "'";
 
-            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Search")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
+            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Name")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
 
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
             for (int i = 0; i < 6; i++)
@@ -615,6 +657,25 @@ namespace MTGDeckBuilder
                 thisConnection.Close();
 
             if(Deck_id < 0) MessageBox.Show("Successfully added card");
+        }
+
+        private void search_KeyboardKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) Search(sender, e);
+        }
+        private void changePage_KeyboardKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && more_options_row.Height == new GridLength(0)) AdvancedSearchToggle(sender, e);
+            else if (e.Key == Key.Left)
+            {
+                if (int.Parse(pageTextBox.Text) > 1)
+                    previousPageClick(sender, e);
+            }
+            else if (e.Key == Key.Right)
+            {
+                if (int.Parse(pageTextBox.Text)<= int.Parse(maxPage.Content.ToString().Substring(1)))
+                    nextPageClick(sender, e);
+            }
         }
     }
 }
