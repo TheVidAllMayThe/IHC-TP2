@@ -31,6 +31,7 @@ namespace MTGDeckBuilder
         private bool _isSideDeck;
         private int _multiverseId;
 
+
         public int Deck { get { return _deck; } set { _deck = value; } }
         public int Id { get { return _id; } set { _id = value; } }
         public string Name { get { return _name; } set { _name = value; } }
@@ -49,15 +50,26 @@ namespace MTGDeckBuilder
         private int deck_id;
         private int starting_hand_cards;
         static Random rnd;
-
+        Image[] stars;
+        BitmapImage fullStar;
+        BitmapImage emptyStar;
+        
         public Deck(int deck_id)
         {
+            emptyStar = new BitmapImage(new Uri("/Img/empty_star.png", UriKind.Relative));
+            fullStar = new BitmapImage(new Uri("/Img/full_star.png", UriKind.Relative));
             this.deck_id = deck_id;
             InitializeComponent();
             starting_hand_cards = 7;
             rnd = new Random();
             showDeck();
             show_hand();
+            stars = new Image[5];
+            stars[0] = star0;
+            stars[1] = star1;
+            stars[2] = star2;
+            stars[3] = star3;
+            stars[4] = star4;
         }
 
         private void New_Hand(object sender, RoutedEventArgs e)
@@ -219,7 +231,7 @@ namespace MTGDeckBuilder
             string getData = "SELECT name FROM Deck WHERE id = " + deck_id;
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
-            deck_title.Content = dr.GetString(0);
+            deck_title.Content = dr["name"];
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 0";
@@ -348,6 +360,63 @@ namespace MTGDeckBuilder
             dr.Close();
 
             thisConnection.Close();
+        }
+
+        private void star_MouseEnter(object sender, MouseEventArgs e)
+        {
+            int starNumber = int.Parse(((Image)sender).Name.Substring(4));
+            for (int i = 0; i <= starNumber; i++)
+            {
+                stars[i].Source = fullStar;
+            }
+
+            for (int i = starNumber + 1; i < 5; i++)
+            {
+                stars[i].Source = emptyStar;
+            }
+        }
+
+        private void star_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SqlDataReader dr = DatabaseControl.getDataReader("Select rating from Deck where id=" + deck_id);
+            dr.Read();
+            int currentRating = dr["rating"].ToString().Equals("")? 0 : int.Parse(dr["rating"].ToString());
+            for (int i = 0; i <= currentRating; i++)
+            {
+                stars[i].Source = fullStar;
+            }
+
+            for (int i = (currentRating==0 ? 0 : currentRating + 1); i < 5; i++)
+            {
+                stars[i].Source = emptyStar;
+            }
+        }
+
+        private void star_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            int ratingToGive = int.Parse(((Image)sender).Name.Substring(4)) + 1;
+           try {
+                SqlDataReader dr = DatabaseControl.getDataReader("Select rating from RatedBy where (deck=" + deck_id + "and user='" + App.User + "')");
+                dr.Read();
+                string userRating = dr["rating"].ToString();
+
+                if (int.Parse(userRating) == ratingToGive)
+                {
+                    MessageBox.Show("You already rated this deck with the same rating!", "Rating", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                MessageBoxResult result = MessageBox.Show("Previously you rated this deck with " + int.Parse(userRating) + " stars. Are you sure you wanna rate this deck with " + ratingToGive + " stars?", "Rating", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if(result == MessageBoxResult.Yes)
+                    {
+                        DatabaseControl.ExecuteNonQuerryCommand("EXEC rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                    }
+                }
+            }catch(InvalidOperationException io) {
+                Console.WriteLine(io);
+                DatabaseControl.ExecuteNonQuerryCommand("EXEC rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                MessageBox.Show("You gave this deck " + ratingToGive + " stars.", "Rating", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }

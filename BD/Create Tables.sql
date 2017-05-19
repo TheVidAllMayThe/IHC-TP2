@@ -434,8 +434,31 @@ AS
 		ROLLBACK TRAN;	
 	END;
 
-go
+GO
 
 create function getColorsFromDeck (@deckID int) Returns Table
 as
 	return (SELECT color from ColorIdentity inner Join (SELECT Card, deck FROM CardInDeck where deck = @deckID) as cards on cards.card=ColorIdentity.card where isManaColor=1 group by color)
+
+GO
+
+CREATE TRIGGER update_rating_at_update ON RatedBy
+AFTER UPDATE, INSERT
+AS
+	DECLARE @deckID INT;
+	SELECT @deckID = inserted.deck FROM inserted;
+	UPDATE Deck SET rating = (SELECT avg(rating) from RatedBy where deck = @deckID) where id = @deckID;
+
+GO
+
+CREATE PROC rate @user VARCHAR(255), @deckID INT, @rating FLOAT
+as
+	IF EXISTS(SELECT * FROM RatedBy WHERE deck = @deckID AND [user] = @user)
+	BEGIN
+		UPDATE RatedBy SET rating = @rating where (deck=@deckID and [user] = @user);
+	END
+	ELSE
+	BEGIN
+		INSERT INTO RatedBy VALUES (@deckID, @user, @rating);
+	END
+

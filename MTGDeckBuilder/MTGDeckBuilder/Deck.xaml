@@ -138,10 +138,21 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="0.15*"/>
                             </Grid.RowDefinitions>
                             <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
                             <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" Style="{StaticResource Card Title Style}" FontSize="24"/>
                             <Image Grid.Row="1" x:Name="image" Source="magic_the_gathering.png" Grid.Column="2" Margin="10,10,10,10"></Image>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Viewbox>
+                                    <Label Content="Rate: " Style="{StaticResource Card Title Style}"/>
+                                </Viewbox>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp" x:Name="star0" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/Img/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star1" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/Img/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star2" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/Img/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star3" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/Img/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star4" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/Img/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                            </StackPanel>
                         </Grid>
                     </Grid>
                 </TabItem>
