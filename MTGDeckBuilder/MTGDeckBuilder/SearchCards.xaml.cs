@@ -41,7 +41,12 @@ namespace MTGDeckBuilder
             this.Deck_name = Deck_name;
             
             InitializeComponent();
-            if (Deck_id > 0) text_block_context.Text = "Searching cards for deck '" + Deck_name + "'";
+            if (Deck_id > 0)
+            {
+                text_block_context.Text = "Searching cards for deck '";
+                text_block_deck.Text = Deck_name;
+                text_block_results.Text = "'";
+            }
             abilitiesStartingText = abilities_box.Text;
             borders = new Border[6];
             titles = new Label[6];
@@ -202,8 +207,9 @@ namespace MTGDeckBuilder
             table = new DataTable("cards");
             SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
             adapt.Fill(table);
-            text_block_context.Text = Deck_id > 0 ? "Searching cards for deck '" + Deck_name + "' ": "Search ";
-            text_block_context.Text += "results = " + table.Rows.Count;
+            text_block_context.Text = Deck_id > 0 ? "Searching cards for '" : "Search";
+            text_block_deck.Text = Deck_name;
+            text_block_results.Text = Deck_id > 0 ? "' results = " + table.Rows.Count : " results = " + table.Rows.Count;
 
             bis = new BitmapImage[table.Rows.Count];
 
@@ -611,6 +617,15 @@ namespace MTGDeckBuilder
                 App.Add_Card((int)table.Rows[rowNumber]["id"], add.DeckName, add.DeckID, add.Amount, add.SideBoard, card_name);
         }
 
+        private void text_block_deck_MouseDown(object sender, RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+            {
+                Deck d = new Deck(Deck_id);
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
+            }
+        }
+
         private void addButton_MouseEnter(object sender, MouseEventArgs e)
         {
             ((Canvas)sender).Opacity = 0.8;
@@ -619,6 +634,15 @@ namespace MTGDeckBuilder
         private void addButton_MouseLeave(object sender, MouseEventArgs e)
         {
             ((Canvas)sender).Opacity = 1;
+        }
+
+        private void text_block_deck_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((TextBlock)sender).Opacity = 0.6;
+        }
+        private void text_block_deck_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((TextBlock)sender).Opacity = 1;
         }
 
         private void search_KeyboardKeyDown(object sender, KeyEventArgs e)

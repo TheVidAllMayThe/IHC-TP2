@@ -135,8 +135,12 @@
                 </StackPanel>
             </Grid>
 
-            <TextBlock x:Name="text_block_context" Grid.Row="2" Grid.Column="2" FontSize="14" Margin="20,0,0,0" FontStyle="Italic"/>
-
+            <StackPanel Grid.Row="2" Grid.Column="2" Margin="20,0,0,0" Orientation="Horizontal">
+                <TextBlock x:Name="text_block_context" FontSize="14" FontStyle="Italic"/>
+                <TextBlock x:Name="text_block_deck" MouseEnter="text_block_deck_MouseEnter" MouseLeave="text_block_deck_MouseLeave" MouseUp="text_block_deck_MouseDown" Foreground="AliceBlue" FontSize="14" FontStyle="Italic" TextDecorations="underline"/>
+                <TextBlock x:Name="text_block_results" FontSize="14" FontStyle="Italic"/>
+            </StackPanel>
+            
             <Viewbox Grid.ColumnSpan="9" Grid.Row="4" HorizontalAlignment="Center" Keyboard.KeyDown="changePage_KeyboardKeyDown">
                 <StackPanel Orientation="Horizontal">
                     <Label VerticalAlignment="Center">

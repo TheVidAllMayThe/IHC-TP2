@@ -147,14 +147,14 @@
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <Label Content="Details"/>
+                        <Label Style="{StaticResource Card Title Style}" Content="Details"/>
                     </TabItem.Header>
 
                     <!-- Details tab content -->
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <Label Content="Starting Hand"/>
+                        <Label Style="{StaticResource Card Title Style}" Content="Starting Hand"/>
                     </TabItem.Header>
 
                     <!-- Starting Hand tab content -->
