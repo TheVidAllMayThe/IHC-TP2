@@ -19,10 +19,11 @@
             </Grid.Background>
         </Grid>
 
-        <Grid>
+        <Grid x:Name="overAllGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.07*"/>
                 <RowDefinition x:Name="more_options_row" Height="0"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="0.88*"/>
                 <RowDefinition Height="0.05*"/>
 
@@ -134,7 +135,9 @@
                 </StackPanel>
             </Grid>
 
-            <Viewbox Grid.ColumnSpan="9" Grid.Row="3" HorizontalAlignment="Center" Keyboard.KeyDown="changePage_KeyboardKeyDown">
+            <TextBlock x:Name="text_block_context" Grid.Row="2" Grid.Column="2" FontSize="14" Margin="20,0,0,0" FontStyle="Italic"/>
+
+            <Viewbox Grid.ColumnSpan="9" Grid.Row="4" HorizontalAlignment="Center" Keyboard.KeyDown="changePage_KeyboardKeyDown">
                 <StackPanel Orientation="Horizontal">
                     <Label VerticalAlignment="Center">
                         <TextBlock TextDecorations="Underline" VerticalAlignment="Center">
@@ -160,9 +163,9 @@
 
 
             <!-- Card Zone -->
-            <Border Background="Black" Opacity="0.4" Grid.Row="2" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+            <Border Background="Black" Opacity="0.4" Grid.Row="3" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
 
-            <Border Grid.Row="2" Margin="10,0,10,10" CornerRadius="8,8,8,8">
+            <Border Grid.Row="3" Margin="10,0,10,10" CornerRadius="8,8,8,8">
                 <Grid x:Name="mainGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -210,7 +213,7 @@
                 <TextBlock Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" FontSize="12" Margin="5,0,0,0" FontStyle="Italic">Rarity</TextBlock>
 
                 <TextBox Margin="5,0,0,5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" x:Name="abilities_box" Keyboard.KeyDown="search_KeyboardKeyDown" MinWidth="300" MaxHeight="20" Text="Abilities (ex: &quot;Flying&quot;, &quot;Double Strike&quot;)" Foreground="Gray" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
-                <TextBox Margin="5,0,0,5" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" x:Name="edition_box" Keyboard.KeyDown="search_KeyboardKeyDown" MinWidth="300" MaxHeight="20" Text="Edition" Foreground="Gray" GotFocus="edition_box_GotFocus"/>
+                <TextBox Margin="5,0,0,5" Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" x:Name="edition_box" Keyboard.KeyDown="search_KeyboardKeyDown" MinWidth="300" MaxHeight="20" Text="Edition" Foreground="Gray" GotFocus="edition_box_GotFocus" LostFocus="edition_box_LostFocus"/>
                 <Viewbox Margin="5,0,0,5" Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="2">
                     <ComboBox MinWidth="300" MaxHeight="20" SelectionChanged ="Search" x:Name="rarity_combo_box" Text=""  IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
                         <ComboBoxItem Content="Any"/>

@@ -189,8 +189,8 @@ namespace MTGDeckBuilder
             table = new DataTable("cards");
             SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
             adapt.Fill(table);
+            text_block_context.Text = "Search results = " + table.Rows.Count;
 
-            
             bis = new BitmapImage[table.Rows.Count];
 
             setPage(1);
@@ -200,7 +200,6 @@ namespace MTGDeckBuilder
         {
             int maxPageInt = table.Rows.Count / 6 + (table.Rows.Count % 6 == 0 ? 0 : 1);
             currentPage = page;
-            Console.WriteLine(currentQuerry);
 
             if(page == maxPageInt)
             {
@@ -281,8 +280,7 @@ namespace MTGDeckBuilder
                         {
                             contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString() + row["subtype"] + ", ";
                         }
-
-                        Console.WriteLine(contentsOfBorder[i % 6][3].Content);
+                        
                         if (contentsOfBorder[i % 6][3].Content.ToString().Trim().Equals(""))
                             contentsOfBorder[i % 6][3].Content = "---";
                         else
@@ -331,7 +329,7 @@ namespace MTGDeckBuilder
 
         private void searchBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (searchBox.Text.Equals("Search"))
+            if (searchBox.Text.Equals("Name"))
             {
                 searchBox.Foreground = Brushes.Black;
                 searchBox.Text = "";
@@ -528,7 +526,7 @@ namespace MTGDeckBuilder
             u = UCheckBox.IsChecked.Value ? "1":"null";
             w = WCheckBox.IsChecked.Value ? "1":"null";
             r = RCheckBox.IsChecked.Value ? "1":"null";
-            String edition = edition_box.Text.Equals("Edition") ? "null": "'" + edition_box.Text + "'";
+            String edition = edition_box.Text.Equals("Edition") || edition_box.Text.Equals("") ? "null": "'" + edition_box.Text + "'";
             String minPower, maxPower, minTough, maxTough, minCMC, maxCMC;
 
             if (!min_power_box.Text.Equals(""))
