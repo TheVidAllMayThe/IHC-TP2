@@ -53,11 +53,11 @@ namespace MTGDeckBuilder
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
 
-            Deck.Deck_id = dr.GetInt32(0);
+            Deck d = new Deck(dr.GetInt32(0));
             dr.Close();
             thisConnection.Close();
 
-            this.DialogResult = true;
+            ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
         }
 
     }

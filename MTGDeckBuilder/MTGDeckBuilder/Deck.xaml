@@ -39,7 +39,7 @@
             <TabControl Background="Transparent">
                 <TabItem>
                     <TabItem.Header>
-                        <Label Content="Deck"/>
+                        <Label Style="{StaticResource Card Title Style}" Content="Deck"/>
                     </TabItem.Header>
 
                     <!-- Deck tab content -->
@@ -140,7 +140,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
-                            <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" FontWeight="Bold" FontSize="24"/>
+                            <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" Style="{StaticResource Card Title Style}" FontSize="24"/>
                             <Image Grid.Row="1" x:Name="image" Source="magic_the_gathering.png" Grid.Column="2" Margin="10,10,10,10"></Image>
                         </Grid>
                     </Grid>

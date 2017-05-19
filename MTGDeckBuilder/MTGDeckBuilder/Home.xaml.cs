@@ -77,7 +77,11 @@ namespace MTGDeckBuilder
         private void search_cards_border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
-            NavigationService.Navigate(new Uri("SearchCards.xaml", UriKind.Relative));
+            if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+            {
+                SearchCards sc = new SearchCards();
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(sc);
+            }
         }
 
         private void search_cards_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -87,8 +91,11 @@ namespace MTGDeckBuilder
 
         private void search_decks_border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
-            NavigationService.Navigate(new Uri("SearchDecks.xaml", UriKind.Relative));
+            if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+            {
+                SearchDecks sd = new SearchDecks();
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(sd);
+            }
         }
 
         private void search_decks_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -101,7 +108,6 @@ namespace MTGDeckBuilder
             ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
             newDeckDialog dialog = new newDeckDialog();
             dialog.ShowDialog();
-            if(dialog.DialogResult == true) NavigationService.Navigate(new Uri("Deck.xaml", UriKind.Relative));
         }
 
         private void build_deck_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

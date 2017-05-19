@@ -21,6 +21,7 @@ namespace MTGDeckBuilder
             EXITSIZEMOVE = 0x0232,
         }
 
+        
         public MainWindow()
         {
             InitializeComponent();

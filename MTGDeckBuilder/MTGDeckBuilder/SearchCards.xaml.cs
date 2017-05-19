@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 using System.Configuration;
@@ -25,7 +18,7 @@ namespace MTGDeckBuilder
     /// </summary>
 
 
-    public partial class Page1 : Page
+    public partial class SearchCards : Page
     {
 
         
@@ -37,12 +30,13 @@ namespace MTGDeckBuilder
         String currentQuerry;
         DataTable table;
         BitmapImage[] bis;
-        string abilitiesStartingText;
-        private static int currentPage;
-        public static int Deck_id = -1; 
-
-        public Page1()
+        private string abilitiesStartingText;
+        private int currentPage;
+        public int Deck_id = -1;
+        
+        public SearchCards(int Deck_id = -1)
         {
+            this.Deck_id = Deck_id;
             InitializeComponent();
             abilitiesStartingText = abilities_box.Text;
             borders = new Border[6];
@@ -169,12 +163,13 @@ namespace MTGDeckBuilder
                 contentsOfBorder[k] = tmp;
 
             }
-
-            currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
-            setCards();
+            if (currentQuerry == null)
+            {
+                currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
+                setCards();
+            }
            
         }
-        
 
         private void setCards()
         {
@@ -579,26 +574,22 @@ namespace MTGDeckBuilder
         {
             int borderPressed = int.Parse(((Border)sender).Name.Substring(6));
 
-            Card.Card_id = (int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"];
-
-            
-            NavigationService.Navigate(new Uri("Card.xaml", UriKind.Relative));
+            if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+            { 
+                Card c = new Card((int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"]);
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(c);
+            }
         }
 
         private void addButton_Click(object sender, RoutedEventArgs e)
         {
             int buttonPressed = int.Parse(((Button)sender).Name.Substring(9));
             int rowNumber = (currentPage - 1) * 6 + buttonPressed;
-            Card.Card_id = (int)table.Rows[rowNumber]["id"];
             addCardDialog add = (table.Rows[rowNumber]["rarity"].ToString().Equals("Basic Land") ? new addCardDialog((BitmapImage)images[rowNumber].Source, true): new addCardDialog((BitmapImage)images[rowNumber].Source, false));
             add.ShowDialog();
+            String card_name = table.Rows[rowNumber]["cardName"].ToString();
             if(add.DialogResult == true)
-                Add_Card((int)table.Rows[rowNumber]["id"], add.DeckID, add.Amount, add.SideBoard);
-            if (Deck_id > 0)
-            {
-                Deck_id = -1;
-                NavigationService.Navigate(new Uri("Deck.xaml", UriKind.Relative));
-            }
+                Add_Card((int)table.Rows[rowNumber]["id"], add.DeckName, add.DeckID, add.Amount, add.SideBoard, card_name);
         }
 
 
@@ -634,7 +625,7 @@ namespace MTGDeckBuilder
             return circleButton;
         }
 
-        private void Add_Card(int cardID, int deckID, int amount, bool sideboard)
+        private void Add_Card(int cardID, String deckName, int deckID, int amount, bool sideboard, String cardName)
         {
             
             SqlConnection thisConnection;
@@ -654,7 +645,7 @@ namespace MTGDeckBuilder
             }
                 thisConnection.Close();
 
-            if(Deck_id < 0) MessageBox.Show("Successfully added card");
+            if(Deck_id < 0) MessageBox.Show("Successfully added " + amount +  " " + cardName + " to " + deckName);
         }
 
         private void search_KeyboardKeyDown(object sender, KeyEventArgs e)

@@ -48,7 +48,7 @@
             <Border.Background>
                 <ImageBrush x:Name="Image4" ImageSource="magic_generic_6.jpg" AlignmentY="Top"/>
             </Border.Background>
-            <Label x:Name="label_Copy2" Content="Build Deck" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="48" FontFamily="MagicMedieval" Foreground="White" Margin="10,10,10,10"/>
+            <Label x:Name="label_Copy2" Content="Create Deck" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="48" FontFamily="MagicMedieval" Foreground="White" Margin="10,10,10,10"/>
         </Border>
     </Grid>
     

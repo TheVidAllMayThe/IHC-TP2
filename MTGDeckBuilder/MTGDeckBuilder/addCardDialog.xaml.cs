@@ -27,6 +27,7 @@ namespace MTGDeckBuilder
         private int limit;
         private int amount;
         private int deckID;
+        private string deckName;
         List<string> decknames;
         List<int> deckids;
         private bool sideBoard;
@@ -65,6 +66,19 @@ namespace MTGDeckBuilder
             set
             {
                 sideBoard = value;
+            }
+        }
+
+        public string DeckName
+        {
+            get
+            {
+                return deckName;
+            }
+
+            set
+            {
+                deckName = value;
             }
         }
 
@@ -125,6 +139,7 @@ namespace MTGDeckBuilder
             this.Amount = int.Parse(numberOfCards.Text);
             this.DialogResult = true;
             this.deckID = deckids[decknames.FindIndex(a => a == decksCombo.Text)];
+            this.deckName = decksCombo.Text;
             this.sideBoard = (bool)Yes.IsChecked;
             
         }
