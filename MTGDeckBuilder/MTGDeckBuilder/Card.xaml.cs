@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Windows;
+using System.Windows.Input;
 
 namespace MTGDeckBuilder
 {
@@ -23,15 +14,36 @@ namespace MTGDeckBuilder
     
     public partial class Card : Page
     {
+        private int deck_id;
         private int card_id;
         private SqlConnection thisConnection;
 
-        public Card(int card_id)
+        public Card(int card_id, int deck_id = -1)
         {
+            this.deck_id = deck_id;
             this.card_id = card_id;
             InitializeComponent();
             show_card();
         }
+
+        public void add_buttonClick(object sender, RoutedEventArgs e)
+        {
+            addCardDialog add = new addCardDialog(((BitmapImage)image.Source), rarity.Content.ToString() == "Basic Land");
+            add.ShowDialog();
+            if (add.DialogResult == true)
+                App.Add_Card(card_id, add.DeckName, add.DeckID, add.Amount, add.SideBoard, name.Content.ToString());
+        }
+
+        private void addButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Canvas)sender).Opacity = 0.8;
+        }
+
+        private void addButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Canvas)sender).Opacity = 1;
+        }
+
 
         public void show_card()
         {

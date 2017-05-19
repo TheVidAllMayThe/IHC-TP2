@@ -76,7 +76,7 @@ namespace MTGDeckBuilder
         {
             if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
             {
-                SearchCards c = new SearchCards(deck_id);
+                SearchCards c = new SearchCards(deck_id, deck_title.Content.ToString());
                 ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(c);
             }
         }

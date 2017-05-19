@@ -116,6 +116,13 @@
             <Viewbox Grid.Column="1" Grid.Row="9" HorizontalAlignment="Left">
                 <Label x:Name="artist" Content="Ryan Alexander Lec" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
+
+            <Viewbox Grid.Column="1" Grid.Row="9" Width="50" Height="50" Margin="10,0,10,10" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" MouseUp="add_buttonClick" Width="50" Height="50">
+                    <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="45.5" X2="25" Y2="4.5" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
+                    <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
+                </Canvas>
+            </Viewbox>
         </Grid>
     </Grid>
 </Page>

@@ -108,6 +108,11 @@ namespace MTGDeckBuilder
             ((Border)sender).Margin = new Thickness(0, 0, 0, 0);
             newDeckDialog dialog = new newDeckDialog();
             dialog.ShowDialog();
+            if(dialog.DialogResult == true && Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+                {
+                    Deck d = new Deck(dialog.deck_id);
+                    ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
+                }
         }
 
         private void build_deck_border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

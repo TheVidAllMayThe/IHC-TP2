@@ -23,6 +23,7 @@ namespace MTGDeckBuilder
     public partial class newDeckDialog : Window
     {
         private SqlConnection thisConnection;
+        public int deck_id;
        
         public newDeckDialog()
         {
@@ -53,11 +54,10 @@ namespace MTGDeckBuilder
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
 
-            Deck d = new Deck(dr.GetInt32(0));
+            deck_id = dr.GetInt32(0);
             dr.Close();
             thisConnection.Close();
-
-            ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
+            this.DialogResult = true;
         }
 
     }

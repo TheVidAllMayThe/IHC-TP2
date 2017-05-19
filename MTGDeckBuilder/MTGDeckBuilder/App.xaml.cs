@@ -31,6 +31,31 @@ namespace MTGDeckBuilder
                 user = value;
             }
         }
+
+        public static void Add_Card(int cardID, String deckName, int deckID, int amount, bool sideboard, String cardName)
+        {
+
+            SqlConnection thisConnection;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "EXEC addCardToDeck " + cardID + ", " + deckID + ", " + amount + ", " + (sideboard ? 1 : 0);
+            try
+            {
+                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+            }
+            catch (SqlException e)
+            {
+                MessageBox.Show(e.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            thisConnection.Close();
+
+            MessageBox.Show("Successfully added " + amount + " " + cardName + " to " + deckName);
+        }
+
     }
 
 }
