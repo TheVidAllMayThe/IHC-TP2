@@ -78,7 +78,7 @@ namespace MTGDeckBuilder
                 viewBox = new Viewbox();
                 viewBox.Child = rating[i];
                 deckGrid.Children.Add(viewBox);
-                Grid.SetColumn(viewBox, 2);
+                Grid.SetColumn(viewBox, 3);
 
                 DeckGrid.Children.Add(deckGrid);
                 Grid.SetRow(deckGrid, i);
@@ -275,6 +275,33 @@ namespace MTGDeckBuilder
                         img.Width = 200;
                         img.Margin = new Thickness(25, 50, 25, 50);
                         colors[i].Children.Add(img);
+                    }
+
+                    MessageBox.Show(table.Rows[i]["rating"].ToString());
+                    int ratingOfDeck = (int)Math.Round(table.Rows[i]["rating"].ToString().Equals("")?0:Double.Parse(table.Rows[i]["rating"].ToString()));
+                    for(int k = 0; k < ratingOfDeck; k++)
+                    {
+                        BitmapImage image = new BitmapImage(new Uri("/Img/full_star.png", UriKind.Relative));
+                        Image img = new Image();
+                        img.Source = image;
+                        img.VerticalAlignment = VerticalAlignment.Center;
+                        img.HorizontalAlignment = HorizontalAlignment.Center;
+                        img.Height = 200;
+                        img.Width = 200;
+                        img.Margin = new Thickness(25, 50, 25, 50);
+                        rating[i].Children.Add(img);
+                    }
+                    for (int k = 0; k < 5 - ratingOfDeck; k++)
+                    {
+                        BitmapImage image = new BitmapImage(new Uri("/Img/empty_star.png", UriKind.Relative));
+                        Image img = new Image();
+                        img.Source = image;
+                        img.VerticalAlignment = VerticalAlignment.Center;
+                        img.HorizontalAlignment = HorizontalAlignment.Center;
+                        img.Height = 200;
+                        img.Width = 200;
+                        img.Margin = new Thickness(25, 50, 25, 50);
+                        rating[i].Children.Add(img);
                     }
                 }
             }
