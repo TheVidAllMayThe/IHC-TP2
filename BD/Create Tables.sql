@@ -433,3 +433,9 @@ AS
 		RAISERROR('Cannot have more than 4 of the same non basic lands on a deck',0,0);
 		ROLLBACK TRAN;	
 	END;
+
+go
+
+create function getColorsFromDeck (@deckID int) Returns Table
+as
+	return (SELECT color from ColorIdentity inner Join (SELECT Card, deck FROM CardInDeck where deck = @deckID) as cards on cards.card=ColorIdentity.card where isManaColor=1 group by color)
