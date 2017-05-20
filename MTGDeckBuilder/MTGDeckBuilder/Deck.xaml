@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MTGDeckBuilder"
+      xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
       mc:Ignorable="d" 
       d:DesignHeight="740" d:DesignWidth="1350"
       Title="Deck"
@@ -52,7 +53,7 @@
         </Grid.Background>
         <!-- Tabs -->
         <Grid>
-            <TabControl Background="Transparent">
+            <TabControl SelectionChanged="tabControl_SelectionChanged" Background="Transparent">
                 <TabItem>
                     <TabItem.Header>
                         <Label Style="{StaticResource Card Title Style}" Content="Deck"/>
@@ -179,14 +180,38 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem>
+                <TabItem x:Name="details">
                     <TabItem.Header>
                         <Label Style="{StaticResource Card Title Style}" Content="Details"/>
                     </TabItem.Header>
 
                     <!-- Details tab content -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="0"  Margin="10,10,10,10" Name="manacurveChart" Title="Data Grid">
+                            <chartingToolkit:ColumnSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        </chartingToolkit:Chart>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="1"  Margin="10,10,10,10" Name="cardtypedistributionChart" Title="Data Grid">
+                            <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        </chartingToolkit:Chart>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="0"  Margin="10,10,10,10" Name="manadistributionChart" Title="Data Grid">
+                            <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        </chartingToolkit:Chart>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="1"  Margin="10,10,10,10" Name="manasourcedistributionChart" Title="Data Grid">
+                            <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        </chartingToolkit:Chart>
+                    </Grid>
+                    
                 </TabItem>
-                <TabItem>
+                <TabItem x:Name="starting_hand">
                     <TabItem.Header>
                         <Label Style="{StaticResource Card Title Style}" Content="Starting Hand"/>
                     </TabItem.Header>

@@ -63,7 +63,6 @@ namespace MTGDeckBuilder
             starting_hand_cards = 7;
             rnd = new Random();
             showDeck();
-            show_hand();
             stars = new Image[5];
             stars[0] = star0;
             stars[1] = star1;
@@ -425,6 +424,45 @@ namespace MTGDeckBuilder
             for (int i = (currentRating == 0 ? 0 : currentRating); i < 5; i++)
             {
                 stars[i].Source = emptyStar;
+            }
+        }
+
+        private void showDetailCharts()
+        {
+            /*string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "SELECT name FROM Deck WHERE id = " + deck_id;
+            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            dr.Read();
+            deck_title.Content = dr["name"];
+            dr.Close();
+            */
+            List<KeyValuePair<string, int>> valueList = new List<KeyValuePair<string, int>>();
+            valueList.Add(new KeyValuePair<string, int>("Developer", 60));
+            valueList.Add(new KeyValuePair<string, int>("Misc", 20));
+            valueList.Add(new KeyValuePair<string, int>("Tester", 50));
+            valueList.Add(new KeyValuePair<string, int>("QA", 30));
+            valueList.Add(new KeyValuePair<string, int>("Project Manager", 40));
+
+            manacurveChart.DataContext = valueList;
+            cardtypedistributionChart.DataContext = valueList;
+            manadistributionChart.DataContext = valueList;
+            manasourcedistributionChart.DataContext = valueList;
+        }
+
+        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (details.IsSelected)
+            {
+                showDetailCharts();
+            }
+                
+            if (starting_hand.IsSelected)
+            {
+                show_hand();
             }
         }
 

@@ -324,7 +324,7 @@ namespace MTGDeckBuilder
 
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if((currentPage - 1) * 10 + int.Parse(((Border)sender).Name.Substring(6)) < table.Rows.Count) { 
+            if((currentPage - 1) * 10 + int.Parse(((Border)sender).Name.Substring(6)) < table.Rows.Count && Window.GetWindow(this) != null) { 
                 Deck d = new Deck(int.Parse(table.Rows[(currentPage-1) * 10 + int.Parse(((Border)sender).Name.Substring(6))]["id"].ToString()));
                 ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
             }
