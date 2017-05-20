@@ -123,13 +123,20 @@ namespace MTGDeckBuilder
             btnDialogOk.IsEnabled = false;
         }
 
-        public addCardDialog(BitmapImage image, String deckname, bool isBasicLand)
+        public addCardDialog(BitmapImage image, String deckname, int deckID, bool isBasicLand)
         {
 
             InitializeComponent();
             this.isBasicLand = isBasicLand;
             CardImage.Source = image;
+            
             decksCombo.Text = deckname;
+            decknames = new List<string>();
+            deckids = new List<int>();
+            decknames.Add(deckname);
+            deckids.Add(deckID);
+            decksCombo.ItemsSource = decknames;
+            decksCombo.SelectedIndex = 0;
             decksCombo.IsEnabled = false;
             btnDialogOk.IsEnabled = true;
         }

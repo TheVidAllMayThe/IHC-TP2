@@ -282,7 +282,7 @@ namespace MTGDeckBuilder
                     int ratingOfDeck = (int)Math.Round(table.Rows[i]["rating"].ToString().Equals("") ? 0 : Double.Parse(table.Rows[i]["rating"].ToString()));
                     for (int k = 0; k < ratingOfDeck; k++)
                     {
-                        BitmapImage image = new BitmapImage(new Uri("/Img/full_star.png", UriKind.Relative));
+                        BitmapImage image = new BitmapImage(new Uri("/images/full_star.png", UriKind.Relative));
                         Image img = new Image();
                         img.Source = image;
                         img.VerticalAlignment = VerticalAlignment.Center;
@@ -294,7 +294,7 @@ namespace MTGDeckBuilder
                     }
                     for (int k = 0; k < 5 - ratingOfDeck; k++)
                     {
-                        BitmapImage image = new BitmapImage(new Uri("/Img/empty_star.png", UriKind.Relative));
+                        BitmapImage image = new BitmapImage(new Uri("/images/empty_star.png", UriKind.Relative));
                         Image img = new Image();
                         img.Source = image;
                         img.VerticalAlignment = VerticalAlignment.Center;
@@ -324,8 +324,10 @@ namespace MTGDeckBuilder
 
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Deck d = new Deck(int.Parse(table.Rows[(currentPage-1) * 10 + int.Parse(((Border)sender).Name.Substring(6))]["id"].ToString()));
-            ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
+            if((currentPage - 1) * 10 + int.Parse(((Border)sender).Name.Substring(6)) < table.Rows.Count) { 
+                Deck d = new Deck(int.Parse(table.Rows[(currentPage-1) * 10 + int.Parse(((Border)sender).Name.Substring(6))]["id"].ToString()));
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
+            }
         }
     }
 }

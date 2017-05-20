@@ -56,8 +56,8 @@ namespace MTGDeckBuilder
         
         public Deck(int deck_id)
         {
-            emptyStar = new BitmapImage(new Uri("/Img/empty_star.png", UriKind.Relative));
-            fullStar = new BitmapImage(new Uri("/Img/full_star.png", UriKind.Relative));
+            emptyStar = new BitmapImage(new Uri("/images/empty_star.png", UriKind.Relative));
+            fullStar = new BitmapImage(new Uri("/images/full_star.png", UriKind.Relative));
             this.deck_id = deck_id;
             InitializeComponent();
             starting_hand_cards = 7;
@@ -70,6 +70,8 @@ namespace MTGDeckBuilder
             stars[2] = star2;
             stars[3] = star3;
             stars[4] = star4;
+
+            setCurrentRating();
         }
 
         private void New_Hand(object sender, RoutedEventArgs e)
@@ -378,29 +380,18 @@ namespace MTGDeckBuilder
 
         private void star_MouseLeave(object sender, MouseEventArgs e)
         {
-            SqlDataReader dr = DatabaseControl.getDataReader("Select rating from Deck where id=" + deck_id);
-            dr.Read();
-            int currentRating = dr["rating"].ToString().Equals("")? 0 : int.Parse(dr["rating"].ToString());
-            for (int i = 0; i <= currentRating; i++)
-            {
-                stars[i].Source = fullStar;
-            }
-
-            for (int i = (currentRating==0 ? 0 : currentRating + 1); i < 5; i++)
-            {
-                stars[i].Source = emptyStar;
-            }
+            setCurrentRating();
         }
 
         private void star_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             int ratingToGive = int.Parse(((Image)sender).Name.Substring(4)) + 1;
            try {
-                SqlDataReader dr = DatabaseControl.getDataReader("Select rating from RatedBy where (deck=" + deck_id + "and user='" + App.User + "')");
+                SqlDataReader dr = DatabaseControl.getDataReader("Select rating from RatedBy where deck=" + deck_id + " and [user]='" + App.User + "'");
                 dr.Read();
+                Console.WriteLine("Select rating from RatedBy where deck=" + deck_id + " and [user]='" + App.User + "'");
                 string userRating = dr["rating"].ToString();
-
-                if (int.Parse(userRating) == ratingToGive)
+            if (int.Parse(userRating) == ratingToGive)
                 {
                     MessageBox.Show("You already rated this deck with the same rating!", "Rating", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
@@ -417,6 +408,84 @@ namespace MTGDeckBuilder
                 DatabaseControl.ExecuteNonQuerryCommand("EXEC rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
                 MessageBox.Show("You gave this deck " + ratingToGive + " stars.", "Rating", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+
+            setCurrentRating();
+        }
+
+        private void setCurrentRating()
+        {
+            SqlDataReader dr = DatabaseControl.getDataReader("Select rating from Deck where id=" + deck_id);
+            dr.Read();
+            int currentRating = dr["rating"].ToString().Equals("") ? 0 : int.Parse(dr["rating"].ToString());
+            for (int i = 0; i < currentRating; i++)
+            {
+                stars[i].Source = fullStar;
+            }
+
+            for (int i = (currentRating == 0 ? 0 : currentRating); i < 5; i++)
+            {
+                stars[i].Source = emptyStar;
+            }
+        }
+
+        public void add_buttonClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void addButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Canvas)sender).Opacity = 0.8;
+        }
+
+        private void addButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Canvas)sender).Opacity = 1;
+        }
+
+        private void addButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Viewbox button = sender as Viewbox;
+            Card_listing card = button.DataContext as Card_listing;
+
+            SqlConnection thisConnection;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "UPDATE CardInDeck SET amount = amount + 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
+            try
+            {
+                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+            }
+            catch (SqlException sqle)
+            {
+                MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            thisConnection.Close();
+            showDeck();
+        }
+
+        private void removeButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Viewbox button = sender as Viewbox;
+            Card_listing card = button.DataContext as Card_listing;
+
+            SqlConnection thisConnection;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            string getData = "UPDATE CardInDeck SET amount = amount - 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
+            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
+
+            thisConnection.Close();
+            card.Amount -= 1;
+            showDeck();
         }
     }
 }

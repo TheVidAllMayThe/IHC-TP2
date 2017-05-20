@@ -610,7 +610,29 @@ namespace MTGDeckBuilder
         {
             int buttonPressed = int.Parse(((Canvas)sender).Name.Substring(9));
             int rowNumber = (currentPage - 1) * 6 + buttonPressed;
-            addCardDialog add = (table.Rows[rowNumber]["rarity"].ToString().Equals("Basic Land") ? new addCardDialog((BitmapImage)images[rowNumber].Source, true): new addCardDialog((BitmapImage)images[rowNumber].Source, false));
+            addCardDialog add;
+            try
+            {
+                bool isBasicLand = table.Rows[rowNumber]["rarity"].ToString().Equals("Basic Land");
+                if(Deck_id != -1)
+                {
+                    add = new addCardDialog((BitmapImage)images[rowNumber%6].Source, Deck_name, Deck_id, isBasicLand);
+                }
+                else
+                {
+                    add = new addCardDialog((BitmapImage)images[rowNumber % 6].Source, isBasicLand);
+                }
+            }catch(InvalidOperationException io)
+            {
+                if (Deck_id != -1)
+                {
+                    add = new addCardDialog((BitmapImage)images[rowNumber].Source, false);
+                }
+                else
+                {
+                    add = new addCardDialog((BitmapImage)images[rowNumber % 6].Source, false);
+                }
+            }
             add.ShowDialog();
             String card_name = table.Rows[rowNumber]["cardName"].ToString();
             if(add.DialogResult == true)

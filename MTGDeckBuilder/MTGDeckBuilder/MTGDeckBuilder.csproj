@@ -210,6 +210,33 @@
   <ItemGroup>
     <Resource Include="add_icon.png" />
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="images\B.svg" />
+    <Resource Include="images\empty_star.png" />
+    <Resource Include="images\full_star.png" />
+    <Resource Include="images\magic_generic_1.jpg" />
+    <Resource Include="images\magic_generic_10.jpg" />
+    <Resource Include="images\magic_generic_11.jpg" />
+    <Resource Include="images\magic_generic_12.jpg" />
+    <Resource Include="images\magic_generic_13.jpg" />
+    <Resource Include="images\magic_generic_14.jpg" />
+    <Resource Include="images\magic_generic_2.jpg" />
+    <Resource Include="images\magic_generic_3.jpg" />
+    <Resource Include="images\magic_generic_4.jpg" />
+    <Resource Include="images\magic_generic_5.jpg" />
+    <Resource Include="images\magic_generic_6.jpg" />
+    <Resource Include="images\magic_generic_7.jpg" />
+    <Resource Include="images\magic_generic_8.jpg" />
+    <Resource Include="images\magic_generic_9.jpg" />
+    <Resource Include="images\Mana_B.png" />
+    <Resource Include="images\Mana_G.png" />
+    <Resource Include="images\Mana_R.png" />
+    <Resource Include="images\Mana_U.png" />
+    <Resource Include="images\Mana_W.png" />
+    <Content Include="images\R %281%29.svg" />
+    <Content Include="images\R.svg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

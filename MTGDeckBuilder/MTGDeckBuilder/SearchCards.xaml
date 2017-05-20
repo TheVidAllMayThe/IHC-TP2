@@ -46,27 +46,27 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Margin="5,0,0,0" FontStyle="Italic">Color</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="5" FontSize="12" Margin="5,0,0,0" FontStyle="Italic">Type</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="7" FontSize="12" Margin="5,0,0,0" FontStyle="Italic">Name</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Foreground="Beige">Color</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="5" FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Foreground="Beige">Type</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="7" FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Foreground="Beige">Name</TextBlock>
 
-                <CheckBox Checked="Search" Unchecked="Search" x:Name="GCheckBox" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox Checked="Search" Unchecked="Search" x:Name="GCheckBox" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Margin="0,0,0,0" Source="Mana_G.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Checked="Search" Unchecked="Search" x:Name="UCheckBox" Grid.Row="1" Grid.Column="1" Margin="0,0,5,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox Checked="Search" Unchecked="Search" x:Name="UCheckBox" Grid.Row="1" Grid.Column="1" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Margin="0,0,0,0" Source="Mana_U.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Checked="Search" Unchecked="Search" x:Name="WCheckBox" Grid.Row="1" Grid.Column="2" Margin="0,0,5,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox Checked="Search" Unchecked="Search" x:Name="WCheckBox" Grid.Row="1" Grid.Column="2" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_W.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Checked="Search" Unchecked="Search" x:Name="RCheckBox" Grid.Row="1" Grid.Column="3" Margin="0,0,5,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox Checked="Search" Unchecked="Search" x:Name="RCheckBox" Grid.Row="1" Grid.Column="3" Margin="0,0,10,0"  VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_R.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
-                <CheckBox Checked="Search" Unchecked="Search" x:Name="BCheckBox" Grid.Row="1" Grid.Column="4" Margin="0,0,5,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <CheckBox Checked="Search" Unchecked="Search" x:Name="BCheckBox" Grid.Row="1" Grid.Column="4" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_B.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
 
