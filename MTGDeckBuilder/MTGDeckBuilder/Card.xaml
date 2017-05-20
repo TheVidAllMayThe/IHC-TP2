@@ -37,87 +37,87 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Border Background="Black" Opacity="0.4" Grid.ColumnSpan="2" Grid.RowSpan="10" Margin="10,0,10,0" CornerRadius="8,8,8,8"/>
-            <Viewbox  HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
+            <Viewbox  HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" Margin="10,0,0,0">
             <Label Content="Name:"  Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,10,0">
             <Label x:Name="name" Content="Verdant Automation" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1" Margin="10,0,0,0">
                 <Label Content="Type:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox  Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left">
+            <Viewbox  Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="type" Content="Artifact Creature" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="2">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="2" Margin="10,0,0,0">
                 <Label Content="Subtype:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="subtype" Content="Construct" Grid.Column="1" Grid.Row="2" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="3">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="3" Margin="10,0,0,0">
                 <Label Content="Power:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="power" Content="1" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="4">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="4" Margin="10,0,0,0">
                 <Label Content="Toughness:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="toughness" Content="2" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="5">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="5" Margin="10,0,0,0">
                 <Label Content="Text:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="text" Content="{}{3}{6}: Put a +1/+1 counter on Verdant Automations" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="6">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="6" Margin="10,0,0,0">
                 <Label Content="Rarity:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="rarity" Content="Common" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="7">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="7" Margin="10,0,0,0">
                 <Label Content="Legality:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="7" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="7" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="legality" Content="Vintage, Legacy, Standard" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="8">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="8" Margin="10,0,0,0">
                 <Label Content="Flavor:" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="8" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="8" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="flavor" Content="&quot;A perfect fusion of natur and artifact&quot; -Irsi, hujav gardner" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="9">
+            <Viewbox HorizontalAlignment="Left" Grid.Column="0" Grid.Row="9" Margin="10,0,0,0">
                 <Label Content="Artist:" Grid.Column="0" Grid.Row="9" Style="{StaticResource Card Property Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="9" HorizontalAlignment="Left">
+            <Viewbox Grid.Column="1" Grid.Row="9" HorizontalAlignment="Left" Margin="0,0,10,0">
                 <Label x:Name="artist" Content="Ryan Alexander Lec" Style="{StaticResource Card Title Style}"/>
             </Viewbox>
 
-            <Viewbox Grid.Column="1" Grid.Row="9" Width="50" Height="50" Margin="10,0,10,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+            <Viewbox Grid.Column="1" Grid.Row="9" Width="50" Height="50" Margin="10,10,20,10" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
                 <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" MouseUp="add_buttonClick" Width="50" Height="50">
                     <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="45.5" X2="25" Y2="4.5" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
                     <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
