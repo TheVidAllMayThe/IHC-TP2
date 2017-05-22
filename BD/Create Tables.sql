@@ -374,6 +374,20 @@ ON cid.card = c.id
 
 go
 
+CREATE VIEW CardDetailed AS
+SELECT id, name, TypeOfCard.type + " " + SubtypeOfCard.subtype AS type, cmc, edition, rarity
+FROM(	
+	SELECT Card.id, cmc, Card.name AS name, rarity, Edition.name AS edition
+	FROM Card
+	JOIN Edition
+	ON Card.edition = Edition.code) AS c1
+JOIN TypeOfCard
+ON TypeOfCard.card = c1.id
+JOIN SubtypeOfCard
+ON SubtypeOfCard.card = c1.id;
+
+go
+
 CREATE FUNCTION search_cards (@name Varchar(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns Table
 AS
 	RETURN(SELECT distinct seven.id, seven.multiverseID, seven.name as cardName, seven.editionName, seven.rarity, seven.cmc 
@@ -440,6 +454,71 @@ create function getColorsFromDeck (@deckID int) Returns Table
 as
 	return (SELECT color from ColorIdentity inner Join (SELECT Card, deck FROM CardInDeck where deck = @deckID) as cards on cards.card=ColorIdentity.card where isManaColor=1 group by color)
 
+GO
+
+CREATE FUNCTION manaCurve (@deckID int) Returns Table
+AS
+	RETURN (SELECT cmc, SUM(amount) AS n
+			FROM (SELECT card, amount FROM CardInDeck WHERE deck = @deckID) AS cid
+			JOIN (SELECT cmc, id FROM Card) AS c
+			ON cid.card = c.id AND c.cmc IS NOT NULL
+			GROUP BY cmc)
+GO
+
+CREATE FUNCTION cardTypeDistribution (@deckID int) Returns @table TABLE(rarity VARCHAR(255), perc real)
+AS
+	BEGIN
+		DECLARE @total INT;
+		SELECT @total = SUM(amount)
+		FROM CardInDeck
+		WHERE deck = @deckID;
+
+		INSERT INTO @table SELECT type, 100*SUM(amount)/@total
+		FROM (SELECT card, amount FROM CardInDeck WHERE deck = @deckID) AS cid
+		JOIN TypeOfCard
+		ON cid.card = TypeOfCard.card
+		GROUP BY type;
+		RETURN;
+	END
+GO
+
+CREATE FUNCTION manaDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
+AS
+	BEGIN
+		DECLARE @total INT;
+		SELECT @total = SUM(amount)
+		FROM CardInDeck
+		WHERE deck = @deckID;
+
+		INSERT INTO @table SELECT color, 100*SUM(amount)/@total
+		FROM (SELECT card, amount FROM CardInDeck WHERE deck = @deckID) AS cid
+		JOIN ColorIdentity
+		ON cid.card = ColorIdentity.card
+		GROUP BY color;
+		RETURN;
+	END
+GO
+
+CREATE FUNCTION manasourceDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
+AS
+	BEGIN
+		DECLARE @total INT;
+		SELECT @total = SUM(amount)
+		FROM CardInDeck
+		JOIN TypeOfCard
+		ON deck = @deckID AND TypeOfCard.type = 'Land' AND CardInDeck.card = TypeOfCard.card;
+
+		INSERT INTO @table SELECT color, 100*SUM(amount)/@total
+		FROM (
+			SELECT cardInDeck.card, amount
+			FROM CardInDeck 
+			JOIN TypeOfCard
+			ON CardInDeck.card = TypeOfCard.card AND TypeOfCard.type = 'Land' AND deck = @deckID) AS cid
+		JOIN ColorIdentity
+		ON cid.card = ColorIdentity.card
+		GROUP BY color;
+		RETURN;
+	END
 GO
 
 CREATE TRIGGER update_rating_at_update ON RatedBy

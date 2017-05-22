@@ -22,6 +22,93 @@ namespace MTGDeckBuilder
     /// Interaction logic for Deck.xaml
     /// </summary>
     /// 
+    public class Card_detailed
+    {
+        private string _name;
+        private string _type;
+        private int _cmc;
+        private string _edition;
+        private string _rarity;
+        private int _amount;
+
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+
+            set
+            {
+                _name = value;
+            }
+        }
+
+        public string Type
+        {
+            get
+            {
+                return _type;
+            }
+
+            set
+            {
+                _type = value;
+            }
+        }
+
+        public int Cmc
+        {
+            get
+            {
+                return _cmc;
+            }
+
+            set
+            {
+                _cmc = value;
+            }
+        }
+
+        public string Edition
+        {
+            get
+            {
+                return _edition;
+            }
+
+            set
+            {
+                _edition = value;
+            }
+        }
+
+        public string Rarity
+        {
+            get
+            {
+                return _rarity;
+            }
+
+            set
+            {
+                _rarity = value;
+            }
+        }
+
+        public int Amount
+        {
+            get
+            {
+                return _amount;
+            }
+
+            set
+            {
+                _amount = value;
+            }
+        }
+    }
     public class Card_listing
     {
         private int _deck;
@@ -114,8 +201,7 @@ namespace MTGDeckBuilder
             {
                 for(int i=0; i< dr.GetInt32(0); i++) list.Add(dr.GetInt32(1));
             }
-
-            Console.Write(list.Count());
+            
             int picked;
             for (int i = 0; i < 4 && i < starting_hand_cards && list.Count() > 0; i++)
             {
@@ -429,28 +515,64 @@ namespace MTGDeckBuilder
 
         private void showDetailCharts()
         {
-            /*string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "SELECT name FROM Deck WHERE id = " + deck_id;
+            string getData = "SELECT cmc, n FROM manaCurve(" + deck_id + ")";
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_title.Content = dr["name"];
+            List<KeyValuePair<int, int>> manacurveList = new List<KeyValuePair<int, int>>();
+            while (dr.Read())
+            {
+                manacurveList.Add(new KeyValuePair<int, int>(dr.GetInt32(0), dr.GetInt32(1)));
+            }
             dr.Close();
-            */
-            List<KeyValuePair<string, int>> valueList = new List<KeyValuePair<string, int>>();
-            valueList.Add(new KeyValuePair<string, int>("Developer", 60));
-            valueList.Add(new KeyValuePair<string, int>("Misc", 20));
-            valueList.Add(new KeyValuePair<string, int>("Tester", 50));
-            valueList.Add(new KeyValuePair<string, int>("QA", 30));
-            valueList.Add(new KeyValuePair<string, int>("Project Manager", 40));
 
-            manacurveChart.DataContext = valueList;
-            cardtypedistributionChart.DataContext = valueList;
-            manadistributionChart.DataContext = valueList;
-            manasourcedistributionChart.DataContext = valueList;
+            getData = "SELECT rarity, perc FROM cardTypeDistribution(" + deck_id + ")";
+            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            List<KeyValuePair<String, float>> cardtypeDistributionList = new List<KeyValuePair<String, float>>();
+            while (dr.Read())
+            {
+                cardtypeDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
+            }
+            dr.Close();
+
+            getData = "SELECT color, perc FROM manaDistribution(" + deck_id + ")";
+            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            List<KeyValuePair<String, float>> manaDistributionList = new List<KeyValuePair<String, float>>();
+            while (dr.Read())
+            {
+                manaDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
+            }
+            dr.Close();
+
+
+            getData = "SELECT color, perc FROM manasourceDistribution(" + deck_id + ")";
+            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            List<KeyValuePair<String, float>> manasourceDistributionList = new List<KeyValuePair<String, float>>();
+            while (dr.Read())
+            {
+                manasourceDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
+            }
+            dr.Close();
+            
+            manacurveChart.DataContext = manacurveList;
+            cardtypedistributionChart.DataContext = cardtypeDistributionList;
+            manadistributionChart.DataContext = manaDistributionList;
+            manasourcedistributionChart.DataContext = manasourceDistributionList;
+
+
+            getData = "SELECT amount, id, name, type, cmc, edition, rarity FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = " + deck_id;
+            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+
+            ObservableCollection<Card_detailed> temp = new ObservableCollection<Card_detailed>();
+            while (dr.Read())
+            {
+                temp.Add(new Card_detailed { Amount = dr.GetInt32(0), Name = dr.GetString(2), Type = dr.GetString(3), Cmc = dr["cmc"] == null ? dr.GetInt32(4):0, Edition = dr.GetString(5), Rarity = dr["rarity"] == null? "":dr.GetString(6) });
+            }
+            deck_cards_detailed.ItemsSource = temp;
+            dr.Close();
         }
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
