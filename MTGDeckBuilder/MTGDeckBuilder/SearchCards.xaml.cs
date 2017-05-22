@@ -34,12 +34,14 @@ namespace MTGDeckBuilder
         private int currentPage;
         public int Deck_id;
         public string Deck_name;
-        
+        private Canvas[] canvas;
         public SearchCards(int Deck_id = -1, string Deck_name = "")
         {
             this.Deck_id = Deck_id;
             this.Deck_name = Deck_name;
-            
+
+
+            canvas = new Canvas[6];
             InitializeComponent();
             if (Deck_id > 0)
             {
@@ -150,19 +152,19 @@ namespace MTGDeckBuilder
                 l2.StrokeThickness = 4;
                 l2.Stroke = Brushes.White;
                 
-                Canvas canvas = new Canvas();
-                canvas.Background = Brushes.Transparent; //To detect clicks anywhere on canvas
-                canvas.Width = 50;
-                canvas.Height = 50;
-                canvas.Children.Add(l1);
-                canvas.Children.Add(l2);
-                canvas.Name = "AddButton" + k;
-                canvas.MouseUp += new MouseButtonEventHandler(this.addButton_Click);
-                canvas.MouseEnter += new MouseEventHandler(this.addButton_MouseEnter);
-                canvas.MouseLeave += new MouseEventHandler(this.addButton_MouseLeave);
+                canvas[k] = new Canvas();
+                canvas[k].Background = Brushes.Transparent; //To detect clicks anywhere on canvas
+                canvas[k].Width = 50;
+                canvas[k].Height = 50;
+                canvas[k].Children.Add(l1);
+                canvas[k].Children.Add(l2);
+                canvas[k].Name = "AddButton" + k;
+                canvas[k].MouseUp += new MouseButtonEventHandler(this.addButton_Click);
+                canvas[k].MouseEnter += new MouseEventHandler(this.addButton_MouseEnter);
+                canvas[k].MouseLeave += new MouseEventHandler(this.addButton_MouseLeave);
 
                 viewBox = new Viewbox();
-                viewBox.Child = canvas;
+                viewBox.Child = canvas[k];
                 viewBox.Margin = new Thickness(0, 0, 15, 15);
                 viewBox.HorizontalAlignment = HorizontalAlignment.Right;
 
@@ -219,15 +221,37 @@ namespace MTGDeckBuilder
         private void setPage(int page)
         {
             int maxPageInt = table.Rows.Count / 6 + (table.Rows.Count % 6 == 0 ? 0 : 1);
+
             currentPage = page;
 
-            if(page == maxPageInt)
+            maxPage.Content = "/" + maxPageInt;
+
+            pageTextBox.Text = "" + page;
+
+            if (page < maxPageInt)
+                nextPage.IsEnabled = true;
+            else
+                nextPage.IsEnabled = false;
+
+            if (page > 1)
+                previousPage.IsEnabled = true;
+            else
+                previousPage.IsEnabled = false;
+
+            if(maxPageInt == 0)
+            {
+                MessageBox.Show("Your search has no results!", "No results", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (page == maxPageInt)
             {
                 BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
                 for (int i = 0; i < 6; i++)
                 {
-                    images[i].Source = image;
+                    images[i].Source = null;
                     titles[i].Content = "";
+                    canvas[i].Visibility = Visibility.Hidden;
                     for (int k = 0; k < 6; k++)
                     {
                         contentsOfBorder[i][k].Content = "";
@@ -239,6 +263,7 @@ namespace MTGDeckBuilder
             {
                 for (int i = page * 6 - 6; i < (page == maxPageInt ? table.Rows.Count : page * 6); i++)
                 {
+                    canvas[i%6].Visibility = Visibility.Visible;
                     borders[i % 6] = new Border();
                     borders[i % 6].BorderThickness = new Thickness(1.5);
 
@@ -321,28 +346,8 @@ namespace MTGDeckBuilder
                         contentsOfBorder[i % 6][4].Content = "";
                         contentsOfBorder[i % 6][5].Content = "";
                     }
-
-
-
-
                 }
             }
-
-
-            maxPage.Content = "/" + maxPageInt;
-
-            pageTextBox.Text = "" + page;
-
-            if (page == maxPageInt)
-                nextPage.IsEnabled = false;
-            else
-                nextPage.IsEnabled = true;
-
-            if (page == 1)
-                previousPage.IsEnabled = false;
-            else
-                previousPage.IsEnabled = true;
-
         }
 
 
@@ -380,7 +385,7 @@ namespace MTGDeckBuilder
             BCheckBox.Checked -= this.Search;
             rarity_combo_box.SelectionChanged -= this.Search;
 
-            searchBox.Text = "Search";
+            searchBox.Text = "Name";
             typeComboBox.SelectedIndex = 0;
             GCheckBox.IsChecked = false;
             UCheckBox.IsChecked = false;
@@ -409,15 +414,15 @@ namespace MTGDeckBuilder
         private void AdvancedSearchToggle(object sender, RoutedEventArgs e)
         {
             PointCollection pc = new PointCollection();
-            System.Windows.Point p1;
-            System.Windows.Point p2;
-            System.Windows.Point p3;
+            Point p1;
+            Point p2;
+            Point p3;
             if (more_options_row.Height == new GridLength(0))
             {
                 more_options_row.Height = GridLength.Auto;
-                p1 = new System.Windows.Point(25, 4.5);
-                p2 = new System.Windows.Point(4.5, 45.5);
-                p3 = new System.Windows.Point(45.5, 45.5);
+                p1 = new Point(25, 4.5);
+                p2 = new Point(4.5, 45.5);
+                p3 = new Point(45.5, 45.5);
             }
 
             else
@@ -539,15 +544,18 @@ namespace MTGDeckBuilder
 
         private void Search(object sender, RoutedEventArgs e)
         {
-            String type = typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("") ? "null": "'"+typeComboBox.Text+ "'";
+            String type = (typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("")) ? "null": "'"+typeComboBox.Text+ "'";
             String b, g, u, w, r;
             b = BCheckBox.IsChecked.Value ? "1":"null";
             g = GCheckBox.IsChecked.Value ? "1":"null";
             u = UCheckBox.IsChecked.Value ? "1":"null";
             w = WCheckBox.IsChecked.Value ? "1":"null";
             r = RCheckBox.IsChecked.Value ? "1":"null";
-            String edition = edition_box.Text.Equals("Edition") || edition_box.Text.Equals("") ? "null": "'" + edition_box.Text + "'";
+            
+            String edition = (edition_box.Text.Equals("Edition") || edition_box.Text.Equals("")) ? "null": "'" + edition_box.Text + "'";
             String minPower, maxPower, minTough, maxTough, minCMC, maxCMC;
+
+            
 
             if (!min_power_box.Text.Equals(""))
                 minPower = (min_power_box.Text);
@@ -583,14 +591,16 @@ namespace MTGDeckBuilder
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
             for (int i = 0; i < 6; i++)
             {
-                images[i].Source = image;
+                images[i].Source = null;
                 titles[i].Content = "";
                 for (int k = 0; k < 6; k++)
                 {
                     contentsOfBorder[i][k].Content = "";
                 }
+                canvas[i].Visibility = Visibility.Hidden;
             }
 
+            
             setCards();
 
         }
@@ -599,11 +609,15 @@ namespace MTGDeckBuilder
         {
             int borderPressed = int.Parse(((Border)sender).Name.Substring(6));
 
-            if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
-            { 
-                Card c = new Card((int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"]);
-                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(c);
+            try
+            {
+                if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+                {
+                    Card c = new Card((int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"]);
+                    ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(c);
+                }
             }
+            catch (IndexOutOfRangeException IOORE) { }
         }
 
         private void addButton_Click(object sender, RoutedEventArgs e)

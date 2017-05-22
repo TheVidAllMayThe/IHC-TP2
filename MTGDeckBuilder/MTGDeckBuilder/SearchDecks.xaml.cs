@@ -36,9 +36,21 @@ namespace MTGDeckBuilder
 
         public SearchDecks()
         {
-            
             InitializeComponent();
             currentQuerry = "SELECT * FROM Deck";
+            addButtonViewBox.Visibility = Visibility.Hidden;
+            construct();
+        }
+
+        public SearchDecks(string user) {
+            InitializeComponent();
+            currentQuerry = "SELECT * FROM Deck where (creator = '" + user + "')";
+            construct();
+        }
+
+        private void construct()
+        {
+            
             titles = new Label[10];
             creators = new Label[10];
             colors = new StackPanel[10];
@@ -329,5 +341,28 @@ namespace MTGDeckBuilder
                 ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
             }
         }
+
+        private void addButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Canvas)sender).Opacity = 0.8;
+        }
+
+        private void addButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Canvas)sender).Opacity = 1;
+        }
+
+        private void addButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ((Viewbox)sender).Margin = new Thickness(0, 0, 0, 0);
+            newDeckDialog dialog = new newDeckDialog();
+            dialog.ShowDialog();
+            if (dialog.DialogResult == true && Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+            {
+                Deck d = new Deck(dialog.deck_id);
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(d);
+            }
+        }
+
     }
 }

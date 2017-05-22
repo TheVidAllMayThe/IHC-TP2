@@ -37,7 +37,7 @@
             <Label x:Name="label_Copy" Content="Search Decks" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="48" FontFamily="MagicMedieval" Foreground="#FFEAEAEA" Margin="10,10,10,10"/>
         </Border>
 
-        <Border x:Name="border3" Grid.Row="1" Grid.Column="0" MouseEnter="border3_MouseEnter" MouseLeave="border3_MouseLeave">
+        <Border x:Name="mydecksBorder" Grid.Row="1" Grid.Column="0" MouseEnter="border3_MouseEnter" MouseLeave="border3_MouseLeave" MouseLeftButtonDown="search_cards_border_MouseLeftButtonDown" MouseLeftButtonUp="mydecksBorder_MouseLeftButtonUp">
             <Border.Background>
                 <ImageBrush x:Name="Image3" ImageSource="magic_generic_9.jpg" AlignmentY="Top"/>
             </Border.Background>

@@ -120,5 +120,13 @@ namespace MTGDeckBuilder
             ((Border)sender).Margin = new Thickness(3, 3, 3, 3);
         }
 
+        private void mydecksBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
+            {
+                SearchDecks sd = new SearchDecks(App.User);
+                ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(sd);
+            }
+        }
     }
 }
