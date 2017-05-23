@@ -11,6 +11,18 @@
       Background="Black">
 
     <Page.Resources>
+        <TextBlock x:Key="manacurveChartTitle" Text="Mana Curve" Foreground="White"/>
+        <TextBlock x:Key="cardTypeDistributonTitle" Text="Card Type Distribution" Foreground="White"/>
+        <TextBlock x:Key="manaDistributionTitle" Text="Mana Distribution" Foreground="White"/>
+        <TextBlock x:Key="manaSourceDistributionTitle" Text="Mana Source Distribution"  Foreground="White"/>
+
+        <Style x:Key="ChartTitleStyle" TargetType="chartingToolkit:Chart">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            
+        </Style>
+
         <DataTemplate x:Key="deck_list_template">
             <Grid HorizontalAlignment="Center">
                 <Grid.ColumnDefinitions>
@@ -18,13 +30,13 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,10,10,10" VerticalAlignment="Center">
-                    <Label Style="{StaticResource Card Property Style}" FontSize="18" Content="{Binding Amount}"/>
-                    <Label Style="{StaticResource Card Property Style}" FontSize="18" Content="x "/>
-                    <Label MouseEnter="showImage" Style="{StaticResource Card Property Style}" FontSize="18" Content="{Binding Name}"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Label Foreground="LightGray" FontSize="16"  Content="{Binding Amount}"/>
+                    <Label Foreground="LightGray" FontSize="16" Content="x "/>
+                    <Label Foreground="LightGray" MouseEnter="showImage"  FontSize="16" Content="{Binding Name}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,10,10,10" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <Viewbox MouseUp="addButton_MouseUp" MaxHeight="15" Grid.Column="1" Grid.Row="9" Margin="0,0,20,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
                         <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" MouseUp="add_buttonClick" Width="50" Height="50">
                             <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="45.5" X2="25" Y2="4.5" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
@@ -32,7 +44,7 @@
                         </Canvas>
                     </Viewbox>
 
-                    <Viewbox MouseUp="removeButton_MouseUp" MaxHeight="20" Grid.Column="1" Grid.Row="9" Margin="0,0,20,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform" >
+                    <Viewbox MouseUp="removeButton_MouseUp" MaxHeight="20" Grid.Column="1" Grid.Row="9" Margin="0,0,10,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform" >
                         <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" MouseUp="add_buttonClick" Width="50" Height="50">
                             <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
                         </Canvas>
@@ -57,12 +69,12 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}" Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Name}" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Type}" Grid.Column="2" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Cmc}" Grid.Column="3" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Edition}" Grid.Column="4" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Label Style="{StaticResource Card Property Style}" Content="{Binding Rarity}" Grid.Column="5" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}" Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Name}" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Type}" Grid.Column="2" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Cmc}" Grid.Column="3" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Edition}" Grid.Column="4" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Rarity}" Grid.Column="5" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
         </DataTemplate>
 
@@ -70,7 +82,7 @@
     
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="magic_generic_10.jpg" Opacity="0.6"></ImageBrush>
+            <ImageBrush ImageSource="magic_generic_16.jpg" Opacity="0.6"></ImageBrush>
         </Grid.Background>
         <!-- Tabs -->
         <Grid>
@@ -121,7 +133,7 @@
                                             <Label x:Name="deck_number_of_lands" Content="21" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                             <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                         </StackPanel>
-                                        <ItemsControl x:Name="deck_lands" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_lands" HorizontalAlignment="Left" ItemTemplate="{StaticResource deck_list_template}" />
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2">
                                             <Label Style="{StaticResource Card Title Style}" Content="Creatures(" FontSize="20"/>
@@ -217,21 +229,35 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="0"  Margin="10,10,10,10" Name="manacurveChart" Title="Data Grid">
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="0"  Margin="10,10,10,10" Title="{StaticResource manacurveChartTitle}" Name="manacurveChart">
                             <chartingToolkit:ColumnSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                            <chartingToolkit:Chart.Axes>
+                                <chartingToolkit:LinearAxis Orientation="Y">
+                                    <chartingToolkit:LinearAxis.Foreground >
+                                        White
+                                    </chartingToolkit:LinearAxis.Foreground>
+                                </chartingToolkit:LinearAxis>
+                                <chartingToolkit:LinearAxis Orientation="X">
+                                    <chartingToolkit:LinearAxis.Foreground >
+                                        White
+                                    </chartingToolkit:LinearAxis.Foreground>
+                                </chartingToolkit:LinearAxis>
+                            </chartingToolkit:Chart.Axes>
                         </chartingToolkit:Chart>
-                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="1"  Margin="10,10,10,10" Name="cardtypedistributionChart" Title="Data Grid">
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="1"  Margin="10,10,10,10" Title="{StaticResource cardTypeDistributonTitle}" Name="cardtypedistributionChart" >
                             <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
                         </chartingToolkit:Chart>
-                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="0"  Margin="10,10,10,10" Name="manadistributionChart" Title="Data Grid">
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="0"  Margin="10,10,10,10" Title="{StaticResource manaDistributionTitle}" Name="manadistributionChart" >
                             <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
                         </chartingToolkit:Chart>
-                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="1"  Margin="10,10,10,10" Name="manasourcedistributionChart" Title="Data Grid">
-                            <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="1"  Margin="10,10,10,10"  Title="{StaticResource manaSourceDistributionTitle}" Name="manasourcedistributionChart" >
+                            <chartingToolkit:PieSeries Foreground="Green" DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                            
                         </chartingToolkit:Chart>
 
-                        <StackPanel Margin="10,10,10,10" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
-                            <Grid>
+                        <Border Margin="20,20,20,20" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Background="Black" Opacity="0.6"  HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <StackPanel Margin="10,10,10,10"  Orientation="Vertical" >
+                            <Grid x:Name="card_detailed">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
@@ -240,16 +266,19 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Style="{StaticResource Card Property Style}"></Label>
-                                <Label Grid.Column="1" Style="{StaticResource Card Property Style}">Name</Label>
-                                <Label Grid.Column="2" Style="{StaticResource Card Property Style}">Type</Label>
-                                <Label Grid.Column="3" Style="{StaticResource Card Property Style}">CMC</Label>
-                                <Label Grid.Column="4" Style="{StaticResource Card Property Style}">Edition</Label>
-                                <Label Grid.Column="5" Style="{StaticResource Card Property Style}">Rarity</Label>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Column="0" Style="{StaticResource Card Title Style}"></Label>
+                                <Label Grid.Column="1"  Style="{StaticResource Card Title Style}" Margin="0,-1,0,1">Name</Label>
+                                <Label Grid.Column="2" Style="{StaticResource Card Title Style}">Type</Label>
+                                <Label Grid.Column="3" Style="{StaticResource Card Title Style}">CMC</Label>
+                                <Label Grid.Column="4" Style="{StaticResource Card Title Style}">Edition</Label>
+                                <Label Grid.Column="5" Style="{StaticResource Card Title Style}">Rarity</Label>
                             </Grid>
-                            <ItemsControl x:Name="deck_cards_detailed" ItemTemplate="{StaticResource deck_list_detailed_template}" />
                         </StackPanel>
-                    </Grid>
+                        </Border>
+                     </Grid>
                     
                 </TabItem>
                 <TabItem x:Name="starting_hand">
@@ -277,4 +306,6 @@
             </TabControl>
         </Grid>
     </Grid>
+    
+    
 </Page>

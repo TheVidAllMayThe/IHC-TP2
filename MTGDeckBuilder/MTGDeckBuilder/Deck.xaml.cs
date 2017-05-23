@@ -22,93 +22,6 @@ namespace MTGDeckBuilder
     /// Interaction logic for Deck.xaml
     /// </summary>
     /// 
-    public class Card_detailed
-    {
-        private string _name;
-        private string _type;
-        private int _cmc;
-        private string _edition;
-        private string _rarity;
-        private int _amount;
-
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-
-            set
-            {
-                _name = value;
-            }
-        }
-
-        public string Type
-        {
-            get
-            {
-                return _type;
-            }
-
-            set
-            {
-                _type = value;
-            }
-        }
-
-        public int Cmc
-        {
-            get
-            {
-                return _cmc;
-            }
-
-            set
-            {
-                _cmc = value;
-            }
-        }
-
-        public string Edition
-        {
-            get
-            {
-                return _edition;
-            }
-
-            set
-            {
-                _edition = value;
-            }
-        }
-
-        public string Rarity
-        {
-            get
-            {
-                return _rarity;
-            }
-
-            set
-            {
-                _rarity = value;
-            }
-        }
-
-        public int Amount
-        {
-            get
-            {
-                return _amount;
-            }
-
-            set
-            {
-                _amount = value;
-            }
-        }
-    }
     public class Card_listing
     {
         private int _deck;
@@ -566,12 +479,61 @@ namespace MTGDeckBuilder
             getData = "SELECT amount, id, name, type, cmc, edition, rarity FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
-            ObservableCollection<Card_detailed> temp = new ObservableCollection<Card_detailed>();
-            while (dr.Read())
+            Label amount;
+            Label name  ;
+            Label type  ;
+            Label cmc   ;
+            Label edition;
+            Label rarity;
+            for(int i = 0; dr.Read(); i++)
             {
-                temp.Add(new Card_detailed { Amount = dr.GetInt32(0), Name = dr.GetString(2), Type = dr.GetString(3), Cmc = dr["cmc"] == null ? dr.GetInt32(4):0, Edition = dr.GetString(5), Rarity = dr["rarity"] == null? "":dr.GetString(6) });
+                amount  = new Label();
+                name    = new Label();
+                type    = new Label();
+                cmc     = new Label();
+                edition = new Label();
+                rarity  = new Label();
+                amount.Foreground = Brushes.LightGray;
+                name.Foreground = Brushes.LightGray;
+                type.Foreground = Brushes.LightGray;
+                cmc.Foreground = Brushes.LightGray;
+                edition.Foreground = Brushes.LightGray;
+                rarity.Foreground = Brushes.LightGray;
+
+                amount.Content = dr.GetInt32(0);
+                name.Content = dr.GetString(2);
+                type.Content = dr.GetString(3);
+                cmc.Content = dr["cmc"] == null ? "": dr["cmc"];
+                edition.Content = dr.GetString(5);
+                rarity.Content = dr["rarity"] == null ? "" : dr["rarity"];
+
+                card_detailed.RowDefinitions.Add(new RowDefinition());
+
+                card_detailed.Children.Add(amount);
+                Grid.SetColumn(amount, 0);
+                Grid.SetRow(amount, i + 1);
+
+                card_detailed.Children.Add(name);
+                Grid.SetColumn(name, 1);
+                Grid.SetRow(name, i + 1);
+
+                card_detailed.Children.Add(type);
+                Grid.SetColumn(type, 2);
+                Grid.SetRow(type, i+1);
+
+                card_detailed.Children.Add(cmc);
+                Grid.SetColumn(cmc, 3);
+                Grid.SetRow(cmc, i + 1);
+
+                card_detailed.Children.Add(edition);
+                Grid.SetColumn(edition, 4);
+                Grid.SetRow(edition, i + 1);
+
+                card_detailed.Children.Add(rarity);
+                Grid.SetColumn(rarity, 5);
+                Grid.SetRow(rarity, i+1);
             }
-            deck_cards_detailed.ItemsSource = temp;
+            
             dr.Close();
         }
 
@@ -605,6 +567,7 @@ namespace MTGDeckBuilder
 
         private void addButton_MouseUp(object sender, MouseButtonEventArgs e)
         {
+
             Viewbox button = sender as Viewbox;
             Card_listing card = button.DataContext as Card_listing;
 

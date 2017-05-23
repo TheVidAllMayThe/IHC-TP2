@@ -6,5 +6,5 @@
 
         Title="MainWindow" Height="740" Width="1350" WindowState="Maximized"
         >
-    <Frame x:Name="MainFrame" Source="Home.xaml"/>
+    <Frame x:Name="MainFrame" Source="LoginPage.xaml"/>
 </Window>

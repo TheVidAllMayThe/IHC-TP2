@@ -82,6 +82,9 @@
     <Compile Include="Deck.xaml.cs">
       <DependentUpon>Deck.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="newDeckDialog.xaml.cs">
       <DependentUpon>newDeckDialog.xaml</DependentUpon>
     </Compile>
@@ -97,6 +100,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Home.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -230,6 +237,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="images\B.svg" />
+    <Resource Include="magic_generic_login.jpg" />
     <Resource Include="images\empty_star.png" />
     <Resource Include="images\full_star.png" />
     <Resource Include="images\magic_generic_1.jpg" />
