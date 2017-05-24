@@ -49,6 +49,7 @@ namespace MTGDeckBuilder
         SqlConnection thisConnection;
         private int deck_id;
         private int starting_hand_cards;
+        private string creator;
         static Random rnd;
         Image[] stars;
         BitmapImage fullStar;
@@ -72,8 +73,9 @@ namespace MTGDeckBuilder
 
             SqlDataReader dr = DatabaseControl.getDataReader("SELECT creator FROM Deck WHERE id = " + deck_id);
             dr.Read();
-            
-            if (!App.User.Equals(dr["creator"].ToString())){
+            creator = dr["creator"].ToString();
+            Console.WriteLine(creator);
+            if (!App.User.Equals(creator)){
                 addButton.Visibility = Visibility.Hidden;
             }
             dr.Close();
@@ -168,9 +170,10 @@ namespace MTGDeckBuilder
             }
             dr.Close();
         }
-        private void Add_Card(object sender, RoutedEventArgs e)
+        private void addButton_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Button button = sender as Button;
+
+            Viewbox button = sender as Viewbox;
             Card_listing card = button.DataContext as Card_listing;
 
             SqlConnection thisConnection;
@@ -194,9 +197,9 @@ namespace MTGDeckBuilder
             showDeck();
         }
 
-        private void Remove_Card(object sender, RoutedEventArgs e)
+        private void removeButton_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Button button = sender as Button;
+            Viewbox button = sender as Viewbox;
             Card_listing card = button.DataContext as Card_listing;
 
             SqlConnection thisConnection;
@@ -213,7 +216,7 @@ namespace MTGDeckBuilder
             showDeck();
         }
 
-        private void showImage(object sender, MouseEventArgs e)
+    private void showImage(object sender, MouseEventArgs e)
         {
             Label label = sender as Label;
             Card_listing card = label.DataContext as Card_listing;
@@ -236,8 +239,12 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
+            SqlDataReader dr = DatabaseControl.getDataReader("SELECT creator FROM Deck WHERE id = " + deck_id);
+            dr.Read();
+            creator = dr["creator"].ToString();
+
             string getData = "SELECT name FROM Deck WHERE id = " + deck_id;
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_title.Content = dr["name"];
             dr.Close();
@@ -262,7 +269,8 @@ namespace MTGDeckBuilder
             {
                 temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
             }
-            deck_lands.ItemsSource = temp;
+            if (App.User.Equals(creator)) deck_lands.ItemsSource = temp;
+            else deck_lands_not_owner.ItemsSource = temp;
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM CreatureMainBoard WHERE deck = " + deck_id;
@@ -279,7 +287,9 @@ namespace MTGDeckBuilder
             {
                 temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
             }
-            deck_creatures.ItemsSource = temp;
+
+            if (App.User.Equals(creator)) deck_creatures.ItemsSource = temp;
+            else deck_creatures_not_owner.ItemsSource = temp;
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM SorceryMainBoard WHERE deck = " + deck_id;
@@ -296,7 +306,8 @@ namespace MTGDeckBuilder
             {
                 temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
             }
-            deck_sorceries.ItemsSource = temp;
+            if (App.User.Equals(creator)) deck_sorceries.ItemsSource = temp;
+            else deck_sorceries_not_owner.ItemsSource = temp;
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM ArtifactMainBoard WHERE deck = " + deck_id;
@@ -313,7 +324,8 @@ namespace MTGDeckBuilder
             {
                 temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
             }
-            deck_artifacts.ItemsSource = temp;
+            if (App.User.Equals(creator)) deck_artifacts.ItemsSource = temp;
+            else deck_artifacts_not_owner.ItemsSource = temp;
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM InstantMainBoard WHERE deck = " + deck_id;
@@ -330,7 +342,8 @@ namespace MTGDeckBuilder
             {
                 temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
             }
-            deck_instants.ItemsSource = temp;
+            if (App.User.Equals(creator)) deck_instants.ItemsSource = temp;
+            else deck_instants_not_owner.ItemsSource = temp;
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM EnchantmentMainBoard WHERE deck = " + deck_id;
@@ -347,7 +360,8 @@ namespace MTGDeckBuilder
             {
                 temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
             }
-            deck_enchantments.ItemsSource = temp;
+            if (App.User.Equals(creator)) deck_enchantments.ItemsSource = temp;
+            else deck_enchantments_not_owner.ItemsSource = temp;
             dr.Close();
 
             getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 1";
@@ -362,9 +376,11 @@ namespace MTGDeckBuilder
             temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = true, MultiverseId = dr.GetInt32(4) });
             }
-            side_deck.ItemsSource = temp;
+            if (App.User.Equals(creator)) side_deck.ItemsSource = temp;
+            else side_deck_not_owner.ItemsSource = temp;
+
             dr.Close();
 
             thisConnection.Close();
@@ -558,11 +574,6 @@ namespace MTGDeckBuilder
             }
         }
 
-        public void add_buttonClick(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private void addButton_MouseEnter(object sender, MouseEventArgs e)
         {
             ((Canvas)sender).Opacity = 0.8;
@@ -571,52 +582,6 @@ namespace MTGDeckBuilder
         private void addButton_MouseLeave(object sender, MouseEventArgs e)
         {
             ((Canvas)sender).Opacity = 1;
-        }
-
-        private void addButton_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-            Viewbox button = sender as Viewbox;
-            Card_listing card = button.DataContext as Card_listing;
-
-            SqlConnection thisConnection;
-            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            string getData = "UPDATE CardInDeck SET amount = amount + 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
-            try
-            {
-                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
-            }
-            catch (SqlException sqle)
-            {
-                MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            thisConnection.Close();
-            showDeck();
-        }
-
-        private void removeButton_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            Viewbox button = sender as Viewbox;
-            Card_listing card = button.DataContext as Card_listing;
-
-            SqlConnection thisConnection;
-            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            string getData = "UPDATE CardInDeck SET amount = amount - 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
-            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
-
-            thisConnection.Close();
-            card.Amount -= 1;
-            showDeck();
         }
     }
 }

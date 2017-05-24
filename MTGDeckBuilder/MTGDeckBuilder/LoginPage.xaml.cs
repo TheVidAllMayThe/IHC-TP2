@@ -85,19 +85,29 @@ namespace MTGDeckBuilder
                     return;
                 }
 
-                SqlDataReader reader = DatabaseControl.getDataReader("SELECT dbo.loginOrRegister('" + username.Text + "', '" + password.Password + "')");
+                SqlDataReader reader = DatabaseControl.getDataReader("SELECT dbo.isRegistered('" + username.Text + "')");
                 reader.Read();
-                bool bit = reader.GetBoolean(0);
-                if (bit)
+                bool isRegistered = reader.GetBoolean(0);
+
+                if (isRegistered)
                 {
-                    App.User = username.Text;
-                    NavigationService.Navigate(new Uri("Home.xaml", UriKind.Relative));
+                    reader = DatabaseControl.getDataReader("SELECT dbo.login('" + username.Text + "', '" + password.Password + "')");
+                    reader.Read();
+                    bool bit = reader.GetBoolean(0);
+                    if (bit)
+                    {
+                        App.User = username.Text;
+                        NavigationService.Navigate(new Uri("Home.xaml", UriKind.Relative));
+                    }
+                    else
+                    {
+                        MessageBox.Show("You have inserted a wrong Email/Password combo!", "Wrong Credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("You have inserted a wrong Email/Password combo!", "Wrong Credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    DatabaseControl.ExecuteNonQuerryCommand("EXEC register '" + username.Text + "', '" + password.Password + "'");
                 }
-
             }
         }
     }

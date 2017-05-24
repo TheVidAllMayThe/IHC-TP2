@@ -87,7 +87,7 @@ deck INTEGER,
 amount INTEGER not null,
 isSideboard BIT not null,
 PRIMARY KEY (deck, [card], isSideboard),
-FOREIGN KEY (deck) REFERENCES Deck (id),
+FOREIGN KEY (deck) REFERENCES Deck (id) ON DELETE CASCADE,
 FOREIGN KEY ([card]) REFERENCES [Card] (id)
 );
 
@@ -375,7 +375,7 @@ ON cid.card = c.id
 go
 
 CREATE VIEW CardDetailed AS
-SELECT id, name, TypeOfCard.type + " " + SubtypeOfCard.subtype AS type, cmc, edition, rarity
+SELECT id, name, TypeOfCard.type + ' ' + SubtypeOfCard.subtype AS type, cmc, edition, rarity
 FROM(	
 	SELECT Card.id, cmc, Card.name AS name, rarity, Edition.name AS edition
 	FROM Card
@@ -439,12 +439,11 @@ AS
 
 go
 
-CREATE FUNCTION loginOrRegister (@user VARCHAR(255), @pass VARCHAR(255)) Returns bit
+CREATE FUNCTION login (@user VARCHAR(255), @pass TEXT) Returns bit
 AS
 	BEGIN
-		IF EXISTS(SELECT * FROM [User] WHERE email = @user AND password = @pass) RETURN 1;
-		ELSE IF EXISTS(SELECT * FROM [User] WHERE email = @user) RETURN 0;
-		RETURN 1;
+		IF EXISTS(SELECT * FROM [User] WHERE email = @user AND password LIKE @pass) RETURN 1;
+		RETURN 0;
 	END
 GO
 

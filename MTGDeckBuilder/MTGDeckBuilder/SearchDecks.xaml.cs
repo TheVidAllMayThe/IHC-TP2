@@ -27,41 +27,53 @@ namespace MTGDeckBuilder
 
         DataTable table;
         string currentQuerry;
+        SqlConnection thisConnection;
         int currentPage;
         Label[] titles;
         Label[] creators;
         StackPanel[] colors;
         StackPanel[] rating;
         Image[] stars;
-
+        Image[] trash;
+        BitmapImage trashBitMap;
         public SearchDecks()
         {
             InitializeComponent();
             currentQuerry = "SELECT * FROM Deck";
             addButtonViewBox.Visibility = Visibility.Hidden;
-            construct();
+            construct(false);
         }
 
         public SearchDecks(string user) {
             InitializeComponent();
             currentQuerry = "SELECT * FROM Deck where (creator = '" + user + "')";
-            construct();
+            construct(true);
         }
 
-        private void construct()
+        private void construct(bool isMyDecks)
         {
             
             titles = new Label[10];
             creators = new Label[10];
             colors = new StackPanel[10];
             rating = new StackPanel[10];
+            trash = new Image[10];
             Viewbox viewBox;
+            trashBitMap = new BitmapImage(new Uri("/images/trash-512.png", UriKind.Relative));
 
             for (int i = 0; i < 10; i++)
             {
+                Grid trashGrid = new Grid();
                 Grid deckGrid = new Grid();
-                for (int w = 0; w < 4; w++)
-                    deckGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                for (int w = 0; w < 5; w++)
+                {
+                    ColumnDefinition col = new ColumnDefinition();
+                    col.Width =  w < 4 ? new GridLength(1, GridUnitType.Star) : new GridLength(1, GridUnitType.Auto);
+                    deckGrid.ColumnDefinitions.Add(col);
+                    col = new ColumnDefinition();
+                    col.Width = w < 4 ? new GridLength(1, GridUnitType.Star) : new GridLength(1, GridUnitType.Auto);
+                    trashGrid.ColumnDefinitions.Add(col);
+                }
 
                 titles[i] = new Label();
                 titles[i].Style = Application.Current.Resources["Card Title Style"] as Style;
@@ -94,22 +106,26 @@ namespace MTGDeckBuilder
                 deckGrid.Children.Add(viewBox);
                 Grid.SetColumn(viewBox, 3);
 
-                DeckGrid.Children.Add(deckGrid);
-                Grid.SetRow(deckGrid, i);
+                trash[i] = new Image();
+                trash[i].Name = "Trash" + i;
+                viewBox = new Viewbox();
+                viewBox.Margin = new Thickness(10, 10, 10, 10);
+                viewBox.Child = trash[i];
+                trashGrid.Children.Add(viewBox);
+                Grid.SetColumn(viewBox, 4);
+                Grid.SetZIndex(viewBox, 200);
 
+                DeckGrid.Children.Add(deckGrid);
+                DeckGrid.Children.Add(trashGrid);
+                Grid.SetRow(deckGrid, i);
+                Grid.SetRow(trashGrid, i);
+                Grid.SetZIndex(trashGrid, 200);
+                if (!isMyDecks)
+                    trashGrid.Visibility = Visibility.Collapsed;
             }
-            setDecks();
+            setDecks(1);
         }
         private void searchBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (searchBox.Text.Equals("Search"))
-            {
-                searchBox.Foreground = Brushes.Black;
-                searchBox.Text = "";
-            }
-        }
-
-        private void abilityBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (searchBox.Text.Equals("Search"))
             {
@@ -123,44 +139,22 @@ namespace MTGDeckBuilder
 
         }
 
-        private void More_Options_Click(object sender, RoutedEventArgs e)
-        {
-            var run = More_Options.Inlines.FirstOrDefault() as Run;
-            string text = run == null ? string.Empty : run.Text;
-
-            if (text.Equals("More Options ▲"))
-            {
-                More_Options.Inlines.Clear();
-                More_Options.Inlines.Add("More Options ▼");
-                more_options_border.Visibility = Visibility.Hidden;
-            }
-
-            else
-            {
-                More_Options.Inlines.Clear();
-                More_Options.Inlines.Add("More Options ▲");
-                more_options_border.Visibility = Visibility.Visible;
-            }
-
-
-        }
-
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (contains_box.Text.Equals("Abilities/Creatures..."))
+            if (abilities_box.Text.Equals("Abilities/Creatures..."))
             {
 
-                contains_box.Foreground = Brushes.Black;
-                contains_box.Text = "";
+                abilities_box.Foreground = Brushes.Black;
+                abilities_box.Text = "";
             }
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (contains_box.Text.Trim().Equals(""))
+            if (abilities_box.Text.Trim().Equals(""))
             {
-                contains_box.Foreground = Brushes.Gray;
-                contains_box.Text = "Abilities/Creatures...";
+                abilities_box.Foreground = Brushes.Gray;
+                abilities_box.Text = "Abilities/Creatures...";
             }
         }
 
@@ -223,21 +217,20 @@ namespace MTGDeckBuilder
             }
         }
 
-        private void setDecks()
+        private void setDecks(int i)
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
             SqlConnection thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-
-            SqlCommand selectCard = new SqlCommand(currentQuerry, thisConnection);
+            SqlCommand selectDeck = new SqlCommand(currentQuerry, thisConnection);
 
             table = new DataTable("decks");
-            SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
+            SqlDataAdapter adapt = new SqlDataAdapter(selectDeck);
             adapt.Fill(table);
 
-            setPage(1);
+            setPage(i);
         }
 
         private void setPage(int page)
@@ -250,6 +243,7 @@ namespace MTGDeckBuilder
             for (int i = 0; i<10; i++)
             {
                 titles[i % 10].Content = null;
+                trash[i].Source = null;
                 creators[i % 10].Content = null;
                 rating[i % 10].Children.Clear();
                 colors[i].Children.Clear();
@@ -270,6 +264,7 @@ namespace MTGDeckBuilder
                 {
                     titles[i % 10].Content = table.Rows[i]["name"];
                     creators[i % 10].Content = table.Rows[i]["creator"];
+
 
 
                     string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
@@ -317,6 +312,10 @@ namespace MTGDeckBuilder
                         img.Margin = new Thickness(25, 50, 25, 50);
                         rating[i%10].Children.Add(img);
                     }
+
+
+                    trash[i % 10].Source = trashBitMap;
+                    trash[i % 10].MouseLeftButtonUp += new MouseButtonEventHandler(deleteDeck);
                 }
             }
             maxPage.Content = "/" + maxPageInt;
@@ -333,6 +332,20 @@ namespace MTGDeckBuilder
             else
                 previousPage.IsEnabled = true;
             
+        }
+
+        private void deleteDeck(object sender, MouseButtonEventArgs e)
+        {
+            int deckID = int.Parse(table.Rows[int.Parse(((Image)sender).Name.Substring(5)) + (currentPage - 1) * 10]["id"].ToString());
+
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            thisConnection = new SqlConnection(@cs);
+            thisConnection.Open();
+
+            String getData = "DELETE FROM Deck WHERE id = " + deckID;
+            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+
+            setDecks(currentPage);
         }
 
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -365,5 +378,183 @@ namespace MTGDeckBuilder
             }
         }
 
+        private void Search(object sender, RoutedEventArgs e)
+        {
+            String type = (typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("")) ? "null" : "'" + typeComboBox.Text + "'";
+            String b, g, u, w, r;
+            b = BCheckBox.IsChecked.Value ? "1" : "null";
+            g = GCheckBox.IsChecked.Value ? "1" : "null";
+            u = UCheckBox.IsChecked.Value ? "1" : "null";
+            w = WCheckBox.IsChecked.Value ? "1" : "null";
+            r = RCheckBox.IsChecked.Value ? "1" : "null";
+
+            String name = (searchBox.Text.Equals("Name") || searchBox.Text.Equals("") ? "null" : "'" + searchBox.Text + "'");
+            String cards = (cards_box.Text.Equals("Cards") || cards_box.Text.Equals("")) ? "null" : "'" + cards_box.Text + "'";
+            String abilities = (abilities_box.Text.Equals("Abilities") || abilities_box.Text.Equals("")) ? "null" : "'" + abilities_box.Text + "'";
+            String minLands, maxLands, minCreatures, maxCreatures, minSpells, maxSpells, minArtifacts, maxArtifacts, minEnchantments, maxEnchantments, minInstants, maxInstants;
+            
+            if (!min_lands_box.Text.Equals(""))
+                minLands = (min_lands_box.Text);
+            else
+                minLands = "null";
+            if (!max_lands_box.Text.Equals(""))
+                maxLands = (max_lands_box.Text);
+            else
+                maxLands = "null";
+            if (!min_creatures_box.Text.Equals(""))
+                minCreatures = (min_creatures_box.Text);
+            else
+                minCreatures = "null";
+            if (!max_creatures_box.Text.Equals(""))
+                maxCreatures = (max_creatures_box.Text);
+            else
+                maxCreatures = "null";
+            if (!min_spells_box.Text.Equals(""))
+                minSpells = (min_spells_box.Text);
+            else
+                minSpells = "null";
+            if (!max_spells_box.Text.Equals(""))
+                maxSpells = (max_spells_box.Text);
+            else
+                maxSpells = "null";
+            if (!min_artifacts_box.Text.Equals(""))
+                minArtifacts = (min_artifacts_box.Text);
+            else
+                minArtifacts = "null";
+            if (!max_artifacts_box.Text.Equals(""))
+                maxArtifacts = (max_artifacts_box.Text);
+            else
+                maxArtifacts = "null";
+            if (!min_enchantments_box.Text.Equals(""))
+                minEnchantments = (min_enchantments_box.Text);
+            else
+                minEnchantments = "null";
+            if (!max_enchantments_box.Text.Equals(""))
+                maxEnchantments = (max_enchantments_box.Text);
+            else
+                maxEnchantments = "null";
+            if (!min_instants_box.Text.Equals(""))
+                minInstants = (min_instants_box.Text);
+            else
+                minInstants = "null";
+            if (!max_instants_box.Text.Equals(""))
+                maxInstants = (max_instants_box.Text);
+            else
+                maxInstants = "null";
+
+            currentQuerry = "SELECT * from search_decks(" + name + ", " + cards + ',' + abilities + ", " + type + ',' + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + minLands + ", " + maxLands + ", " + minCreatures + ", " + maxCreatures + ", " + minSpells + ", " + maxSpells + ", " + minArtifacts + ',' + maxArtifacts + ',' + minEnchantments + ',' + maxEnchantments + ',' + minInstants + ',' + maxInstants + ")";
+
+            setDecks(1);
+        }
+
+        private void Clear(object sender, RoutedEventArgs e)
+        {
+            typeComboBox.SelectionChanged -= this.Search;
+            GCheckBox.Checked -= this.Search;
+            UCheckBox.Checked -= this.Search;
+            RCheckBox.Checked -= this.Search;
+            WCheckBox.Checked -= this.Search;
+            BCheckBox.Checked -= this.Search;
+            
+            searchBox.Text = "Name";
+            typeComboBox.SelectedIndex = 0;
+            GCheckBox.IsChecked = false;
+            UCheckBox.IsChecked = false;
+            RCheckBox.IsChecked = false;
+            WCheckBox.IsChecked = false;
+            BCheckBox.IsChecked = false;
+            abilities_box.Text = "Abilities";
+            cards_box.Text = "Cards";
+            min_lands_box.Text = "";
+            max_lands_box.Text = "";
+            min_instants_box.Text = "";
+            max_instants_box.Text = "";
+            min_creatures_box.Text = "";
+            max_creatures_box.Text = "";
+            min_artifacts_box.Text = "";
+            max_artifacts_box.Text = "";
+            min_enchantments_box.Text = "";
+            max_enchantments_box.Text = "";
+            min_spells_box.Text = "";
+            max_spells_box.Text = "";
+
+            typeComboBox.SelectionChanged += this.Search;
+            GCheckBox.Checked += this.Search;
+            UCheckBox.Checked += this.Search;
+            RCheckBox.Checked += this.Search;
+            WCheckBox.Checked += this.Search;
+            BCheckBox.Checked += this.Search;
+        }
+        
+        private void cards_box_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (cards_box.Text.Equals("Cards"))
+            {
+
+                cards_box.Foreground = Brushes.Black;
+                cards_box.Text = "";
+            }
+        }
+
+        private void cards_box_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (cards_box.Text.Trim().Equals(""))
+            {
+                cards_box.Foreground = Brushes.Gray;
+                cards_box.Text = "Cards";
+            }
+        }
+
+        private void abilities_box_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (cards_box.Text.Equals("Abilities"))
+            {
+
+                cards_box.Foreground = Brushes.Black;
+                cards_box.Text = "";
+            }
+        }
+
+        private void abilities_box_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (cards_box.Text.Trim().Equals(""))
+            {
+                cards_box.Foreground = Brushes.Gray;
+                cards_box.Text = "Abilities";
+            }
+        }
+
+        private void AdvancedSearchToggle(object sender, RoutedEventArgs e)
+        {
+            PointCollection pc = new PointCollection();
+            Point p1;
+            Point p2;
+            Point p3;
+            if (more_options_row.Height == new GridLength(0))
+            {
+                more_options_row.Height = GridLength.Auto;
+                p1 = new Point(25, 4.5);
+                p2 = new Point(4.5, 45.5);
+                p3 = new Point(45.5, 45.5);
+            }
+
+            else
+            {
+                more_options_row.Height = new GridLength(0);
+                p1 = new System.Windows.Point(25, 45.5);
+                p2 = new System.Windows.Point(4.5, 4.5);
+                p3 = new System.Windows.Point(45.5, 4.5);
+            }
+            pc.Add(p1);
+            pc.Add(p2);
+            pc.Add(p3);
+            triangle.Points = pc;
+
+        }
+
+        private void search_KeyboardKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) Search(sender, e);
+        }
     }
 }

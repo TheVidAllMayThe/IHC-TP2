@@ -13,8 +13,8 @@
             <ImageBrush ImageSource="magic_generic_login.jpg"></ImageBrush>
         </Grid.Background>
         <StackPanel Margin="0, 0, 0, 20" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-            <TextBox Margin="0, 0, 0, 6" Width="250" Text="Email" KeyDown="search_KeyboardKeyDown" Foreground="LightGray" x:Name="username" Background="Transparent" GotFocus="txtSearchBox_GotFocus" LostFocus="txtSearchBox_LostFocus" />
-            <PasswordBox Width="250" Foreground="LightGray" Password="Password" KeyDown="search_KeyboardKeyDown" x:Name="password" Background="Transparent" GotFocus="password_GotFocus" LostFocus="password_LostFocus" />
+            <TextBox CaretBrush="White" Margin="0, 0, 0, 6" Width="250" Text="Email" KeyDown="search_KeyboardKeyDown" Foreground="LightGray" x:Name="username" Background="Transparent" GotFocus="txtSearchBox_GotFocus" LostFocus="txtSearchBox_LostFocus" />
+            <PasswordBox CaretBrush="White" Width="250" Foreground="LightGray" Password="Password" KeyDown="search_KeyboardKeyDown" x:Name="password" Background="Transparent" GotFocus="password_GotFocus" LostFocus="password_LostFocus" />
         </StackPanel>
     </Grid>
 </Page>

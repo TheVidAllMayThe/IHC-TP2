@@ -38,21 +38,32 @@
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <Viewbox MouseUp="addButton_MouseUp" MaxHeight="15" Grid.Column="1" Grid.Row="9" Margin="0,0,20,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
-                        <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" MouseUp="add_buttonClick" Width="50" Height="50">
+                        <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" Width="50" Height="50">
                             <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="45.5" X2="25" Y2="4.5" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
                             <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
                         </Canvas>
                     </Viewbox>
 
                     <Viewbox MouseUp="removeButton_MouseUp" MaxHeight="20" Grid.Column="1" Grid.Row="9" Margin="0,0,10,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform" >
-                        <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" MouseUp="add_buttonClick" Width="50" Height="50">
+                        <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" Width="50" Height="50">
                             <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
                         </Canvas>
                     </Viewbox>
-                    
-                    <!--
-                    <Button HorizontalAlignment="Right" Click="Add_Card" Width="15">+</Button>
-                    <Button HorizontalAlignment="Right" Click="Remove_Card" Width="15">-</Button>-->
+                </StackPanel>
+            </Grid>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="deck_list_template_no_buttons">
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Label Foreground="LightGray" FontSize="16"  Content="{Binding Amount}"/>
+                    <Label Foreground="LightGray" FontSize="16" Content="x "/>
+                    <Label Foreground="LightGray" MouseEnter="showImage"  FontSize="16" Content="{Binding Name}"/>
                 </StackPanel>
             </Grid>
 
@@ -134,6 +145,7 @@
                                             <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
                                         </StackPanel>
                                         <ItemsControl x:Name="deck_lands" HorizontalAlignment="Left" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_lands_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2">
                                             <Label Style="{StaticResource Card Title Style}" Content="Creatures(" FontSize="20"/>
@@ -141,6 +153,7 @@
                                             <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                         </StackPanel>
                                         <ItemsControl x:Name="deck_creatures" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_creatures_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2">
                                             <Label Style="{StaticResource Card Title Style}" Content="Enchantments(" FontSize="20"/>
@@ -148,6 +161,7 @@
                                             <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                         </StackPanel>
                                         <ItemsControl x:Name="deck_enchantments" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_enchantments_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Column="1">
@@ -158,6 +172,7 @@
                                             <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                         </StackPanel>
                                         <ItemsControl x:Name="deck_sorceries" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_sorceries_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <Label Style="{StaticResource Card Title Style}" Content="Artifacts(" FontSize="20"/>
@@ -165,6 +180,7 @@
                                             <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                         </StackPanel>
                                         <ItemsControl x:Name="deck_artifacts" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_artifacts_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <Label Style="{StaticResource Card Title Style}" Content="Instants(" FontSize="20"/>
@@ -172,6 +188,7 @@
                                             <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                                         </StackPanel>
                                         <ItemsControl x:Name="deck_instants" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_instants_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
                                     </StackPanel>
                                 </Grid>                           
                             </Grid>
@@ -188,7 +205,11 @@
                                 <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
                             </StackPanel>
                             <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
-                            <ItemsControl Grid.Row="1" x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}"/>
+                            <StackPanel Grid.Row="1" Orientation="Vertical">
+                                <ItemsControl x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}"/>
+                                <ItemsControl x:Name="side_deck_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}"/>
+                            </StackPanel>
+                            
                         </Grid>
                         
                         <Grid Grid.Column="0">
