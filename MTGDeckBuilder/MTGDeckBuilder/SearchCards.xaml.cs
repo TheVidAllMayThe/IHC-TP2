@@ -37,12 +37,11 @@ namespace MTGDeckBuilder
         private Canvas[] canvas;
         public SearchCards(int Deck_id = -1, string Deck_name = "")
         {
+            InitializeComponent();
             this.Deck_id = Deck_id;
             this.Deck_name = Deck_name;
 
-
             canvas = new Canvas[6];
-            InitializeComponent();
             if (Deck_id > 0)
             {
                 text_block_context.Text = "Searching cards for deck '";
@@ -55,7 +54,6 @@ namespace MTGDeckBuilder
             images = new Image[6];
             contentsOfBorder = new Label[6][];
            
-
             for (int k = 0; k<6; k++)
             {
                 Grid grid = new Grid();

@@ -153,14 +153,24 @@ namespace MTGDeckBuilder
 
         private void lessCard_Click(object sender, RoutedEventArgs e)
         {
-            if ((int.Parse(numberOfCards.Text) - 1 != 0))
-                numberOfCards.Text = "" + (int.Parse(numberOfCards.Text) - 1);
+            try { 
+                if ((int.Parse(numberOfCards.Text) - 1 != 0))
+                    numberOfCards.Text = "" + (int.Parse(numberOfCards.Text) - 1);
+            }catch(FormatException fo)
+            {
+                numberOfCards.Text = "" + 0;
+            }
         }
 
         private void moreCard_Click(object sender, RoutedEventArgs e)
         {
-            if ((int.Parse(numberOfCards.Text) + 1 <= limit))
-                numberOfCards.Text = "" + (int.Parse(numberOfCards.Text) + 1);
+            try { 
+                if ((int.Parse(numberOfCards.Text) + 1 <= limit))
+                    numberOfCards.Text = "" + (int.Parse(numberOfCards.Text) + 1);
+            }catch(FormatException fo)
+            {
+                numberOfCards.Text = "" + 1;
+            }
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
