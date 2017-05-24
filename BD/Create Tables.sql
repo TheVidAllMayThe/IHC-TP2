@@ -439,6 +439,15 @@ AS
 
 go
 
+CREATE FUNCTION loginOrRegister (@user VARCHAR(255), @pass VARCHAR(255)) Returns bit
+AS
+	BEGIN
+		IF EXISTS(SELECT * FROM [User] WHERE email = @user AND password = @pass) RETURN 1;
+		ELSE IF EXISTS(SELECT * FROM [User] WHERE email = @user) RETURN 0;
+		RETURN 1;
+	END
+GO
+
 CREATE TRIGGER valid_amount_cards ON CardInDeck
 AFTER UPDATE, INSERT
 AS
