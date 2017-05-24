@@ -15,6 +15,7 @@ namespace MTGDeckBuilder
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
             SqlConnection thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
+            
             return new SqlCommand(querry, thisConnection).ExecuteReader();
         }
 

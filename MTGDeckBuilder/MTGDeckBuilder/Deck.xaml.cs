@@ -70,6 +70,14 @@ namespace MTGDeckBuilder
             stars[3] = star3;
             stars[4] = star4;
 
+            SqlDataReader dr = DatabaseControl.getDataReader("SELECT creator FROM Deck WHERE id = " + deck_id);
+            dr.Read();
+            
+            if (!App.User.Equals(dr["creator"].ToString())){
+                addButton.Visibility = Visibility.Hidden;
+            }
+            dr.Close();
+
             setCurrentRating();
         }
 

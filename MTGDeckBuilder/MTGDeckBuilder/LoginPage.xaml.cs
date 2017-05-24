@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -29,7 +30,7 @@ namespace MTGDeckBuilder
         private void txtSearchBox_GotFocus(object sender, RoutedEventArgs e)
         {
             ((TextBox)sender).Foreground = Brushes.White;
-            if (((TextBox)sender).Text.Trim().Equals("Username"))
+            if (((TextBox)sender).Text.Trim().Equals("Email"))
             {
                 ((TextBox)sender).Text = "";
             }
@@ -39,7 +40,7 @@ namespace MTGDeckBuilder
         {
             if (((TextBox)sender).Text.Trim().Equals(""))
             {
-                ((TextBox)sender).Text = "Username";
+                ((TextBox)sender).Text = "Email";
                 ((TextBox)sender).Foreground = Brushes.LightGray;
             }
         }
@@ -68,14 +69,35 @@ namespace MTGDeckBuilder
             {
                 try
                 {
+                    if (username.Text.Trim().Equals(""))
+                        throw new FormatException();
                     var test = new MailAddress(username.Text);
-                    App.user = username.Text;
+                    
                 }
                 catch (FormatException ex)
                 {
-                    MessageBox.Show("You have inserted an invalid email!", "Wrong Email", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("You have inserted an invalid email!", "Invalid Email", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-                
+                if (password.Password.Length < 6)
+                {
+                    MessageBox.Show("You have inserted an invalid password!", "Invalid Password", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                SqlDataReader reader = DatabaseControl.getDataReader("SELECT dbo.loginOrRegister('" + username.Text + "', '" + password.Password + "')");
+                reader.Read();
+                bool bit = reader.GetBoolean(0);
+                if (bit)
+                {
+                    App.User = username.Text;
+                    NavigationService.Navigate(new Uri("Home.xaml", UriKind.Relative));
+                }
+                else
+                {
+                    MessageBox.Show("You have inserted a wrong Email/Password combo!", "Wrong Credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+
             }
         }
     }

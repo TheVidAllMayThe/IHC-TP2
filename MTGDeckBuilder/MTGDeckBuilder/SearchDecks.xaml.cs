@@ -251,6 +251,7 @@ namespace MTGDeckBuilder
             {
                 titles[i % 10].Content = null;
                 creators[i % 10].Content = null;
+                rating[i % 10].Children.Clear();
                 colors[i].Children.Clear();
             }
 
@@ -302,7 +303,7 @@ namespace MTGDeckBuilder
                         img.Height = 200;
                         img.Width = 200;
                         img.Margin = new Thickness(25, 50, 25, 50);
-                        rating[i].Children.Add(img);
+                        rating[i%10].Children.Add(img);
                     }
                     for (int k = 0; k < 5 - ratingOfDeck; k++)
                     {
@@ -314,7 +315,7 @@ namespace MTGDeckBuilder
                         img.Height = 200;
                         img.Width = 200;
                         img.Margin = new Thickness(25, 50, 25, 50);
-                        rating[i].Children.Add(img);
+                        rating[i%10].Children.Add(img);
                     }
                 }
             }
