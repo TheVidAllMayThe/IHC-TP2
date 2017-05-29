@@ -549,3 +549,12 @@ as
 		INSERT INTO RatedBy VALUES (@deckID, @user, @rating);
 	END
 
+
+GO
+
+CREATE FUNCTION [dbo].[isRegistered] (@email VARCHAR(255)) Returns bit
+AS
+	BEGIN
+		IF EXISTS(SELECT * FROM [User] WHERE email = @email) return 1
+		RETURN 0
+	END
