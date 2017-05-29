@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>MTG White.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -237,6 +240,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="images\B.svg" />
+    <Resource Include="MTG White.ico" />
     <Resource Include="images\Trash_icon.png" />
     <Resource Include="magic_generic_login.jpg" />
     <Resource Include="images\empty_star.png" />
@@ -260,6 +264,7 @@
     <Resource Include="images\Mana_R.png" />
     <Resource Include="images\Mana_U.png" />
     <Resource Include="images\Mana_W.png" />
+    <Resource Include="images\MTG White.ico" />
     <Content Include="images\R %281%29.svg" />
     <Content Include="images\R.svg" />
   </ItemGroup>

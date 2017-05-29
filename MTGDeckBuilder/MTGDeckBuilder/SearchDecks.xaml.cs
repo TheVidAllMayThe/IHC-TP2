@@ -59,7 +59,7 @@ namespace MTGDeckBuilder
             rating = new StackPanel[10];
             trash = new Image[10];
             Viewbox viewBox;
-            trashBitMap = new BitmapImage(new Uri("/images/trash-512.png", UriKind.Relative));
+            trashBitMap = new BitmapImage(new Uri("/images/Trash_icon.png", UriKind.Relative));
 
             for (int i = 0; i < 10; i++)
             {
@@ -108,10 +108,13 @@ namespace MTGDeckBuilder
 
                 trash[i] = new Image();
                 trash[i].Name = "Trash" + i;
+                trash[i].Margin = new Thickness(50, 25, 0, 25);
                 viewBox = new Viewbox();
-                viewBox.Margin = new Thickness(10, 10, 10, 10);
+                viewBox.Margin = new Thickness(50, 25, 0, 25);
                 viewBox.Child = trash[i];
+                
                 trashGrid.Children.Add(viewBox);
+                viewBox.Margin = new Thickness(10, 10, 10, 10);
                 Grid.SetColumn(viewBox, 4);
                 Grid.SetZIndex(viewBox, 200);
 
