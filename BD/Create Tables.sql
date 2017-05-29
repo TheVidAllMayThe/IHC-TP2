@@ -558,3 +558,9 @@ AS
 		IF EXISTS(SELECT * FROM [User] WHERE email = @email) return 1
 		RETURN 0
 	END
+
+GO
+
+CREATE PROC [dbo].[register](@email varchar(255), @password TEXT)
+as
+	INSERT INTO [User] VALUES (@email, @password, NULL, NULL);
