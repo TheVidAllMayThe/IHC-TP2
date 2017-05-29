@@ -237,7 +237,6 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="images\B.svg" />
-    <Resource Include="images\trash-512.png" />
     <Resource Include="images\Trash_icon.png" />
     <Resource Include="magic_generic_login.jpg" />
     <Resource Include="images\empty_star.png" />
