@@ -255,13 +255,13 @@ namespace MTGDeckBuilder
             deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM LandMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Land')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_lands.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM LandMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Land')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
@@ -273,13 +273,13 @@ namespace MTGDeckBuilder
             else deck_lands_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM CreatureMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Creature')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM CreatureMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Creature')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -292,13 +292,13 @@ namespace MTGDeckBuilder
             else deck_creatures_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM SorceryMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM SorceryMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -310,13 +310,13 @@ namespace MTGDeckBuilder
             else deck_sorceries_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM ArtifactMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM ArtifactMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -328,13 +328,13 @@ namespace MTGDeckBuilder
             else deck_artifacts_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM InstantMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Instant')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_instants.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM InstantMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Instant')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -346,13 +346,13 @@ namespace MTGDeckBuilder
             else deck_instants_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM EnchantmentMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM EnchantmentMainBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -370,7 +370,7 @@ namespace MTGDeckBuilder
             side_deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM SideDeckBoard WHERE deck = " + deck_id;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 1, " + "'NULL')"; ;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -500,7 +500,7 @@ namespace MTGDeckBuilder
             manasourcedistributionChart.DataContext = manasourceDistributionList;
 
 
-            getData = "SELECT amount, id, name, type, cmc, edition, rarity FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = " + deck_id;
+            getData = "SELECT amount, id, name, type, cmc, edition, rarity, subtype FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = " + deck_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             Label amount;
@@ -526,7 +526,7 @@ namespace MTGDeckBuilder
 
                 amount.Content = dr.GetInt32(0);
                 name.Content = dr.GetString(2);
-                type.Content = dr.GetString(3);
+                type.Content = dr.GetString(3) + " " + dr["subtype"];
                 cmc.Content = dr["cmc"] == null ? "": dr["cmc"];
                 edition.Content = dr.GetString(5);
                 rarity.Content = dr["rarity"] == null ? "" : dr["rarity"];

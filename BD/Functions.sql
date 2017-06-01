@@ -4,16 +4,29 @@ GO
 
 CREATE FUNCTION login (@user VARCHAR(255), @pass TEXT) Returns bit
 AS
-	BEGIN
-		IF EXISTS(SELECT * FROM [User] WHERE email = @user AND password LIKE @pass) RETURN 1;
-		RETURN 0;
-	END
+BEGIN
+	IF EXISTS(SELECT * FROM [User] WHERE email = @user AND password LIKE @pass) RETURN 1;
+	RETURN 0;
+END
 
 GO
 
-CREATE FUNCTION getColorsFromDeck (@deckID int) Returns Table
-as
-	return (SELECT color from ColorIdentity inner Join (SELECT Card, deck FROM CardInDeck where deck = @deckID) as cards on cards.card=ColorIdentity.card where isManaColor=1 group by color)
+CREATE FUNCTION isRegistered(@email varchar(255)) Returns bit
+AS
+BEGIN
+	IF EXISTS(SELECT * FROM [User] WHERE email = @email)
+		RETURN 1;
+	RETURN 0;
+END
+
+GO
+
+CREATE FUNCTION getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) Returns Table
+AS
+	RETURN (SELECT card, name, deck, amount, multiverseID
+			FROM DeckCard
+			WHERE deck = @deck AND (isSideboard = @isSideboard OR @isSideboard = NULL) AND type = @type)
+	
 
 GO
 
@@ -84,15 +97,6 @@ AS
 
 GO
 
-CREATE FUNCTION [dbo].[isRegistered] (@email VARCHAR(255)) Returns bit
-AS
-	BEGIN
-		IF EXISTS(SELECT * FROM [User] WHERE email = @email) return 1
-		RETURN 0
-	END
-
-GO
-
 CREATE FUNCTION search_cards (@name Varchar(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns Table
 AS
 	RETURN(SELECT distinct seven.id, seven.multiverseID, seven.name as cardName, seven.editionName, seven.rarity, seven.cmc 
@@ -128,3 +132,15 @@ AS
 		ON six.edition =Edition.code AND (Edition.name = @edition OR @edition is null)) AS seven
 	LEFT JOIN Creature
 	ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity is null) where upper(' '+seven.name+' ') Like upper('% '+@name+' %') or @name is null);
+
+GO
+
+CREATE FUNCTION subType(@card INT) RETURNS VARCHAR(MAX)
+AS
+	BEGIN
+		DECLARE @subtype VARCHAR(MAX);
+		SELECT @subtype =  COALESCE(@subtype + ', ', '') + subtype
+		FROM SubtypeOfCard
+		WHERE card = @card;
+		RETURN @subtype;
+	END

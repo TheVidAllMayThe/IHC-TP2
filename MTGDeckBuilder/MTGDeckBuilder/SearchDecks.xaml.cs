@@ -273,7 +273,7 @@ namespace MTGDeckBuilder
                     string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
                     SqlConnection thisConnection = new SqlConnection(@cs);
                     thisConnection.Open();
-                    string querry = "SELECT * FROM getColorsFromDeck(" + table.Rows[i]["id"] + ")";
+                    string querry = "SELECT color FROM DeckColors WHERE deck = " + table.Rows[i]["id"];
                     SqlCommand powerselect = new SqlCommand(querry, thisConnection);
                     SqlDataReader querryCommandReader = powerselect.ExecuteReader();
 

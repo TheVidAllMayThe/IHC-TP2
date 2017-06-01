@@ -161,10 +161,15 @@ keyword_abilities = [("Deathtouch"),
 ("Vanishing"),
 ("Wither")]
 
-ConnectionString = r"DRIVER={SQL Server Native Client 11.0};SERVER = tcp://193.136.175.33;Initial Catalog = p2g1; uid = p2g1;password = 7637776412"
+ConnectionString = r"DRIVER={ODBC Driver 13 for SQL Server};SERVER=localhost\SQLEXPRESS;Database=Magic;Trusted_Connection=yes"
 
 conn = pypyodbc.connect(ConnectionString)
 c = conn.cursor()
+
+SQL = 'SELECT * FROM <YOURTABLE>'
+
+c.execute('USE Magic')
+c.execute("SELECT * FROM [User]")
 
 f = open(r".\AllSets.json", "r", encoding="utf8")
 
@@ -174,89 +179,92 @@ f.close()
 
 
 
+try:
+    for f in magic_data:
 
-for f in magic_data:
+        
+        set = magic_data[f]
 
-    
-    set = magic_data[f]
+        
+        releaseDate = datetime.strptime(set['releaseDate'], "%Y-%m-%d").date()
 
-    
-    releaseDate = datetime.strptime(set['releaseDate'], "%Y-%m-%d").date()
+        if releaseDate >= datetime.strptime('2015-10-1', "%Y-%m-%d").date():
+            legality = 'Standard'
 
-    if releaseDate >= datetime.strptime('2015-10-1', "%Y-%m-%d").date():
-        legality = 'Standard'
+        elif releaseDate >= datetime.strptime('2003-07-28', "%Y-%m-%d").date():
+                legality = 'Modern'
 
-    elif releaseDate >= datetime.strptime('2003-07-28', "%Y-%m-%d").date():
-            legality = 'Modern'
+        else:
+            legality = 'Vintage'
+        
 
-    else:
-        legality = 'Vintage'
-    
-
-    try:
-      c.execute("Insert INTO Edition (name, code, gathererCode, releaseDate, legality, mkm_id) values (?, ?, ?, ?, ?, ?)", [set['name'], set['code'], set['gathererCode'], set['releaseDate'], legality, set['mkm_id']])
-    except KeyError:
-      try:
-         c.execute("Insert INTO Edition (name, code, releaseDate, legality, mkm_id) values (?, ?, ?, ?, ?)", [set['name'], set['code'], set['releaseDate'], legality, set['mkm_id']])
-      except KeyError: 
-        try: 
-           c.execute("Insert INTO Edition (name, code, gathererCode, releaseDate, legality) values (?, ?, ?, ?, ?)", [set['name'], set['code'],set['gathererCode'], set['releaseDate'], legality])
+        try:
+          c.execute("Insert INTO Edition (name, code, gathererCode, releaseDate, legality, mkm_id) values (?, ?, ?, ?, ?, ?)", [set['name'], set['code'], set['gathererCode'], set['releaseDate'], legality, set['mkm_id']])
         except KeyError:
-           c.execute("Insert INTO Edition (name, code, releaseDate, legality) values (?, ?, ?, ?)", [set['name'], set['code'], set['releaseDate'], legality])
-    
-    
-    cards = set['cards'];
-    print(set['name'])
-    for card in cards:
-        for param in ['artist', 'imageName', 'cmc', 'name', 'rarity', 'text', 'manaCost', 'multiverseid']:
-            if param not in card.keys():
-                card[param] = None
- 
-        c.execute("Insert INTO Card (artist, imageName, cmc, manaCost, multiverseID, name, rarity, text, edition) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", [card['artist'], card['imageName'], card['cmc'], card['manaCost'],card['multiverseid'], card['name'], card['rarity'], card['text'], set['code']])
-        c.execute("select @@IDENTITY")
+          try:
+             c.execute("Insert INTO Edition (name, code, releaseDate, legality, mkm_id) values (?, ?, ?, ?, ?)", [set['name'], set['code'], set['releaseDate'], legality, set['mkm_id']])
+          except KeyError: 
+            try: 
+               c.execute("Insert INTO Edition (name, code, gathererCode, releaseDate, legality) values (?, ?, ?, ?, ?)", [set['name'], set['code'],set['gathererCode'], set['releaseDate'], legality])
+            except KeyError:
+               c.execute("Insert INTO Edition (name, code, releaseDate, legality) values (?, ?, ?, ?)", [set['name'], set['code'], set['releaseDate'], legality])
         
-        cardID = int(c.fetchone()[0])
-
-        if card['text'] is not None:
-            for keyword_abilitie in keyword_abilities:
-                if keyword_abilitie in card['text']:
-                    c.execute("Insert INTO Ability (Card, Ability, Action) Values (?, ?, ?)", [cardID, keyword_abilitie, 0])
         
-            for keyword_action in keyword_actions:
-                if keyword_action in card['text']:
-                    c.execute("Insert INTO Ability (Card, Ability, Action) Values (?, ?, ?)", [cardID, keyword_action, 1])
-
-        if 'colorIdentity' in card.keys():
-            for color in card['colorIdentity']:
-                if card['manaCost'] is not None and color in card['manaCost']:
-                    c.execute('Insert INTO ColorIdentity VALUES (?,?,?)', [cardID, color, 1])
-                else:
-                    c.execute('Insert INTO ColorIdentity VALUES (?,?,?)', [cardID, color, 0])
-
-        if 'types' in card.keys():
-            for type in card['types']:
-                 c.execute('Insert INTO TypeOfCard VALUES (?,?)', [cardID, type])
-
-        if 'subtypes' in card.keys():
-            for type in card['subtypes']:
-                 c.execute('Insert INTO SubtypeOfCard VALUES (?,?)', [cardID, type])
-
-        if 'power' in card.keys():
-            if '*' in card['power']:
-                card['power'] = None
-            else:
-                card['power'] = int(float(card['power']))
-
-            if '*' in card['toughness']:
-                card['toughness'] = None
-            else:
-                card['toughness'] = int(float(card['toughness']))
-
-            c.execute('Insert INTO Creature VALUES (?,?,?)', [cardID, card['power'], card['toughness']])
-
-        if 'flavor' in card.keys():
-            c.execute('Insert INTO Flavor VALUES (?,?)', [cardID, card['flavor']])
-        
-
-c.commit();
+        cards = set['cards'];
+        print(set['name'])
+        for card in cards:
+            for param in ['artist', 'imageName', 'cmc', 'name', 'rarity', 'text', 'manaCost', 'multiverseid']:
+                if param not in card.keys():
+                    card[param] = None
+     
+            c.execute("Insert INTO Card (artist, imageName, cmc, manaCost, multiverseID, name, rarity, text, edition) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", [card['artist'], card['imageName'], card['cmc'], card['manaCost'],card['multiverseid'], card['name'], card['rarity'], card['text'], set['code']])
+            c.execute("select @@IDENTITY")
             
+            cardID = int(c.fetchone()[0])
+
+            if card['text'] is not None:
+                for keyword_abilitie in keyword_abilities:
+                    if keyword_abilitie in card['text']:
+                        c.execute("Insert INTO Ability (Card, Ability, Action) Values (?, ?, ?)", [cardID, keyword_abilitie, 0])
+            
+                for keyword_action in keyword_actions:
+                    if keyword_action in card['text']:
+                        c.execute("Insert INTO Ability (Card, Ability, Action) Values (?, ?, ?)", [cardID, keyword_action, 1])
+
+            if 'colorIdentity' in card.keys():
+                for color in card['colorIdentity']:
+                    if card['manaCost'] is not None and color in card['manaCost']:
+                        c.execute('Insert INTO ColorIdentity VALUES (?,?,?)', [cardID, color, 1])
+                    else:
+                        c.execute('Insert INTO ColorIdentity VALUES (?,?,?)', [cardID, color, 0])
+
+            if 'types' in card.keys():
+                for type in card['types']:
+                     c.execute('Insert INTO TypeOfCard VALUES (?,?)', [cardID, type])
+
+            if 'subtypes' in card.keys():
+                for type in card['subtypes']:
+                     c.execute('Insert INTO SubtypeOfCard VALUES (?,?)', [cardID, type])
+
+            if 'power' in card.keys():
+                if '*' in card['power']:
+                    card['power'] = None
+                else:
+                    card['power'] = int(float(card['power']))
+
+                if '*' in card['toughness']:
+                    card['toughness'] = None
+                else:
+                    card['toughness'] = int(float(card['toughness']))
+
+                c.execute('Insert INTO Creature VALUES (?,?,?)', [cardID, card['power'], card['toughness']])
+
+            if 'flavor' in card.keys():
+                c.execute('Insert INTO Flavor VALUES (?,?)', [cardID, card['flavor']])
+            
+
+    c.commit();
+except Exception:
+    print("I/O error({0}): {1}".format(e.errno, e.strerror))
+    c.close()
+    conn.close()

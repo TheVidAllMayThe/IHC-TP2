@@ -108,6 +108,7 @@ namespace MTGDeckBuilder
                 {
                     DatabaseControl.ExecuteNonQuerryCommand("EXEC register '" + username.Text + "', '" + password.Password + "'");
                 }
+
             }
         }
     }

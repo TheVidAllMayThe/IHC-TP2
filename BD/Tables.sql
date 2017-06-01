@@ -9,7 +9,6 @@ GO
 CREATE TABLE [User] (
 	email VARCHAR(255) NOT NULL,
 	[password] TEXT NOT NULL,
-	username VARCHAR(255) NOT NULL,
 	PRIMARY KEY (email)
 );
 
@@ -17,7 +16,7 @@ CREATE TABLE Edition (
 	[name] VARCHAR(MAX) NOT NULL,
 	code VARCHAR(255) NOT NULL,
 	legality VARCHAR(MAX) NOT NULL,
-	mkm_id INT NOT NULL,
+	mkm_id INT,
 	gathererCode VARCHAR(255),
 	releaseDate DATE,
 	PRIMARY KEY (code)
@@ -27,7 +26,7 @@ CREATE TABLE [Card] (
 	id INTEGER IDENTITY(1,1) NOT NULL,
 	[name] VARCHAR(MAX) NOT NULL,
 	rarity VARCHAR(255) NOT NULL,
-	edition VARCHAR(255) NOT NULL,
+	edition VARCHAR(255),
 	artist VARCHAR(MAX),
 	imageName VARCHAR(MAX),
 	gathererID INT,
