@@ -1,0 +1,223 @@
+CREATE DATABASE Magic;
+
+GO
+
+USE Magic;
+
+GO
+
+CREATE TABLE [User] (
+	email VARCHAR(255) NOT NULL,
+	[password] TEXT NOT NULL,
+	username VARCHAR(255) NOT NULL,
+	PRIMARY KEY (email)
+);
+
+CREATE TABLE Edition (
+	[name] VARCHAR(MAX) NOT NULL,
+	code VARCHAR(255) NOT NULL,
+	legality VARCHAR(MAX) NOT NULL,
+	mkm_id INT NOT NULL,
+	gathererCode VARCHAR(255),
+	releaseDate DATE,
+	PRIMARY KEY (code)
+);
+
+CREATE TABLE [Card] ( 
+	id INTEGER IDENTITY(1,1) NOT NULL,
+	[name] VARCHAR(MAX) NOT NULL,
+	rarity VARCHAR(255) NOT NULL,
+	edition VARCHAR(255) NOT NULL,
+	artist VARCHAR(MAX),
+	imageName VARCHAR(MAX),
+	gathererID INT,
+	multiverseID INT,
+	manaCost VARCHAR(100),
+	[text] TEXT,
+	cmc INT,
+	PRIMARY KEY (id),
+	FOREIGN KEY (edition) REFERENCES Edition(code) ON DELETE SET NULL
+);
+
+CREATE TABLE Creature(
+	[card] INT NOT NULL,
+	power INT,
+	toughness INT,
+	PRIMARY KEY ([card]),
+	FOREIGN KEY ([card]) REFERENCES [Card](ID) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE ColorIdentity(
+	[card] INT NOT NULL,
+	color VARCHAR(20) NOT NULL,
+	isManaColor BIT NOT NULL,
+	PRIMARY KEY ([card], color),
+	FOREIGN KEY ([card]) REFERENCES [Card](ID) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+CREATE TABLE SubtypeOfCard(
+	card INTEGER NOT NULL,
+	subtype VARCHAR(255) NOT NULL,
+	PRIMARY KEY (card, subtype),
+	FOREIGN KEY (card) REFERENCES Card(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE TypeOfCard(
+	card INTEGER NOT NULL,
+	type VARCHAR(255) NOT NULL,
+	PRIMARY KEY (card, type),
+	FOREIGN KEY (card) REFERENCES Card(id)  ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Deck(
+	id INTEGER IDENTITY(1,1) NOT NULL,
+	[name] VARCHAR(255) NOT NULL,
+	creator VARCHAR(255) NOT NULL,
+	rating FLOAT,
+	UNIQUE(creator, [name]),
+	PRIMARY KEY (id),
+	FOREIGN KEY (creator) REFERENCES [User](email) 
+);
+
+CREATE TABLE CardInDeck(
+	[card] INTEGER UNIQUE NOT NULL,
+	deck INTEGER NOT NULL,
+	amount INTEGER NOT NULL,
+	isSideboard BIT NOT NULL,
+	PRIMARY KEY (deck, [card]),
+	FOREIGN KEY (deck) REFERENCES Deck (id),
+	FOREIGN KEY ([card]) REFERENCES [Card] (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE TagOfDeck(
+	deck INTEGER NOT NULL,
+	tag VARCHAR(50) NOT NULL,
+	PRIMARY KEY (deck, tag),
+	FOREIGN KEY (deck) REFERENCES Deck(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE RatedBy(
+	deck INT NOT NULL,
+	[user] VARCHAR(255) NOT NULL,
+	rating FLOAT NOT NULL,
+	PRIMARY KEY (deck, [user]),
+	FOREIGN KEY (deck) REFERENCES Deck(id) ON UPDATE CASCADE ON DELETE CASCADE, 
+	FOREIGN KEY ([user]) REFERENCES [User](email) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Flavor(
+	card INTEGER NOT NULL,
+	flavor TEXT NOT NULL,
+	PRIMARY KEY (card),
+	FOREIGN KEY (card) REFERENCES Card(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Ability(
+	card INTEGER NOT NULL,
+	Ability VARCHAR(255) NOT NULL,
+	action BIT NOT NULL,
+	PRIMARY KEY (card, Ability),
+	FOREIGN KEY (card) REFERENCES Card(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Player(
+	[user] VARCHAR(255) NOT NULL,
+	lp TINYINT DEFAULT 20 NOT NULL,
+	pc TINYINT DEFAULT 0 NOT NULL,
+	b TINYINT DEFAULT 0 NOT NULL,
+	g TINYINT DEFAULT 0 NOT NULL,
+	w TINYINT DEFAULT 0 NOT NULL,
+	u TINYINT DEFAULT 0 NOT NULL,
+	r TINYINT DEFAULT 0 NOT NULL,
+	uncolored TINYINT DEFAULT 0 NOT NULL,
+	deck INT NOT NULL,
+	PRIMARY KEY ([user]),
+	FOREIGN KEY ([user]) REFERENCES [User](email),
+	FOREIGN KEY (deck) REFERENCES Deck(id)
+);
+
+
+CREATE TABLE Game(
+	ID int IDENTITY(1,1) NOT NULL,
+	Turn INT DEFAULT 0 NOT NULL,
+	Phase VARCHAR(15) DEFAULT 'Beginning' NOT NULL,
+	Player1 VARCHAR(255) NOT NULL,
+	Player2 VARCHAR(255) NOT NULL,
+	State VARCHAR(10) DEFAULT 'Ongoing' NOT NULL,
+	PRIMARY KEY (ID, Turn, Phase),
+	FOREIGN KEY (Player1) REFERENCES [User](email),
+	FOREIGN KEY (Player2) REFERENCES [User](email),
+);
+
+CREATE TABLE Pile(
+	card INTEGER NOT NULL,
+	Player VARCHAR(255) NOT NULL,
+	Game INT NOT NULL,
+	Turn INT NOT NULL,
+	Phase VARCHAR(15) NOT NULL,
+	PRIMARY KEY (Player, card),
+	FOREIGN KEY (card) REFERENCES Card(ID),
+	FOREIGN KEY (Player) REFERENCES Player([user]),
+	FOREIGN KEY (Game, Turn, Phase) REFERENCES Game(ID, Turn, Phase)
+);
+
+CREATE TABLE Board(
+	card INTEGER NOT NULL,
+	Player VARCHAR(255) NOT NULL,
+	Game INT NOT NULL,
+	Turn INT NOT NULL,
+	Phase VARCHAR(15) NOT NULL,
+	PRIMARY KEY (Player, card),
+	FOREIGN KEY (card) REFERENCES Card(ID),
+	FOREIGN KEY (Player) REFERENCES Player([user]),
+	FOREIGN KEY (Game, Turn, Phase) REFERENCES Game(ID, Turn, Phase)
+);
+
+CREATE TABLE Graveyard(
+	card INTEGER NOT NULL,
+	Player VARCHAR(255) NOT NULL,
+	Game INT NOT NULL,
+	Turn INT NOT NULL,
+	Phase VARCHAR(15) NOT NULL,
+	PRIMARY KEY (Player, card),
+	FOREIGN KEY (card) REFERENCES Card(ID),
+	FOREIGN KEY (Player) REFERENCES Player([user]),
+	FOREIGN KEY (Game, Turn, Phase) REFERENCES Game(ID, Turn, Phase),
+);
+
+CREATE TABLE Revealed(
+	card INTEGER NOT NULL,
+	Player VARCHAR(255) NOT NULL,
+	Game INT NOT NULL,
+	Turn INT NOT NULL,
+	Phase VARCHAR(15) NOT NULL,
+	PRIMARY KEY (Player, card),
+	FOREIGN KEY (card) REFERENCES Card(ID),
+	FOREIGN KEY (Player) REFERENCES Player([user]),
+	FOREIGN KEY (Game, Turn, Phase) REFERENCES Game(ID, Turn, Phase)
+);
+
+CREATE TABLE Exiled(
+	card INTEGER NOT NULL,
+	Player VARCHAR(255) NOT NULL,
+	Game INT NOT NULL,
+	Turn INT NOT NULL,
+	Phase VARCHAR(15) NOT NULL,
+	PRIMARY KEY (Player, card),
+	FOREIGN KEY (card) REFERENCES Card(ID),
+	FOREIGN KEY (Player) REFERENCES Player([user]),
+	FOREIGN KEY (Game, Turn, Phase) REFERENCES Game(ID, Turn, Phase)
+);
+
+
+CREATE TABLE Stack(
+	[card] int NOT NULL,
+	Game INT NOT NULL,
+	Turn INT NOT NULL,
+	Phase VARCHAR(15) NOT NULL,
+	ability VARCHAR(255),
+	PRIMARY KEY (game, card),
+	FOREIGN KEY ([card], ability) REFERENCES Ability([card], ability),
+	FOREIGN KEY (Game, Turn, Phase) REFERENCES Game(ID, Turn, Phase)
+);
