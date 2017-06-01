@@ -1,16 +1,15 @@
-/* Delete Database Backup and Restore History from MSDB System Database */
-
-EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'Magic'
-GO
-
-/* Query to Get Exclusive Access of SQL Server Database before Dropping the Database  */
-
-USE [master]
-GO
-ALTER DATABASE Magic SET SINGLE_USER WITH ROLLBACK IMMEDIATE
-GO
-
-/* Query to Drop Database in SQL Server  */
-
-DROP DATABASE Magic
-GO
+/*
+DROP table [CardInDeck];
+drop table Flavor;
+drop table RatedBy;
+drop table TypeOfCard;
+drop table SubtypeOfCard;
+drop table Ability;
+drop table ColorIdentity;
+drop table Creature;
+drop table TagOfDeck;
+drop table [Card];
+drop table Edition;
+drop table Deck;
+drop table [User];
+/*

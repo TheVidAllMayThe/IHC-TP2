@@ -161,15 +161,18 @@ keyword_abilities = [("Deathtouch"),
 ("Vanishing"),
 ("Wither")]
 
-ConnectionString = r"DRIVER={ODBC Driver 13 for SQL Server};SERVER=localhost\SQLEXPRESS;Database=Magic;Trusted_Connection=yes"
-
+#ConnectionString = r"DRIVER={ODBC Driver 13 for SQL Server};SERVER=localhost\SQLEXPRESS;Database=Magic;Trusted_Connection=yes"
+ConnectionString = r"DRIVER={ODBC Driver 13 for SQL Server};SERVER=tcp:193.136.175.33\SQLSERVER2012,8293;DATABASE=P2G1;UID=p2g1;PWD=7637776412;TrustServerCertificate=no;Connection Timeout=60"
+#Data Source="tcp: 193.136.175.33\SQLSERVER2012,8293";Integrated Security=False;User ID=p2g1;Password=7637776412;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
 conn = pypyodbc.connect(ConnectionString)
 c = conn.cursor()
 
-SQL = 'SELECT * FROM <YOURTABLE>'
 
-c.execute('USE Magic')
-c.execute("SELECT * FROM [User]")
+
+#SQL = 'SELECT * FROM <YOURTABLE>'
+
+#c.execute('USE Magic')
+#c.execute("SELECT * FROM [User]")
 
 f = open(r".\AllSets.json", "r", encoding="utf8")
 
@@ -178,10 +181,8 @@ magic_data = json.loads(f.read())
 f.close()
 
 
-
-
 for f in magic_data:
-
+    c.commit();
     
     set = magic_data[f]
 
@@ -262,6 +263,6 @@ for f in magic_data:
         if 'flavor' in card.keys():
             c.execute('Insert INTO Flavor VALUES (?,?)', [cardID, card['flavor']])
         
-
 c.commit();
+
             
