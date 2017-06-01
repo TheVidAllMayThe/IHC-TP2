@@ -16,6 +16,8 @@
         <TextBlock x:Key="manaDistributionTitle" Text="Mana Distribution" Foreground="White"/>
         <TextBlock x:Key="manaSourceDistributionTitle" Text="Mana Source Distribution"  Foreground="White"/>
 
+        
+        
         <Style x:Key="ChartTitleStyle" TargetType="chartingToolkit:Chart">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="20"/>
@@ -253,12 +255,12 @@
                         <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="0"  Margin="10,10,10,10" Title="{StaticResource manacurveChartTitle}" Name="manacurveChart">
                             <chartingToolkit:ColumnSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
                             <chartingToolkit:Chart.Axes>
-                                <chartingToolkit:LinearAxis Orientation="Y">
+                                <chartingToolkit:LinearAxis Interval="1" Orientation="Y">
                                     <chartingToolkit:LinearAxis.Foreground >
                                         White
                                     </chartingToolkit:LinearAxis.Foreground>
                                 </chartingToolkit:LinearAxis>
-                                <chartingToolkit:LinearAxis Orientation="X">
+                                <chartingToolkit:LinearAxis Interval="1" Orientation="X">
                                     <chartingToolkit:LinearAxis.Foreground >
                                         White
                                     </chartingToolkit:LinearAxis.Foreground>
