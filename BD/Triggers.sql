@@ -10,6 +10,15 @@ AS
 		RAISERROR('Cannot have more than 4 of the same non basic lands on a deck',0,0);
 		ROLLBACK TRAN;	
 	END;
+	ELSE IF EXISTS(SELECT * FROM inserted WHERE amount < 1)
+		DELETE FROM CardInDeck WHERE card IN(SELECT card FROM inserted WHERE amount = 0);
+GO
+
+CREATE TRIGGER has_cards ON CardInGame
+AFTER UPDATE, INSERT
+AS
+	IF EXISTS(SELECT * FROM inserted WHERE Amount < 1)
+		DELETE FROM CardInGame WHERE Card IN (SELECT card FROM inserted WHERE amount = 0);
 
 GO
 
