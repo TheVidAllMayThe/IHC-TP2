@@ -164,10 +164,8 @@ CREATE TABLE CardInGame(
 	Player VARCHAR(255) NOT NULL,
 	GameTurnPhase INT NOT NULL,
 	Place VARCHAR(15) DEFAULT 'Pile' NOT NULL,
-	/*Pile, Board, Graveyard, Exiled*/
-	Amount INT NOT NULL,
+	/*Pile, Board, Hand, Graveyard, Exiled*/
 	PRIMARY KEY(ID),
-	UNIQUE (Card, Player, GameTurnPhase, Place),
 	FOREIGN KEY (Card) REFERENCES Card(ID),
 	FOREIGN KEY (Player) REFERENCES [User](email),
 	FOREIGN KEY (GameTurnPhase) REFERENCES GameTurnPhase(ID)
@@ -175,7 +173,6 @@ CREATE TABLE CardInGame(
 
 CREATE TABLE Revealed(
 	CardInGame INT NOT NULL,
-	Amount INT NOT NULL,
 	PRIMARY KEY (CardInGame),
 	FOREIGN KEY (CardInGame) REFERENCES CardInGame(ID)
 );

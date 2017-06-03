@@ -97,41 +97,83 @@ AS
 
 GO
 
-CREATE FUNCTION search_cards (@name Varchar(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns Table
+CREATE FUNCTION search_cards (@name Varchar(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns @table Table(id INT, multiverseID INT, cardName VARCHAR(MAX), editionName VARCHAR(255), rarity VARCHAR(255), cmc INT)
 AS
-	RETURN(SELECT distinct seven.id, seven.multiverseID, seven.name as cardName, seven.editionName, seven.rarity, seven.cmc 
-	FROM(
-		SELECT six.id, six.multiverseID, six.name, six.rarity, six.cmc, Edition.name as editionName
-		FROM(
-			SELECT five.id, five.multiverseID, five.name, five.rarity, five.cmc, five.edition
-			FROM(
-				SELECT four.id, four.multiverseID, four.name, four.rarity, four.cmc, four.edition
-				FROM(
-					SELECT three.id, three.multiverseID, three.name, three.rarity, three.cmc, three.edition
-					FROM(
-						SELECT two.id, two.multiverseID, two.name, two.rarity, two.cmc ,two.edition
-						FROM (
-							
-							SELECT one.id, one.multiverseID, one.name, one.rarity, one.cmc, one.edition
-							FROM (
-								SELECT Card.edition, Card.id,Card.name, Card.multiverseID, Card.name as cardName, Card.name as editionName, Card.rarity, Card.cmc 
-								FROM Card
-								JOIN TypeOfCard
-								ON Card.id = TypeOfCard.card AND (TypeOfCard.type = @type OR @type is null)) AS one
-							JOIN ColorIdentity
-							ON one.id = ColorIdentity.card AND ((ColorIdentity.color = 'G' and ColorIdentity.isManaColor = 1) OR @green is null)) AS two
-						JOIN ColorIdentity
-						ON two.id = ColorIdentity.card AND ((ColorIdentity.color = 'U' and ColorIdentity.isManaColor = 1) OR @blue is null)) AS three
-					JOIN ColorIdentity
-					ON three.id = ColorIdentity.card AND ((ColorIdentity.color = 'W' and ColorIdentity.isManaColor = 1) OR @white is null)) AS four
+	BEGIN
+		INSERT INTO @table
+		SELECT id, multiverseID, cardName, editionName, rarity, cmc
+		FROM (
+			SELECT id, multiverseID, name AS cardName, rarity, cmc, edition
+			FROM Card
+			WHERE UPPER(' '+name+' ') LIKE UPPER('% '+@name+' %') or @name is null) AS c
+		JOIN (
+			SELECT name AS editionName, code
+			FROM Edition) AS e
+		ON c.edition = e.code;
+
+		IF NOT EXISTS(SELECT * FROM @table)
+			INSERT INTO @table
+			SELECT id, multiverseID, cardName, editionName, rarity, cmc
+			FROM (
+				SELECT id, multiverseID, name AS cardName, rarity, cmc, edition
+				FROM Card
+				WHERE UPPER(name) LIKE UPPER('%'+@name+'%')) AS c
+			JOIN (
+				SELECT name AS editionName, code
+				FROM Edition) AS e
+			ON c.edition = e.code;
+
+		DELETE FROM @table
+		WHERE ID NOT IN(
+			SELECT ID
+			FROM (
+				SELECT ID
+				FROM Card
+				JOIN TypeOfCard
+				ON Card.id = TypeOfCard.card AND (TypeOfCard.type = @type OR @type is null)) AS t);
+
+		DELETE FROM @table
+		WHERE ID NOT IN(
+			SELECT ID
+			FROM (
+				SELECT ID
+				FROM Card
 				JOIN ColorIdentity
-				ON four.id = ColorIdentity.card AND ((ColorIdentity.color = 'R' and ColorIdentity.isManaColor = 1) OR @red is null)) AS five
-			JOIN ColorIdentity
-			ON five.id = ColorIdentity.card AND ((ColorIdentity.color = 'B' and ColorIdentity.isManaColor = 1) OR @black is null)) AS six
-		JOIN Edition
-		ON six.edition =Edition.code AND (Edition.name = @edition OR @edition is null)) AS seven
-	LEFT JOIN Creature
-	ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity is null) where upper(' '+seven.name+' ') Like upper('% '+@name+' %') or @name is null);
+					
+		RETURN(SELECT distinct seven.id, seven.multiverseID, seven.name as cardName, seven.editionName, seven.rarity, seven.cmc 
+		FROM(
+			SELECT six.id, six.multiverseID, six.name, six.rarity, six.cmc, Edition.name as editionName
+			FROM(
+				SELECT five.id, five.multiverseID, five.name, five.rarity, five.cmc, five.edition
+				FROM(
+					SELECT four.id, four.multiverseID, four.name, four.rarity, four.cmc, four.edition
+					FROM(
+						SELECT three.id, three.multiverseID, three.name, three.rarity, three.cmc, three.edition
+						FROM(
+							SELECT two.id, two.multiverseID, two.name, two.rarity, two.cmc ,two.edition
+							FROM (
+							
+								SELECT one.id, one.multiverseID, one.name, one.rarity, one.cmc, one.edition
+								FROM (
+									SELECT Card.edition, Card.id,Card.name, Card.multiverseID, Card.name as cardName, Card.name as editionName, Card.rarity, Card.cmc 
+									FROM Card
+									JOIN TypeOfCard
+									ON Card.id = TypeOfCard.card AND (TypeOfCard.type = @type OR @type is null)) AS one
+								JOIN ColorIdentity
+								ON one.id = ColorIdentity.card AND ((ColorIdentity.color = 'G' and ColorIdentity.isManaColor = 1) OR @green is null)) AS two
+							JOIN ColorIdentity
+							ON two.id = ColorIdentity.card AND ((ColorIdentity.color = 'U' and ColorIdentity.isManaColor = 1) OR @blue is null)) AS three
+						JOIN ColorIdentity
+						ON three.id = ColorIdentity.card AND ((ColorIdentity.color = 'W' and ColorIdentity.isManaColor = 1) OR @white is null)) AS four
+					JOIN ColorIdentity
+					ON four.id = ColorIdentity.card AND ((ColorIdentity.color = 'R' and ColorIdentity.isManaColor = 1) OR @red is null)) AS five
+				JOIN ColorIdentity
+				ON five.id = ColorIdentity.card AND ((ColorIdentity.color = 'B' and ColorIdentity.isManaColor = 1) OR @black is null)) AS six
+			JOIN Edition
+			ON six.edition =Edition.code AND (Edition.name = @edition OR @edition is null)) AS seven
+		LEFT JOIN Creature
+		ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity is null) where upper(' '+seven.name+' ') Like upper('% '+@name+' %') or @name is null);
+	END
 
 GO
 
