@@ -125,6 +125,8 @@ CREATE TABLE Game(
 	Player1 VARCHAR(255) NOT NULL,
 	Player2 VARCHAR(255) NOT NULL,
 	State VARCHAR(10) DEFAULT 'Ongoing' NOT NULL,
+	Turn INT DEFAULT 0 NOT NULL,
+	Phase VARCHAR(15) DEFAULT 'Beginning' NOT NULL,
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Player1) REFERENCES [User](email),
 	FOREIGN KEY (Player2) REFERENCES [User](email),
@@ -148,31 +150,26 @@ CREATE TABLE Player(
 	FOREIGN KEY(Game) REFERENCES Game(ID)
 );
 
-CREATE TABLE GameTurnPhase(
-	ID INT IDENTITY(1,1) NOT NULL,
-	Game INT NOT NULL,
-	Turn INT DEFAULT 0 NOT NULL,
-	Phase VARCHAR(15) DEFAULT 'Beginning' NOT NULL,
-	PRIMARY KEY (ID),
-	UNIQUE (Game, Turn, Phase),
-	FOREIGN KEY (Game) REFERENCES Game(ID)
-);
-
 CREATE TABLE CardInGame(
 	ID INT IDENTITY(1,1) NOT NULL,
 	Card INTEGER NOT NULL,
 	Player VARCHAR(255) NOT NULL,
-	GameTurnPhase INT NOT NULL,
+	Game INT NOT NULL,
 	Place VARCHAR(15) DEFAULT 'Pile' NOT NULL,
+	Tap BIT DEFAULT 0 NOT NULL;
+	Revealed BIT DEFAULT 0 NOT NULL;
 	/*Pile, Board, Hand, Graveyard, Exiled*/
 	PRIMARY KEY(ID),
 	FOREIGN KEY (Card) REFERENCES Card(ID),
 	FOREIGN KEY (Player) REFERENCES [User](email),
-	FOREIGN KEY (GameTurnPhase) REFERENCES GameTurnPhase(ID)
+	FOREIGN KEY (Game) REFERENCES Game(ID)
 );
 
-CREATE TABLE Revealed(
-	CardInGame INT NOT NULL,
-	PRIMARY KEY (CardInGame),
+CREATE TABLE ActionHistory(
+	ID INT IDENTITY(1,1) NOT NULL,
+	CardInGame INT ID NOT NULL,
+	Action VARCHAR(255) NOT NULL,
+	/*Tap, Untap, Exile, Reveal,From... To Pile, To Hand, To Graveyard, To Exiled, To Board, Revealed*/
+	PRIMARY KEY (ID),
 	FOREIGN KEY (CardInGame) REFERENCES CardInGame(ID)
 );

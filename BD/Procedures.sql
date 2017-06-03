@@ -33,8 +33,6 @@ AS
 	SET @game_id = ( SELECT SCOPE_IDENTITY() );
 	INSERT INTO Player([User], Game, Deck) VALUES(@player1, @game_id, @deck1);
 	INSERT INTO Player([User], Game, Deck) VALUES(@player2, @game_id, @deck2);
-	INSERT INTO GameTurnPhase(Game) VALUES(@game_id);
-	SET @gameturnphase_id = ( SELECT SCOPE_IDENTITY() );
 
 	DECLARE @temp_table TABLE([MaxQty] [int] NULL);
 	INSERT INTO @temp_table
@@ -49,15 +47,15 @@ AS
 	WHERE (hundred.number*100 + ten.number*10 + one.number) > 0
 	ORDER BY (hundred.number*100 + ten.number*10 + one.number) ASC;
 
-	INSERT INTO CardInGame(Card, Player, GameTurnPhase)
-		SELECT card, @player1 AS Player, @gameturnphase_id AS GameTurnPhase
+	INSERT INTO CardInGame(Card, Player, Game)
+		SELECT card, @player1 AS Player, @game_id AS Game
 		FROM CardInDeck AS a
 		JOIN @temp_table AS b
 		ON b.MaxQty <= a.amount
 		WHERE deck = @deck1 AND isSideboard = 0;
 
-	INSERT INTO CardInGame(Card, Player, GameTurnPhase)
-		SELECT card, @player2 AS Player, @gameturnphase_id AS GameTurnPhase
+	INSERT INTO CardInGame(Card, Player, Game)
+		SELECT card, @player2 AS Player, @gameturnphase_id AS Game
 		FROM CardInDeck AS a
 		JOIN @temp_table AS b
 		ON b.MaxQty <= a.amount
@@ -65,9 +63,9 @@ AS
 
 GO
 
-CREATE PROC playCard(@player VARCHAR(255), @game_turn_phase INT, @card INT)
+CREATE PROC playCard(@player VARCHAR(255), @game INT, @card INT)
 AS
-	UPDATE CardInGame SET Place = 'Board' WHERE Player = @player AND GameTurnPhase = @game_turn_phase AND Card = @card;
+	UPDATE CardInGame SET Place = 'Board' WHERE Player = @player AND Game = @game AND Card = @card;
 
 GO
 
@@ -83,7 +81,7 @@ AS
 	INSERT INTO @cards(card)
 	SELECT Card
 	FROM CardInGame
-	WHERE Player = @player AND GameTurnPhase = @game_turn_phase AND Place = 'Pile';
+	WHERE Player = @player AND Game = @game AND Place = 'Pile';
 
 	SELECT @n = SUM(ID)
 	FROM @cards;
