@@ -132,7 +132,7 @@ AS
 			JOIN Edition
 			ON six.edition =Edition.code AND (UPPER(' '+Edition.name+' ') LIKE UPPER('% '+@edition+' %') or @edition is null)) AS seven
 		LEFT JOIN Creature
-		ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity is null) AND upper(' '+seven.name+' ') Like upper('% '+@name+' %') or @name is null);
+		ON seven.id = Creature.card AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null) AND (Seven.cmc >= @MinCMC or @MinCMC = null) AND (Seven.cmc <= @MaxCMC or @MaxCMC = null) AND (Seven.rarity = @Rarity or @Rarity is null) AND (upper(' '+seven.name+' ') Like upper('% '+@name+' %') or @name is null));
 
 GO
 
