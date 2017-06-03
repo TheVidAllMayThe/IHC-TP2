@@ -21,3 +21,22 @@ AS
 	DECLARE @deckID INT;
 	SELECT @deckID = inserted.deck FROM inserted;
 	UPDATE Deck SET rating = (SELECT avg(rating) from RatedBy where deck = @deckID) where id = @deckID;
+
+GO
+
+CREATE TRIGGER valid_bid ON OfferBid
+AFTER UPDATE, INSERT
+AS
+	IF EXISTS(
+		SELECT Offer, MinimumBid
+		FROM (
+			SELECT Bid, Offer
+			FROM inserted) as ob
+		JOIN (
+			SELECT ID, MinimumBid
+			FROM ListingBid) AS lb
+		ON ob.Bid = lb.ID AND Offer < MinimumBid)
+	BEGIN
+		RAISERROR('Offer has to be greater or equal to MinimumBid',0,0);
+		ROLLBACK TRAN;	
+	END;

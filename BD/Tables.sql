@@ -139,7 +139,8 @@ CREATE TABLE CardInListing(
 	Condition VARCHAR(20),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Listing) REFERENCES Listing(ID),
-	FOREIGN KEY (Card) REFERENCES Card(ID)
+	FOREIGN KEY (Card) REFERENCES Card(ID),
+	CHECK(Units > 0)
 );
 
 CREATE TABLE ListingTrade(
@@ -161,7 +162,8 @@ CREATE TABLE CardInTrade(
 	Condition VARCHAR(20),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Trade) REFERENCES ListingTrade(ID),
-	FOREIGN KEY (Card) REFERENCES Card(ID)
+	FOREIGN KEY (Card) REFERENCES Card(ID),
+	CHECK(Units > 0)
 );
 
 CREATE TABLE OfferTrade(
@@ -173,7 +175,8 @@ CREATE TABLE OfferTrade(
 	Condition VARCHAR(20),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Trade) REFERENCES ListingTrade(ID),
-	FOREIGN KEY (Card) REFERENCES Card(ID)
+	FOREIGN KEY (Card) REFERENCES Card(ID),
+	CHECK(Units > 0)
 );
 
 ALTER TABLE ListingTrade ADD CONSTRAINT AcceptedOffer FOREIGN KEY(AcceptedOffer) REFERENCES OfferTrade(ID);
