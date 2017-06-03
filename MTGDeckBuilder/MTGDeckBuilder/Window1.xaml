@@ -1,0 +1,243 @@
+﻿<Window x:Class="MTGDeckBuilder.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MTGDeckBuilder"
+        mc:Ignorable="d"
+        Title="Game" Height="740" Width="1350" WindowState="Maximized">
+
+    <Window.Resources>
+        <Style TargetType="Viewbox" x:Key="deck_and_graveyard">
+            <Setter Property="Margin" Value="10,10,10,10"/>
+
+        </Style>
+
+        <Style TargetType="Label" x:Key="deck_and_graveyard_label">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="100"/>
+        </Style>
+
+        <Style TargetType="Border" x:Key="deck_and_graveyard_border">
+            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style TargetType="Label" x:Key="amount_label_style">
+            <Setter Property="FontSize" Value="200"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="Viewbox" x:Key="mana_boxes">
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    
+
+    <Grid Margin="-2,0,2,0.4">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.08*"/>
+            <RowDefinition Height="0.84*"/>
+            <RowDefinition Height="0.08*"/>
+        </Grid.RowDefinitions>
+
+        <Viewbox Grid.Row="0" Grid.Column="0" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_B.png"/>
+                <Label Content="##" x:Name="black_mana" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="1" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_G.png"/>
+                <Label Content="##" x:Name="green_mana" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="2" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_R.png"/>
+                <Label Content="##" x:Name="red_mana" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="3" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_W.png"/>
+                <Label Content="##" x:Name="white_mana" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="4" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_U.png"/>
+                <Label Content="##" Style="{StaticResource amount_label_style}" Foreground="Black" x:Name="blue_mana"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="5" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_B.png"/>
+                <Label Content="##" x:Name="uncolored_mana" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="6" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Label Content="LP: ##" x:Name="LP" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="0" Grid.Column="7" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Label Content="PC: ##" x:Name="PC" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="2" Grid.Column="0" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_B.png"/>
+                <Label Content="##" x:Name="black_mana2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+        <Viewbox Grid.Row="2" Grid.Column="1" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_G.png"/>
+                <Label Content="##" x:Name="green_mana2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+        <Viewbox Grid.Row="2" Grid.Column="2" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_R.png"/>
+                <Label Content="##" x:Name="red_mana2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+        <Viewbox Grid.Row="2" Grid.Column="3" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_W.png"/>
+                <Label Content="##" x:Name="white_mana2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+        <Viewbox Grid.Row="2" Grid.Column="4" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_U.png"/>
+                <Label Content="##" x:Name="blue_mana2" Style="{StaticResource amount_label_style}" Foreground="Black" />
+            </StackPanel>
+        </Viewbox>
+        <Viewbox Grid.Row="2" Grid.Column="5" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Image Source="Mana_B.png"/>
+                <Label Content="##" x:Name="uncolored_mana2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="2" Grid.Column="6" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Label Content="LP: ##" x:Name="LP2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+        <Viewbox Grid.Row="2" Grid.Column="7" Style="{StaticResource mana_boxes}">
+            <StackPanel Orientation="Horizontal" >
+                <Label Content="PC: ##" x:Name="PC2" Style="{StaticResource amount_label_style}" Foreground="Black"/>
+            </StackPanel>
+        </Viewbox>
+
+
+        <Grid Grid.Column="5" Grid.Row="1" Margin="0,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border Style="{StaticResource deck_and_graveyard_border}">
+                <Viewbox Grid.Row="0" Style="{StaticResource deck_and_graveyard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Deck1" Style="{StaticResource deck_and_graveyard_label}" Grid.Row="0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,110,110,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,140,140,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,170,170,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,200,200,0"/>
+                        <Label Grid.Row="1" Margin="0,200,200,0" Content="60" Style="{StaticResource amount_label_style}"/>
+                    </Grid>
+                </Viewbox>
+            </Border>
+
+            <Border Style="{StaticResource deck_and_graveyard_border}" Grid.Row="1">
+                <Viewbox Style="{StaticResource deck_and_graveyard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Graveyard1" Style="{StaticResource deck_and_graveyard_label}" Grid.Row="0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,110,110,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,140,140,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,170,170,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,200,200,0"/>
+                        <Label Grid.Row="1" Margin="0,200,200,0" Content="60" Style="{StaticResource amount_label_style}"/>
+                    </Grid>
+                </Viewbox>
+            </Border>
+
+            <Border Style="{StaticResource deck_and_graveyard_border}" Grid.Row="2">
+                <Viewbox Style="{StaticResource deck_and_graveyard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Graveyard2" Style="{StaticResource deck_and_graveyard_label}" Grid.Row="0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,110,110,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,140,140,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,170,170,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,200,200,0"/>
+                        <Label Grid.Row="1" Margin="0,200,200,0" Content="60" Style="{StaticResource amount_label_style}"/>
+                    </Grid>
+                </Viewbox>
+            </Border>
+
+            <Border Style="{StaticResource deck_and_graveyard_border}" Grid.Row="3" >
+                <Viewbox Style="{StaticResource deck_and_graveyard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Deck2" Style="{StaticResource deck_and_graveyard_label}" Grid.Row="0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,110,110,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,140,140,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,170,170,0"/>
+                        <Image Source="mtg-card-back.jpg" Grid.Row="1" Margin="0,200,200,0"/>
+                        <Label Grid.Row="1" Margin="0,200,200,0" Content="60" Style="{StaticResource amount_label_style}"/>
+                    </Grid>
+                </Viewbox>
+            </Border>
+
+        </Grid>
+    </Grid>
+</Window>

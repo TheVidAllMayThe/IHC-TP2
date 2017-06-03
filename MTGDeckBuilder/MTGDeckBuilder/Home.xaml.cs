@@ -128,5 +128,13 @@ namespace MTGDeckBuilder
                 ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(sd);
             }
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Window1 gameWindow = new Window1();
+            gameWindow.Show();
+            MainWindow main = Application.Current.MainWindow as MainWindow;
+            main.Close();
+        }
     }
 }
