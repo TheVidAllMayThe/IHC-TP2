@@ -145,22 +145,3 @@ AS
 		WHERE card = @card;
 		RETURN @subtype;
 	END
-
-GO
-
-CREATE FUNCTION manaPool(@game_turn_phase INT, @player VARCHAR(255), @color VARCHAR(20)) RETURNS INT
-AS
-	BEGIN
-		declare @amount INT;
-		SELECT @amount = count(*)
-		FROM (
-			SELECT card, color 
-			FROM ColorIdentity
-			WHERE color = @color) AS ci
-		JOIN( 
-			SELECT Card
-			FROM CardInGame
-			WHERE GameTurnPhase = @game_turn_phase AND Player = @player AND Place = 'Board') AS c
-		ON ci.card = c.Card;
-		RETURN @amount;
-	END
