@@ -26,6 +26,6 @@ AS
 
 GO
 
-
-
-
+CREATE PROC usp_sellingListingsSelect
+AS
+	SELECT * FROM Listing WHERE Sell = 1;

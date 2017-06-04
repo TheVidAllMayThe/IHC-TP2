@@ -1,0 +1,110 @@
+﻿<Window x:Class="MTGDeckBuilder.Window2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MTGDeckBuilder"
+        mc:Ignorable="d"
+        Title="Window2" Height="740" Width="1080">
+    <Window.Resources>
+        <DataTemplate x:Key="list_selling_cards">
+            <Grid HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="{Binding Units}" Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Cardname}" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Condition}" Grid.Column="2" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Priceperunit}" Grid.Column="3" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding User}" Grid.Column="4" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Startdate}" Grid.Column="5" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                <Button Grid.Column="7" Click="buy">Buy</Button>
+                <TextBox Grid.Column="6" Text="{Binding AmountToBuy}"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="list_buying_cards">
+            <Grid HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="{Binding Units}" Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Cardname}" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Condition}" Grid.Column="2" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Priceperunit}" Grid.Column="3" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding User}" Grid.Column="4" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Content="{Binding Startdate}" Grid.Column="5" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                <Button Grid.Column="7" Click="buy">Sell</Button>
+                <TextBox Grid.Column="6" Text="{Binding AmountToBuy}"/>
+            </Grid>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="listings_selling_cards">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding User}"/>
+                <Label Content="{Binding StartDate}"/>
+                <Label Content="{Binding EndDate}"/>
+                <Label Content="{Binding TotalPrice}"/>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    
+    <Grid>
+        <TabControl Background="Black">
+            <TabItem>
+                <TabItem.Header>
+                    <Label  Style="{StaticResource Card Title Style}" Content="Selling"/>
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical">
+                    <ItemsControl x:Name="selling" HorizontalAlignment="Left" ItemTemplate="{StaticResource list_selling_cards}" />
+                    <ListBox x:Name="listBox_s" ItemTemplate="{StaticResource list_selling_cards}"/>
+                    <ListBox x:Name="listBox_ls" ItemTemplate="{StaticResource listings_selling_cards}"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <Label  Style="{StaticResource Card Title Style}" Content="Buying"/>
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical">
+                    <ItemsControl x:Name="buying" HorizontalAlignment="Left" ItemTemplate="{StaticResource list_buying_cards}" />
+                    <ListBox x:Name="listBox_b" ItemTemplate="{StaticResource list_buying_cards}"/>
+                    
+                    
+                </StackPanel>
+
+                <!-- Details tab content -->
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <Label Style="{StaticResource Card Title Style}" Content="Bidding"/>
+                </TabItem.Header>
+
+                <!-- Starting Hand tab content -->
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <Label  Style="{StaticResource Card Title Style}" Content="Personal"/>
+                </TabItem.Header>
+
+                <!-- Starting Hand tab content -->
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
