@@ -607,15 +607,15 @@ namespace MTGDeckBuilder
         {
             int borderPressed = int.Parse(((Border)sender).Name.Substring(6));
 
-            try
-            {
+            //try
+            //{
                 if (Window.GetWindow(this) != null) //Avoid double click null pointer exceptions
                 {
                     Card c = new Card((int)table.Rows[(currentPage - 1) * 6 + borderPressed]["id"]);
                     ((MainWindow)Window.GetWindow(this)).MainFrame.Navigate(c);
                 }
-            }
-            catch (IndexOutOfRangeException IOORE) { }
+            //}
+            //catch (IndexOutOfRangeException IOORE) { }
         }
 
         private void addButton_Click(object sender, RoutedEventArgs e)

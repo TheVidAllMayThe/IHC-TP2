@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Windows;
 using System.Windows.Input;
+using System.Data;
 
 namespace MTGDeckBuilder
 {
@@ -52,16 +53,20 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "SELECT name, text, rarity, artist, edition, multiverseID FROM Card WHERE id = " + this.card_id;
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            string getData = "EXEC usp_CardSelect @id";
+            SqlCommand command = new SqlCommand(getData, thisConnection);
+            command.Parameters.Add("@id", SqlDbType.Int);
+            command.Parameters["@id"].Value = this.card_id;
+
+            SqlDataReader dr = command.ExecuteReader();
             dr.Read();
-            
-            name.Content = dr.GetString(0) == null? "---" : dr.GetString(0);
-            text.Content = dr.GetString(1) == null ? "---" : dr.GetString(1);
-            rarity.Content = dr.GetString(2) == null ? "---" : dr.GetString(2);
-            artist.Content = dr.GetString(3) == null ? "---" : dr.GetString(3);
-            String editionKey = dr.GetString(4) == null ? "---" : dr.GetString(4);
-            int multiverseID = dr.GetInt32(5) == 0 ? 0 : dr.GetInt32(5);
+
+            name.Content = dr["name"] == null ? "---" : dr["name"].ToString();
+            text.Content = dr["text"] == null ? "---" : dr["text"].ToString();
+            rarity.Content = dr["rarity"] == null ? "---" : dr["rarity"].ToString();
+            artist.Content = dr["artist"] == null ? "---" : dr["artist"].ToString();
+            string editionKey = dr["edition"] == null ? "---" : dr["edition"].ToString();
+            int multiverseID = dr["multiverseID"] == null ? 0 : int.Parse(dr["multiverseID"].ToString());
             dr.Close();
 
             if (multiverseID != null)
@@ -75,32 +80,31 @@ namespace MTGDeckBuilder
             }
 
 
-            getData = "SELECT flavor FROM Flavor WHERE card = " + card_id;
+            getData = "EXEC usp_FlavorSelect " + card_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            if (dr.Read()) flavor.Content = dr.GetString(0);
+            if (dr.Read()) flavor.Content = dr["flavor"];
             else flavor.Content = "---";
-            while (dr.Read()) type.Content += ", " + dr.GetString(0);
             dr.Close();
 
-            getData = "SELECT type FROM TypeOfCard WHERE card = " + card_id;
+            getData = "EXEC usp_TypeOfCardSelect " + card_id + ", NULL";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            if (dr.Read()) type.Content = dr.GetString(0);
+            if (dr.Read()) type.Content = dr["type"];
             else type.Content = "---";
-            while (dr.Read()) type.Content += ", " + dr.GetString(0);
+            while (dr.Read()) type.Content += ", " + dr["type"];
             dr.Close();
 
-            getData = "SELECT subtype FROM SubtypeOfCard WHERE card = " + card_id;
+            getData = "EXEC usp_SubtypeOfCardSelect " + card_id + ", NULL";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            if(dr.Read()) subtype.Content = dr.GetString(0);
-            while (dr.Read()) subtype.Content += ", " + dr.GetString(0);
+            if(dr.Read()) subtype.Content = dr["subtype"];
+            while (dr.Read()) subtype.Content += ", " + dr["subtype"];
             dr.Close();
 
-            getData = "SELECT power, toughness FROM Creature WHERE card = " + card_id;
+            getData = "EXEC usp_CreatureSelect " + card_id;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             if (dr.Read())
             {
-                power.Content = dr.GetInt32(0);
-                toughness.Content = dr.GetInt32(1);
+                power.Content = dr["power"];
+                toughness.Content = dr["toughness"];
             }
             else
             {
@@ -109,10 +113,10 @@ namespace MTGDeckBuilder
             }
             dr.Close();
 
-            getData = "SELECT legality FROM Edition WHERE code = '" + editionKey+"'";
+            getData = "EXEC usp_EditionSelect " + editionKey;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
-            legality.Content = dr.GetString(0);
+            legality.Content = dr["legality"];
         }
     }
 }

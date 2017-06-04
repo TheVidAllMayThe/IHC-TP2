@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Mail;
@@ -85,16 +87,34 @@ namespace MTGDeckBuilder
                     return;
                 }
 
-                SqlDataReader reader = DatabaseControl.getDataReader("SELECT dbo.isRegistered('" + username.Text + "')");
-                reader.Read();
-                bool isRegistered = reader.GetBoolean(0);
+                string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
-                if (isRegistered)
+                using (SqlConnection conn = new SqlConnection(@cs))
+                using (SqlCommand cmd = new SqlCommand("usp_Login", conn))
                 {
-                    reader = DatabaseControl.getDataReader("SELECT dbo.login('" + username.Text + "', '" + password.Password + "')");
-                    reader.Read();
-                    bool bit = reader.GetBoolean(0);
-                    if (bit)
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@user", SqlDbType.VarChar, 255);
+                    cmd.Parameters.Add("@pass", SqlDbType.VarChar, 255);
+                    cmd.Parameters.Add("@r", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                    // set parameter values
+                    cmd.Parameters["@user"].Value = username.Text;
+                    cmd.Parameters["@pass"].Value = password.Password;
+                    // open connection and execute stored procedure
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    // read output value from @NewId
+                    int id = Convert.ToInt32(cmd.Parameters["@r"].Value);
+                    conn.Close();
+                    Console.WriteLine(id);
+
+
+                    bool isRegistered = id == 1;
+
+                    if (isRegistered)
                     {
                         App.User = username.Text;
                         NavigationService.Navigate(new Uri("Home.xaml", UriKind.Relative));
@@ -103,10 +123,6 @@ namespace MTGDeckBuilder
                     {
                         MessageBox.Show("You have inserted a wrong Email/Password combo!", "Wrong Credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
-                }
-                else
-                {
-                    DatabaseControl.ExecuteNonQuerryCommand("EXEC register '" + username.Text + "', '" + password.Password + "'");
                 }
 
             }

@@ -26,7 +26,6 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
             new SqlCommand(command, thisConnection).ExecuteNonQuery();
-        }
-       
+        }  
     }
 }

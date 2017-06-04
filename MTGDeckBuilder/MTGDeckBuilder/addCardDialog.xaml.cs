@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -106,8 +107,10 @@ namespace MTGDeckBuilder
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
             SqlConnection thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
-            string querry = "SELECT id, name FROM Deck where creator = '" + "ola123@ua.pt" + "'";
+            string querry = "SELECT id, name FROM Deck where creator = @email";
             SqlCommand decksSelect = new SqlCommand(querry, thisConnection);
+            decksSelect.Parameters.Add("@email", SqlDbType.VarChar);
+            decksSelect.Parameters["@email"].Value = App.User;
             SqlDataReader querryCommandReader = decksSelect.ExecuteReader();
 
             decknames = new List<string>();
