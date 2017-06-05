@@ -60,17 +60,22 @@ GO
 CREATE PROC usp_buyOrSellCard (@cardinlisting INT, @amount INT, @user VARCHAR(255), @sell BIT)
 AS
 	BEGIN TRAN
-		DECLARE @primaryuser VARCHAR(255), @isSell BIT;
-		SELECT @primaryuser = [User], @isSell = Sell
+		
+		DECLARE @primaryuser VARCHAR(255), @isSell BIT, @priceperunit MONEY;
+		
+		SELECT @primaryuser = [User], @isSell = Sell, @priceperunit = Price_Per_Unit
 		FROM (SELECT ID, [User], Sell FROM LISTING) AS l
-		JOIN (SELECT listing FROM CardInListing WHERE ID = @cardinlisting) AS cid
+		JOIN (SELECT listing, Price_Per_Unit FROM CardInListing WHERE ID = @cardinlisting) AS cid
 		ON l.ID = cid.listing;
+
 		IF (@isSell != @sell)
 		BEGIN
 			RAISERROR('You cannot buy/sell these cards', 11, 0);
 			ROLLBACK TRAN;
 		END
+		
 		INSERT INTO CardInListing (Listing, Card, Price_Per_Unit, Units, Condition) SELECT Listing, Card, Price_Per_Unit, @amount, Condition FROM CardInListing;
+		
 		DECLARE @max INT;
 		SELECT @max = Units FROM CardInListing WHERE ID = @cardinlisting;
 		IF (@amount > @max)
@@ -81,4 +86,15 @@ AS
 		
 		UPDATE CardInListing SET Units = Units - @amount WHERE ID = @cardinlisting;
 		INSERT INTO CardInListingHistory (ID, EndDate, SecondaryUser) VALUES (@cardinlisting, getdate(), @user);
+
+		IF (@sell = 1)
+		BEGIN
+			UPDATE [User] SET balance += @priceperunit * @amount WHERE email = @primaryuser;
+			UPDATE [User] SET balance -= @priceperunit * @amount WHERE email = @user;
+		END
+		ELSE
+		BEGIN
+			UPDATE [User] SET balance -= @priceperunit * @amount WHERE email = @primaryuser;
+			UPDATE [User] SET balance += @priceperunit * @amount WHERE email = @user;
+		END
 	COMMIT TRAN;
