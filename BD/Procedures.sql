@@ -22,7 +22,7 @@ GO
 
 CREATE PROC usp_register(@user VARCHAR(255), @password TEXT)
 AS
-	INSERT INTO [User] VALUES (@user, @password);
+	INSERT INTO [User](email, password) VALUES (@user, @password);
 
 GO
 
