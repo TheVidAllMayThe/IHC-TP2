@@ -211,6 +211,12 @@ AS
 
 GO
 
+CREATE FUNCTION udf_allCardsInHistoryListings(@sell BIT) RETURNS TABLE
+AS
+	RETURN(SELECT Listing.* FROM CardInListingHistory JOIN Listing ON CardInListingHistory.Listing = Listing.ID AND Listing.Sell = @sell);
+
+GO
+
 CREATE FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
 AS
 	RETURN(SELECT * FROM CardInListing WHERE (Listing = @listing OR @listing = NULL);
