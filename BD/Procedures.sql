@@ -26,6 +26,13 @@ AS
 
 GO
 
+CREATE PROC usp_addDeck(@deck_name VARCHAR(255), @user VARCHAR(255), @r INT OUTPUT)
+AS
+	INSERT INTO Deck(name,creator) VALUES (@deck_name, @user);
+	SELECT @r = id FROM Deck WHERE creator = @user AND name = @deck_name;
+
+GO
+
 CREATE PROC usp_login (@user VARCHAR(255), @pass VARCHAR(max), @r BIT OUTPUT) 
 AS
 BEGIN

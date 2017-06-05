@@ -219,10 +219,10 @@ GO
 
 CREATE FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
 AS
-	RETURN(SELECT * FROM CardInListing WHERE (Listing = @listing OR @listing = NULL);
+	RETURN(SELECT * FROM CardInListing JOIN Card ON CardInListing.Card = Card.ID WHERE (Listing = @listing OR @listing = NULL));
 
 GO
 
 CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
 AS
-	RETURN (SELECT * FROM CardInListingHistory WHERE (Listing = @listing or @listing = NULL);
+	RETURN (SELECT * FROM CardInListingHistory JOIN Card ON CardInListing.Card = Card.ID WHERE (Listing = @listing or @listing = NULL));

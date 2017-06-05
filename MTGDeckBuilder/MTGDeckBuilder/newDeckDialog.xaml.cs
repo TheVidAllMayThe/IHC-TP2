@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Windows.Navigation;
+using System.Data;
 
 namespace MTGDeckBuilder
 {
@@ -24,7 +25,7 @@ namespace MTGDeckBuilder
     {
         private SqlConnection thisConnection;
         public int deck_id;
-       
+
         public newDeckDialog()
         {
             InitializeComponent();
@@ -35,30 +36,56 @@ namespace MTGDeckBuilder
         private void btnDialogOk_Click(object sender, RoutedEventArgs e)
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-            String deck_name = txtAnswer.Text;
-            string getData = "SELECT * FROM Deck WHERE creator = '" + App.User +"' AND name = '" + deck_name + "'";
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            if (dr.Read())
+            using (SqlConnection conn = new SqlConnection(@cs))
             {
-                MessageBox.Show("You already have a deck with that name!", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Question);
-                return;
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM udf_userDecks(@user)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@user", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@user"].Value = App.User;
+
+                    // open connection and execute stored procedure
+                    conn.Open();
+                    SqlDataReader queryCommandReader = cmd.ExecuteReader();
+
+                    while (queryCommandReader.Read())
+                    {
+                        if (queryCommandReader["name"].ToString() == txtAnswer.Text)
+                        {
+                            MessageBox.Show("You already have a deck with that name!", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Question);
+                            conn.Close();
+                            return;
+                        }
+                    }
+                }
+                using (SqlCommand cmd = new SqlCommand("EXEC udf_addDeck @deck_name, @user", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@user", SqlDbType.VarChar, 255);
+                    cmd.Parameters.Add("@deck_name", SqlDbType.VarChar, 255);
+                    cmd.Parameters.Add("@r", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                    // set parameter values
+                    cmd.Parameters["@deck_name"].Value = txtAnswer.Text;
+                    cmd.Parameters["@user"].Value = App.User;
+
+                    // open connection and execute stored procedure
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    // read output value from @NewId
+                    deck_id = Convert.ToInt32(cmd.Parameters["@r"].Value);
+                    conn.Close();
+                    this.DialogResult = true;
+                }
+
             }
-            dr.Close();
-            getData = "INSERT INTO Deck(name,creator) VALUES ('" + deck_name + "', '" + App.User + "')";
-            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
-
-            getData = "SELECT id FROM Deck WHERE creator = '" + App.User + "' AND name = '" + deck_name + "'";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-
-            deck_id = dr.GetInt32(0);
-            dr.Close();
-            thisConnection.Close();
-            this.DialogResult = true;
         }
-
     }
 }
