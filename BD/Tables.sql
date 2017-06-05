@@ -10,7 +10,8 @@ CREATE TABLE [User] (
 	email VARCHAR(255) NOT NULL,
 	[password] TEXT NOT NULL,
 	balance MONEY DEFAULT 0.0 NOT NULL,
-	PRIMARY KEY (email)
+	PRIMARY KEY (email),
+	CHECK(balance >= 0.0)
 );
 
 CREATE TABLE Edition (
@@ -139,17 +140,23 @@ CREATE TABLE CardInListing(
 	Condition VARCHAR(20),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Listing) REFERENCES Listing(ID),
-	FOREIGN KEY (Card) REFERENCES Card(ID),
-	CHECK(Units > 0)
+	FOREIGN KEY (Card) REFERENCES Card(ID)
 );
 
 CREATE TABLE CardInListingHistory(
-	ID INT NOT NULL,
+	ID INT IDENTITY(1,1) NOT NULL,
 	EndDate DATE NOT NULL,
 	SecondaryUser VARCHAR(255) NOT NULL,
+	Listing INT NOT NULL,
+	Card INT NOT NULL,
+	Price_Per_Unit MONEY NOT NULL,
+	Units INT DEFAULT 1 NOT NULL,
+	Condition VARCHAR(20),
 	PRIMARY KEY (ID),
-	FOREIGN KEY (ID) REFERENCES CardInListing(ID),
-	FOREIGN KEY (SecondaryUser) REFERENCES [User](Email)
+	FOREIGN KEY (Listing) REFERENCES Listing(ID),
+	FOREIGN KEY (Card) REFERENCES Card(ID),
+	FOREIGN KEY (SecondaryUser) REFERENCES [User](Email),
+	CHECK(Units > 0)
 );
 
 CREATE TABLE ListingBid(

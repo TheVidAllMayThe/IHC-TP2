@@ -2,7 +2,7 @@ USE Magic;
 
 GO
 
-CREATE PROC addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
+CREATE PROC usp_addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
 AS
 	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck)
 		UPDATE CardInDeck SET amount = amount + @amount WHERE deck = @deck AND card = @cardId AND isSideboard = @sideboard;
@@ -11,7 +11,7 @@ AS
 
 GO
 
-CREATE PROC rate @user VARCHAR(255), @deckID INT, @rating FLOAT
+CREATE PROC usp_rate @user VARCHAR(255), @deckID INT, @rating FLOAT
 AS
 	IF EXISTS(SELECT * FROM RatedBy WHERE deck = @deckID AND [user] = @user)
 		UPDATE RatedBy SET rating = @rating where (deck=@deckID and [user] = @user);
@@ -20,19 +20,19 @@ AS
 
 GO
 
-CREATE PROC register(@user VARCHAR(255), @password TEXT)
+CREATE PROC usp_register(@user VARCHAR(255), @password TEXT)
 AS
 	INSERT INTO [User] VALUES (@user, @password);
 
 GO
 
-CREATE PROC [dbo].[usp_login] (@user VARCHAR(255), @pass VARCHAR(max), @r BIT OUTPUT) 
+CREATE PROC usp_login (@user VARCHAR(255), @pass VARCHAR(max), @r BIT OUTPUT) 
 AS
 BEGIN
 	DECLARE @passw VARCHAR(max) = HASHBYTES('SHA2_512', @pass)
 	IF dbo.isRegistered(@user) = 0
 	BEGIN
-		EXEC register @user, @passw
+		EXEC usp_register @user, @passw
 		SET @r = 1;
 		RETURN;
 	END
@@ -74,18 +74,17 @@ AS
 			ROLLBACK TRAN;
 		END
 		
-		INSERT INTO CardInListing (Listing, Card, Price_Per_Unit, Units, Condition) SELECT Listing, Card, Price_Per_Unit, @amount, Condition FROM CardInListing;
+		INSERT INTO CardInListingHistory (Listing, Card, Price_Per_Unit, Units, Condition, EndDate, SecondaryUser) SELECT Listing, Card, Price_Per_Unit, @amount, Condition, getdate(), @user FROM CardInListing;
 		
 		DECLARE @max INT;
 		SELECT @max = Units FROM CardInListing WHERE ID = @cardinlisting;
 		IF (@amount > @max)
 		BEGIN
-			RAISERROR('Cannot buy more than what is sold', 11, 0);
+			RAISERROR('Not a valid amount of cards', 11, 0);
 			ROLLBACK TRAN;
 		END
 		
 		UPDATE CardInListing SET Units = Units - @amount WHERE ID = @cardinlisting;
-		INSERT INTO CardInListingHistory (ID, EndDate, SecondaryUser) VALUES (@cardinlisting, getdate(), @user);
 
 		IF (@sell = 1)
 		BEGIN

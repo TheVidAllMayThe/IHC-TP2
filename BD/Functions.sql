@@ -2,15 +2,6 @@ USE Magic;
 
 GO
 
-CREATE FUNCTION login (@user VARCHAR(255), @pass TEXT) Returns bit
-AS
-BEGIN
-	IF EXISTS(SELECT * FROM [User] WHERE email = @user AND password LIKE @pass) RETURN 1;
-	RETURN 0;
-END
-
-GO
-
 CREATE FUNCTION isRegistered(@email varchar(255)) Returns bit
 AS
 BEGIN
