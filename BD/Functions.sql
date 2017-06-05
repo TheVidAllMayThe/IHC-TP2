@@ -2,7 +2,7 @@ USE Magic;
 
 GO
 
-CREATE FUNCTION udf_isRegistered(@email varchar(255)) Returns bit
+CREATE FUNCTION udf_isRegistered(@email varchar(255)) RETURNS BIT
 AS
 BEGIN
 	IF EXISTS(SELECT * FROM [User] WHERE email = @email)
@@ -12,7 +12,19 @@ END
 
 GO
 
-CREATE FUNCTION udf_getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) Returns Table
+CREATE FUNCTION udf_userDecks(@user VARCHAR(255)) RETURNS TABLE
+AS
+	RETURN(SELECT id, name FROM Deck WHERE creator = @user);
+
+GO
+
+CREATE FUNCTION udf_handDeck(@deck INT) RETURNS TABLE
+AS
+	RETURN (SELECT amount, multiverseID FROM CardInDeck JOIN Card ON CardInDeck.card = Card.id AND deck = @deck AND isSideBoard = 0);
+
+GO
+
+CREATE FUNCTION udf_getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) RETURNS TABLE
 AS
 	RETURN (SELECT card, name, deck, amount, multiverseID
 			FROM DeckCard
@@ -195,10 +207,10 @@ GO
 
 CREATE FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
 AS
-	RETURN(SELECT * FROM CardInListing WHERE Listing = @listing);
+	RETURN(SELECT * FROM CardInListing WHERE (Listing = @listing OR @listing = NULL);
 
 GO
 
 CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
 AS
-	RETURN (SELECT * FROM CardInListingHistory WHERE Listing = @listing);
+	RETURN (SELECT * FROM CardInListingHistory WHERE (Listing = @listing or @listing = NULL);
