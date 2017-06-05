@@ -95,15 +95,35 @@
                 <TabItem.Header>
                     <Label Style="{StaticResource Card Title Style}" Content="Bidding"/>
                 </TabItem.Header>
-
                 <!-- Starting Hand tab content -->
             </TabItem>
             <TabItem>
                 <TabItem.Header>
                     <Label  Style="{StaticResource Card Title Style}" Content="Personal"/>
                 </TabItem.Header>
-
-                <!-- Starting Hand tab content -->
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel>
+                            <ListBox x:Name="listBox_myS" ItemTemplate="{StaticResource listings_selling_cards}"/>
+                            <Button Content="Add"/>
+                            <Button Content="Delete"/>
+                        </StackPanel>
+                        <ListBox x:Name="listBox_myB" ItemTemplate="{StaticResource list_buying_cards}"/>
+                        <Button Content="Add"/>
+                        <Button Content="Delete"/>
+                        <ListBox x:Name="listBox_cards" ScrollViewer.CanContentScroll="True" Height="400">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label Content="{Binding Name}"/>
+                                        <Label Content="{Binding Id}"/>
+                                        <Button Content="Add"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>
