@@ -2,7 +2,7 @@ USE Magic;
 
 GO
 
-CREATE FUNCTION isRegistered(@email varchar(255)) Returns bit
+CREATE FUNCTION udf_isRegistered(@email varchar(255)) Returns bit
 AS
 BEGIN
 	IF EXISTS(SELECT * FROM [User] WHERE email = @email)
@@ -12,7 +12,7 @@ END
 
 GO
 
-CREATE FUNCTION getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) Returns Table
+CREATE FUNCTION udf_getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) Returns Table
 AS
 	RETURN (SELECT card, name, deck, amount, multiverseID
 			FROM DeckCard
@@ -21,7 +21,7 @@ AS
 
 GO
 
-CREATE FUNCTION manaCurve (@deckID int) Returns Table
+CREATE FUNCTION udf_manaCurve (@deckID int) Returns Table
 AS
 	RETURN (SELECT cmc, SUM(amount) AS n
 			FROM (SELECT card, amount FROM CardInDeck WHERE deck = @deckID) AS cid
@@ -30,7 +30,7 @@ AS
 			GROUP BY cmc)
 GO
 
-CREATE FUNCTION cardTypeDistribution (@deckID int) Returns @table TABLE(rarity VARCHAR(255), perc real)
+CREATE FUNCTION udf_cardTypeDistribution (@deckID int) Returns @table TABLE(rarity VARCHAR(255), perc real)
 AS
 	BEGIN
 		DECLARE @total INT;
@@ -47,7 +47,7 @@ AS
 	END
 GO
 
-CREATE FUNCTION manaDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
+CREATE FUNCTION udf_manaDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
 AS
 	BEGIN
 		DECLARE @total INT;
@@ -65,7 +65,7 @@ AS
 
 GO
 
-CREATE FUNCTION manasourceDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
+CREATE FUNCTION udf_manasourceDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
 AS
 	BEGIN
 		DECLARE @total INT;
@@ -88,7 +88,7 @@ AS
 
 GO
 
-CREATE FUNCTION search_cards (@name Varchar(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns Table
+CREATE FUNCTION udf_search_cards (@name Varchar(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @abilities VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) Returns Table
 AS
 	RETURN(
 		SELECT distinct seven.id, seven.multiverseID, seven.name as cardName, seven.editionName, seven.rarity, seven.cmc 
@@ -127,7 +127,7 @@ AS
 
 GO
 
-CREATE FUNCTION subType(@card INT) RETURNS VARCHAR(MAX)
+CREATE FUNCTION udf_subType(@card INT) RETURNS VARCHAR(MAX)
 AS
 	BEGIN
 		DECLARE @subtype VARCHAR(MAX);
@@ -139,7 +139,7 @@ AS
 
 GO
 
-CREATE FUNCTION onGoingListings(@sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_onGoingListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(
 		SELECT ID, listingid, [User], StartDate, card, cardname, priceperunit, condition, units
@@ -158,7 +158,7 @@ AS
 
 GO
 
-CREATE FUNCTION finishedListings(@sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_finishedListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(
 		SELECT ID, listingid, [User], StartDate, card, cardname, priceperunit, condition, units
@@ -177,10 +177,28 @@ AS
 	
 GO
 
-CREATE FUNCTION totalListingPrice(@listingID INT) RETURNS FLOAT
+CREATE FUNCTION udf_totalListingPrice(@listingID INT) RETURNS FLOAT
 AS
 	BEGIN
 		DECLARE @sum float;
 		SELECT @sum = SUM(Price_Per_Unit*Units) FROM CardInListing WHERE Listing = @listingID;
 		return @sum;
 	END
+
+GO
+
+CREATE FUNCTION udf_userListings(@user VARCHAR(255), @sell BIT) RETURNS TABLE
+AS
+	RETURN(SELECT * FROM Listing WHERE [User] = @user AND Sell = @sell);
+
+GO
+
+CREATE FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
+AS
+	RETURN(SELECT * FROM CardInListing WHERE Listing = @listing);
+
+GO
+
+CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
+AS
+	RETURN (SELECT * FROM CardInListingHistory WHERE Listing = @listing);
