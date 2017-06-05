@@ -307,7 +307,7 @@ namespace MTGDeckBuilder
             thisConnection.Open();
 
             //String getData = "SELECT * FROM listings(1, 0)";
-            String getData = "SELECT * FROM Listing";
+            String getData = "SELECT * FROM udf_allCardsInListings(1)";
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             ObservableCollection<CardInListing> temp = new ObservableCollection<CardInListing>();
@@ -318,7 +318,7 @@ namespace MTGDeckBuilder
             //selling.ItemsSource = temp;
             listBox_s.ItemsSource = temp;
 
-            getData = "SELECT * FROM Listing";
+            getData = "SELECT * FROM udf_allCardsInListings(0)";
             //getData = "SELECT * FROM listings(0, 0)";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
@@ -338,52 +338,96 @@ namespace MTGDeckBuilder
             ObservableCollection<Listing> listings = new ObservableCollection<Listing>(); 
             while (dr.Read()) {
 
-                SqlDataReader dr2 = new SqlCommand("SELECT dbo.totalListingPrice(" + dr["ID"] + ")", thisConnection).ExecuteReader();
+                SqlDataReader dr2 = new SqlCommand("SELECT dbo.udf_totalListingPrice(" + dr["ID"] + ")", thisConnection).ExecuteReader();
                 dr2.Read();
-                listings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), EndDate = dr["EndDate"].ToString(), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()), TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0)) });
+                listings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()) });//, TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0)) });
 
             }
 
             listBox_ls.ItemsSource = listings;
 
 
-            getData = "EXEC usp_CardSelect null";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            ObservableCollection<Card2> cards = new ObservableCollection<Card2>();
-            for (int i = 0; (dr.Read()); i++)
+            if (listBox_cards.ItemsSource == null)
             {
-                cards.Add(new Card2 { Id = int.Parse(dr["id"].ToString()), Name = dr["name"].ToString() });
+                getData = "EXEC usp_CardSelect null";
+                dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+                ObservableCollection<Card2> cards = new ObservableCollection<Card2>();
+                for (int i = 0; (dr.Read()); i++)
+                {
+                    cards.Add(new Card2 { Id = int.Parse(dr["id"].ToString()), Name = dr["name"].ToString() });
+                }
+
+                listBox_cards.ItemsSource = cards;
             }
-
-            listBox_cards.ItemsSource = cards;
-
-
-            getData = "SELECT * FROM userListings('" + App.User + "', " + 1 + ")";
+            
+            getData = "SELECT * FROM udf_userListings('" + App.User + "', " + 1 + ")";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             ObservableCollection<Listing> userSellingListings = new ObservableCollection<Listing>();
 
             for (int i = 0; (dr.Read()); i++)
             {
-                SqlDataReader dr2 = new SqlCommand("SELECT dbo.totalListingPrice(" + dr["ID"] + ")", thisConnection).ExecuteReader();
+                SqlDataReader dr2 = new SqlCommand("SELECT dbo.udf_totalListingPrice(" + dr["ID"] + ")", thisConnection).ExecuteReader();
                 dr2.Read();
-                userSellingListings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), EndDate = dr["EndDate"].ToString(), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()), TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0)) });
+                userSellingListings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()) });//, TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0)) });
             }
 
-            listBox_myS.ItemsSource = cards;
+            listBox_myS.ItemsSource = userSellingListings;
 
 
-
-            getData = "SELECT * FROM userListings('" + App.User + "', " + 1 + ")";
+            getData = "SELECT * FROM udf_userListings('" + App.User + "', " + 0 + ")";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             ObservableCollection<Listing> userBuyingListings = new ObservableCollection<Listing>();
 
             for (int i = 0; (dr.Read()); i++)
             {
-                userBuyingListings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), EndDate = dr["EndDate"].ToString(), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()), TotalPrice = 0});
+                userBuyingListings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()), TotalPrice = 0});
             }
 
-            listBox_myB.ItemsSource = cards;
+            listBox_myB.ItemsSource = userBuyingListings;
+            
+        }
 
+        private void newSellListing(object sender, RoutedEventArgs e)
+        {
+            insertListing(true);
+        }
+
+        public void insertListing(bool sell)
+        {
+            App.User = "ola123@ua.pt";
+            DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_ListingInsert '" + App.User + "', null, " + (sell ? 1 : 0));
+            updateVisual();
+        }
+
+        private void deleteSellListing(object sender, RoutedEventArgs e)
+        {
+            if(listBox_myS.SelectedIndex != -1)
+                deleteListing(((Listing)listBox_myS.SelectedItem).Id);
+        }
+
+        public void deleteListing(int id)
+        {
+            DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_deleteListing " + id);
+            updateVisual();
+        }
+
+        private void listBox_myS_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SqlDataReader dr = DatabaseControl.getDataReader("EXEC udf_cardInListing " + ((Listing)listBox_myS.SelectedItem).Id);
+            ObservableCollection<CardInListing> cardsInListing = new ObservableCollection<CardInListing>();
+            while (dr.Read())
+            {
+                cardsInListing.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["listingid"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["priceperunit"].ToString()), Condition = dr["condition"].ToString(), Units = int.Parse(dr["units"].ToString()) });
+            }
+            listBox_cardsInListingSelling.ItemsSource = cardsInListing;
+
+            dr = DatabaseControl.getDataReader("EXEC udf_cardInListingHistory " + ((Listing)listBox_myS.SelectedItem).Id);
+            ObservableCollection<CardInListing> cardsInListingBought = new ObservableCollection<CardInListing>();
+            while (dr.Read())
+            {
+                cardsInListingBought.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["listingid"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["priceperunit"].ToString()), Condition = dr["condition"].ToString(), Units = int.Parse(dr["units"].ToString()) });
+            }
+            listBox_cardsInListingSold.ItemsSource = cardsInListingBought;
         }
     }
 }

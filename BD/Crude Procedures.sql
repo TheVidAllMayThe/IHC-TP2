@@ -1049,14 +1049,16 @@ END
 GO
 CREATE PROC [dbo].[usp_ListingInsert] 
     @User varchar(255),
-    @StartDate date,
-    
+    @StartDate DATETIME,
     @Sell bit
 AS 
 	SET NOCOUNT ON 
 	SET XACT_ABORT ON  
 	
 	BEGIN TRAN
+
+	if @StartDate is null
+		set @StartDate = sysDateTime();
 	
 	INSERT INTO [dbo].[Listing] ([User], [StartDate], [Sell])
 	SELECT @User, @StartDate, @Sell
@@ -1068,6 +1070,9 @@ AS
 	-- End Return Select <- do not remove
                
 	COMMIT
+
+
+
 GO
 IF OBJECT_ID('[dbo].[usp_ListingUpdate]') IS NOT NULL
 BEGIN 

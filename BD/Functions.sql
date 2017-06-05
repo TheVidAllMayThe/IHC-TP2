@@ -217,12 +217,18 @@ AS
 
 GO
 
+
+
 CREATE FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
 AS
-	RETURN(SELECT * FROM CardInListing JOIN Card ON CardInListing.Card = Card.ID WHERE (Listing = @listing OR @listing = NULL));
+	RETURN(SELECT CardInListing.*, Card.name, Card.id as cardID FROM CardInListing JOIN Card ON CardInListing.Card = Card.ID WHERE (Listing = @listing OR @listing = NULL));
 
 GO
 
+
+use Magic;
+go
+
 CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
 AS
-	RETURN (SELECT * FROM CardInListingHistory JOIN Card ON CardInListing.Card = Card.ID WHERE (Listing = @listing or @listing = NULL));
+	RETURN (SELECT CardInListingHistory.*, Card.name, Card.id as cardID FROM CardInListingHistory JOIN Card ON CardInListingHistory.Card = Card.ID WHERE (Listing = @listing or @listing = NULL));

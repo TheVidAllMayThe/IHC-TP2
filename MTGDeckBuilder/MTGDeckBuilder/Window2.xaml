@@ -104,24 +104,66 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <StackPanel>
-                            <ListBox x:Name="listBox_myS" ItemTemplate="{StaticResource listings_selling_cards}"/>
-                            <Button Content="Add"/>
-                            <Button Content="Delete"/>
+                            <Label FontSize="40" Content="Selling" Foreground="White"/>
+                            <ListBox x:Name="listBox_myS" ItemTemplate="{StaticResource listings_selling_cards}" MouseLeftButtonUp="listBox_myS_MouseLeftButtonUp"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Add" Click="newSellListing"/>
+                                <Button Content="Delete" Click="deleteSellListing"/>
+                            </StackPanel>
                         </StackPanel>
-                        <ListBox x:Name="listBox_myB" ItemTemplate="{StaticResource list_buying_cards}"/>
-                        <Button Content="Add"/>
-                        <Button Content="Delete"/>
-                        <ListBox x:Name="listBox_cards" ScrollViewer.CanContentScroll="True" Height="400">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label Content="{Binding Name}"/>
-                                        <Label Content="{Binding Id}"/>
-                                        <Button Content="Add"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <StackPanel Margin="40, 0, 0, 0">
+                            <Label FontSize="40" Content="Buying" Foreground="White"/>
+                            <ListBox x:Name="listBox_myB" ItemTemplate="{StaticResource list_buying_cards}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Add"/>
+                                <Button Content="Delete"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Margin="40, 0, 0, 0">
+                            <Label FontSize="40" Content="Cards" Foreground="White"/>
+                            <ListBox x:Name="listBox_cards" ScrollViewer.CanContentScroll="True" Height="400">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding Name}"/>
+                                            <Label Content="{Binding Id}"/>
+                                            <Button Content="Add"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                        <StackPanel Margin="40, 0, 0, 0">
+                            <Label FontSize="30" Content="Cards in listing (Selling)" Foreground="White"/>
+                            <ListBox x:Name="listBox_cardsInListingSelling" ScrollViewer.CanContentScroll="True" Height="400">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding Units}"/>
+                                            <Label Content="{Binding Name}"/>
+                                            <Label Content="{Binding Priceperunit}"/>
+                                            <Button Content="Add"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                        <StackPanel Margin="40, 0, 0, 0">
+                            <Label FontSize="30" Content="Cards in listing (Bought)" Foreground="White"/>
+                            <ListBox x:Name="listBox_cardsInListingSold" ScrollViewer.CanContentScroll="True" Height="400">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding Name}"/>
+                                            <Label Content="{Binding Id}"/>
+                                            <Button Content="Add"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                        
                     </StackPanel>
                 </StackPanel>
             </TabItem>
