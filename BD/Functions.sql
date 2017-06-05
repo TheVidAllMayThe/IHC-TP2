@@ -188,13 +188,16 @@ AS
 			ON l.listingid = ca.Listing)
 	
 GO
-
+use Magic;
+go
 CREATE FUNCTION udf_totalListingPrice(@listingID INT) RETURNS FLOAT
 AS
 	BEGIN
 		DECLARE @sum float;
 		SELECT @sum = SUM(Price_Per_Unit*Units) FROM CardInListing WHERE Listing = @listingID;
-		return @sum;
+		IF @sum is not null
+			return @sum;
+		return 0.0
 	END
 
 GO
@@ -205,16 +208,17 @@ AS
 
 GO
 
+USE Magic;
+go
 CREATE FUNCTION udf_allCardsInListings(@sell BIT) RETURNS TABLE
 AS
-	RETURN(SELECT Listing.* FROM CardInListing JOIN Listing ON CardInListing.Listing = Listing.ID AND Listing.Sell = @sell);
+	RETURN(SELECT CardInListing.*, Listing.StartDate, Listing.[User], Card.name AS CardName FROM CardInListing JOIN Listing ON CardInListing.Listing = Listing.ID AND Listing.Sell = @sell JOIN Card ON Card.id = CardInListing.Card);
 
 GO
 
 CREATE FUNCTION udf_allCardsInHistoryListings(@sell BIT) RETURNS TABLE
 AS
-	RETURN(SELECT Listing.* FROM CardInListingHistory JOIN Listing ON CardInListingHistory.Listing = Listing.ID AND Listing.Sell = @sell);
-
+	RETURN(SELECT CardInListingHistory.*, Listing.StartDate, Listing.[User], Card.name AS CardName FROM CardInListingHistory JOIN Listing ON CardInListingHistory.Listing = Listing.ID AND Listing.Sell = @sell JOIN Card ON Card.id = CardInListingHistory.Card);
 GO
 
 
@@ -226,9 +230,12 @@ AS
 GO
 
 
+
+
 use Magic;
 go
 
 CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
 AS
 	RETURN (SELECT CardInListingHistory.*, Card.name, Card.id as cardID FROM CardInListingHistory JOIN Card ON CardInListingHistory.Card = Card.ID WHERE (Listing = @listing or @listing = NULL));
+

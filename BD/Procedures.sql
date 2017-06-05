@@ -104,3 +104,36 @@ AS
 			UPDATE [User] SET balance += @priceperunit * @amount WHERE email = @user;
 		END
 	COMMIT TRAN;
+
+go
+
+use Musle
+DELETE FROM Listing;
+DELETE FROM CardInListing;
+USE Magic;
+GO
+CREATE PROC usp_addCardToListing @listing int, @card int, @price Money, @condition varchar(20)
+AS
+	IF EXISTS(SELECT * FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price)
+	BEGIN
+		DECLARE @amount int;
+		SELECT @amount = units FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price;
+		UPDATE CardInListing SET Units = @amount + 1 where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price;
+	END
+	ELSE
+		INSERT INTO CardInListing VALUES (@listing, @card, @price, 1, @condition);
+
+go
+
+CREATE PROC usp_rmCardToListing @listing int, @card int, @price Money, @condition varchar(20)
+AS
+	IF EXISTS(SELECT * FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price and Units > 1)
+	BEGIN
+		DECLARE @amount int;
+		SELECT @amount = units FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price;
+		UPDATE CardInListing SET Units = @amount - 1 where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price;
+	END
+	ELSE
+		DELETE FROM CardInListing WHERE ;
+
+go

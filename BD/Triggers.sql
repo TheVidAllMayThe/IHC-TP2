@@ -43,6 +43,9 @@ AS
 
 GO
 
+
+use Magic
+go
 CREATE TRIGGER unit_check ON CardInListing
 AFTER UPDATE
 AS
@@ -57,7 +60,7 @@ AS
 	BEGIN
 		DECLARE @id INT ;
 		SELECT @id = ID FROM INSERTED;
-		DELETE FROM Listing WHERE ID = @id;
+		DELETE FROM CardInListing WHERE ID = @id;
 	END
 	COMMIT
 

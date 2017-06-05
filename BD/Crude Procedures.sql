@@ -1950,7 +1950,7 @@ AS
 
 	BEGIN TRAN
 
-	SELECT [email], [password] 
+	SELECT [email], [password], [balance]
 	FROM   [dbo].[User] 
 	WHERE  ([email] = @email OR @email IS NULL) 
 

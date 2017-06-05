@@ -289,31 +289,34 @@ namespace MTGDeckBuilder
             updateVisual();
         }
 
-        private void buy(object sender, RoutedEventArgs e)
+        private void buyCard(object sender, RoutedEventArgs e)
         {
-            CardInListing l = sender as CardInListing;
-            if(l.AmountToBuy > l.Units || l.AmountToBuy<0)
-            {
-                MessageBox.Show("Can't buy that much");
-                return;
-            }
+
+            if (listBox_s.SelectedIndex == -1) return;
+            CardInListing l = listBox_s.SelectedItem as CardInListing;
+            DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_buyOrSellCard " + l.Id + ", " + 1 + ", '" + App.User + "',"+ 1);
+            updateVisual();
         }
 
         private void updateVisual()
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
+            SqlDataReader dr = DatabaseControl.getDataReader("EXEC usp_UserSelect '" + App.User + "'");
+            dr.Read();
+            money.Content = "i has ale dis monis: " + dr["balance"];
+
             SqlConnection thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
             //String getData = "SELECT * FROM listings(1, 0)";
             String getData = "SELECT * FROM udf_allCardsInListings(1)";
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             ObservableCollection<CardInListing> temp = new ObservableCollection<CardInListing>();
             while (dr.Read())
             {
-                temp.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["listingid"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["priceperunit"].ToString()), Condition = dr["condition"].ToString(), Units = int.Parse(dr["units"].ToString()) });
+                temp.Add(new CardInListing { User =  dr["User"].ToString() ,Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["Listing"].ToString()), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["Card"].ToString()), Cardname = dr["CardName"].ToString(), Priceperunit = double.Parse(dr["Price_Per_Unit"].ToString()), Condition = dr["Condition"].ToString(), Units = int.Parse(dr["Units"].ToString()) });
             }
             //selling.ItemsSource = temp;
             listBox_s.ItemsSource = temp;
@@ -326,7 +329,7 @@ namespace MTGDeckBuilder
 
             while (dr.Read())
             {
-                temp.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["listingid"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["priceperunit"].ToString()), Condition = dr["condition"].ToString(), Units = int.Parse(dr["units"].ToString()) });
+                temp.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["Listing"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["Card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["Price_Per_Unit"].ToString()), Condition = dr["Condition"].ToString(), Units = int.Parse(dr["Units"].ToString()) });
             }
 
             listBox_b.ItemsSource = temp;
@@ -340,11 +343,10 @@ namespace MTGDeckBuilder
 
                 SqlDataReader dr2 = new SqlCommand("SELECT dbo.udf_totalListingPrice(" + dr["ID"] + ")", thisConnection).ExecuteReader();
                 dr2.Read();
-                listings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()) });//, TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0)) });
-
+                listings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()), TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0))});
             }
 
-            listBox_ls.ItemsSource = listings;
+            //listBox_ls.ItemsSource = listings;
 
 
             if (listBox_cards.ItemsSource == null)
@@ -367,8 +369,11 @@ namespace MTGDeckBuilder
             for (int i = 0; (dr.Read()); i++)
             {
                 SqlDataReader dr2 = new SqlCommand("SELECT dbo.udf_totalListingPrice(" + dr["ID"] + ")", thisConnection).ExecuteReader();
+                Console.WriteLine("SELECT dbo.udf_totalListingPrice(" + dr["ID"] + ")");
                 dr2.Read();
-                userSellingListings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()) });//, TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0)) });
+                double totalPrice = dr2.GetDouble(0); 
+                    
+                userSellingListings.Add(new Listing { Id = int.Parse(dr["ID"].ToString()), StartDate = (dr["StartDate"] == null ? "null" : dr["StartDate"].ToString()), TotalPrice = totalPrice});
             }
 
             listBox_myS.ItemsSource = userSellingListings;
@@ -384,12 +389,16 @@ namespace MTGDeckBuilder
             }
 
             listBox_myB.ItemsSource = userBuyingListings;
-            
+
         }
 
         private void newSellListing(object sender, RoutedEventArgs e)
         {
             insertListing(true);
+        }
+        private void newBuyListing(object sender, RoutedEventArgs e)
+        {
+            insertListing(false);
         }
 
         public void insertListing(bool sell)
@@ -401,9 +410,23 @@ namespace MTGDeckBuilder
 
         private void deleteSellListing(object sender, RoutedEventArgs e)
         {
-            if(listBox_myS.SelectedIndex != -1)
+            int index = listBox_myS.SelectedIndex;
+            if (index != -1)
                 deleteListing(((Listing)listBox_myS.SelectedItem).Id);
+
+            listBox_myS.SelectedIndex = index;
         }
+
+        private void deleteBuyListing(object sender, RoutedEventArgs e)
+        {
+            int index = listBox_myB.SelectedIndex;
+            if (listBox_myB.SelectedIndex != -1)
+                deleteListing(((Listing)listBox_myB.SelectedItem).Id);
+            listBox_myB.SelectedIndex = index;
+        }
+
+
+
 
         public void deleteListing(int id)
         {
@@ -413,21 +436,85 @@ namespace MTGDeckBuilder
 
         private void listBox_myS_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            SqlDataReader dr = DatabaseControl.getDataReader("EXEC udf_cardInListing " + ((Listing)listBox_myS.SelectedItem).Id);
-            ObservableCollection<CardInListing> cardsInListing = new ObservableCollection<CardInListing>();
-            while (dr.Read())
-            {
-                cardsInListing.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["listingid"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["priceperunit"].ToString()), Condition = dr["condition"].ToString(), Units = int.Parse(dr["units"].ToString()) });
-            }
-            listBox_cardsInListingSelling.ItemsSource = cardsInListing;
+            updateCardsList();
+        }
 
-            dr = DatabaseControl.getDataReader("EXEC udf_cardInListingHistory " + ((Listing)listBox_myS.SelectedItem).Id);
-            ObservableCollection<CardInListing> cardsInListingBought = new ObservableCollection<CardInListing>();
-            while (dr.Read())
+        private void addCardSell(object sender, RoutedEventArgs e)
+        {
+            if (listBox_cards.SelectedIndex == -1 || listBox_myS.SelectedIndex == -1) return;
+            int index1 = listBox_cards.SelectedIndex, index2 = listBox_myS.SelectedIndex;
+            try
             {
-                cardsInListingBought.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["listingid"].ToString()), User = dr["User"].ToString(), Startdate = dr["StartDate"].ToString(), Card = int.Parse(dr["card"].ToString()), Cardname = dr["cardname"].ToString(), Priceperunit = double.Parse(dr["priceperunit"].ToString()), Condition = dr["condition"].ToString(), Units = int.Parse(dr["units"].ToString()) });
+                DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_addCardToListing " + ((Listing)listBox_myS.SelectedItem).Id + ", " + ((Card2)listBox_cards.SelectedItem).Id + ", " + price.Text + ", '" + condition.Text + "'");
+            }catch(SqlException sqlE) { Console.Write("" + sqlE); }
+
+            updateCardsList();
+            updateVisual();
+            listBox_cards.SelectedIndex = index1;
+            listBox_myS.SelectedIndex = index2;
+        }
+
+        private void addCardBuy(object sender, RoutedEventArgs e)
+        {
+            if (listBox_cards.SelectedIndex == -1 || listBox_myB.SelectedIndex == -1) return;
+            int index1 = listBox_cards.SelectedIndex, index2 = listBox_myB.SelectedIndex;
+            try
+            {
+                DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_addCardToListing " + ((Listing)listBox_myB.SelectedItem).Id + ", " + ((Card2)listBox_cards.SelectedItem).Id + ", " + price.Text + ", '" + condition.Text + "'");
             }
-            listBox_cardsInListingSold.ItemsSource = cardsInListingBought;
+            catch (SqlException sqlE) { Console.Write("" + sqlE); }
+
+            updateCardsList();
+            updateVisual();
+            listBox_cards.SelectedIndex = index1;
+            listBox_myB.SelectedIndex = index2;
+        }
+
+
+        private void updateCardsList()
+        {
+            try
+            {
+                SqlDataReader dr = DatabaseControl.getDataReader("SELECT * FROM udf_cardInListing(" + ((Listing)listBox_myS.SelectedItem).Id + ")");
+                ObservableCollection<CardInListing> cardsInListing = new ObservableCollection<CardInListing>();
+                while (dr.Read())
+                {
+                    cardsInListing.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["Listing"].ToString()), Card = int.Parse(dr["cardID"].ToString()), Cardname = dr["name"].ToString(), Priceperunit = double.Parse(dr["Price_Per_Unit"].ToString()), Condition = dr["Condition"].ToString(), Units = int.Parse(dr["Units"].ToString()) });
+                }
+                listBox_cardsInListingSelling.ItemsSource = cardsInListing;
+
+                dr = DatabaseControl.getDataReader("SELECT * FROM udf_cardInListingHistory(" + ((Listing)listBox_myS.SelectedItem).Id + ")");
+                ObservableCollection<CardInListing> cardsInListingBought = new ObservableCollection<CardInListing>();
+                while (dr.Read())
+                {
+                    cardsInListingBought.Add(new CardInListing { Id = int.Parse(dr["ID"].ToString()), Listingid = int.Parse(dr["Listing"].ToString()), Card = int.Parse(dr["cardID"].ToString()), Cardname = dr["name"].ToString(), Priceperunit = double.Parse(dr["Price_Per_Unit"].ToString()), Condition = dr["Condition"].ToString(), Units = int.Parse(dr["Units"].ToString()) });
+                }
+                listBox_cardsInListingSold.ItemsSource = cardsInListingBought;
+            }
+            catch (SqlException sql) {
+                Console.WriteLine(sql);
+            }
+        }
+
+        private void removeCardSell(object sender, RoutedEventArgs e)
+        {
+            if (listBox_cardsInListingSelling.SelectedIndex == -1) return;
+
+            try
+            {
+                Listing listing = ((Listing)listBox_myS.SelectedItem);
+                CardInListing cardListing = ((CardInListing)listBox_cardsInListingSelling.SelectedItem);
+                DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rmCardToListing " + listing.Id + ", " + cardListing.Card + ", " + cardListing.Priceperunit + ", '" + cardListing.Condition + "'");
+            }
+            catch (SqlException sqlE) { Console.Write("" + sqlE); }
+
+            updateCardsList();
+            updateVisual();
+        }
+
+        private void listBox_myB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }
