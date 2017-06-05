@@ -11,6 +11,23 @@ AS
 
 GO
 
+CREATE PROC usp_CardSelect @id int
+AS 
+	
+	SELECT id, name, rarity, edition, artist, imageName, gathererID, multiverseID, manaCost, text, cmc 
+	FROM   Card
+	WHERE  (id = @id OR @id IS NULL) 
+
+GO
+
+CREATE PROC usp_FlavorSelect @card int
+AS 
+	SELECT card, flavor 
+	FROM   Flavor 
+	WHERE  (card = @card OR @card IS NULL) 
+
+GO
+
 CREATE PROC usp_rate @user VARCHAR(255), @deckID INT, @rating FLOAT
 AS
 	IF EXISTS(SELECT * FROM RatedBy WHERE deck = @deckID AND [user] = @user)

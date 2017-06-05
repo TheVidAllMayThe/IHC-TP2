@@ -584,7 +584,7 @@ namespace MTGDeckBuilder
 
             string rarity = rarity_combo_box.Text.Equals("Any") ? "null" : "'" + rarity_combo_box.Text + "'";
 
-            currentQuerry = "SELECT * from search_cards(" + (searchBox.Text.Equals("Name")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
+            currentQuerry = "SELECT * from udf_search_cards(" + (searchBox.Text.Equals("Name")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
 
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
             for (int i = 0; i < 6; i++)

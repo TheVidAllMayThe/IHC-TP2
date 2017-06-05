@@ -62,7 +62,7 @@ namespace MTGDeckBuilder
                         }
                     }
                 }
-                using (SqlCommand cmd = new SqlCommand("EXEC udf_addDeck @deck_name, @user", conn))
+                using (SqlCommand cmd = new SqlCommand("usp_addDeck", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -74,9 +74,7 @@ namespace MTGDeckBuilder
                     // set parameter values
                     cmd.Parameters["@deck_name"].Value = txtAnswer.Text;
                     cmd.Parameters["@user"].Value = App.User;
-
-                    // open connection and execute stored procedure
-                    conn.Open();
+                    
                     cmd.ExecuteNonQuery();
 
                     // read output value from @NewId

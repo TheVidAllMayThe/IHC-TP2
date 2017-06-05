@@ -41,7 +41,7 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "EXEC addCardToDeck " + cardID + ", " + deckID + ", " + amount + ", " + (sideboard ? 1 : 0);
+            string getData = "EXEC usp_addCardToDeck " + cardID + ", " + deckID + ", " + amount + ", " + (sideboard ? 1 : 0);
             try
             {
                 new SqlCommand(getData, thisConnection).ExecuteNonQuery();

@@ -445,7 +445,7 @@ namespace MTGDeckBuilder
             else
                 maxInstants = "null";
 
-            currentQuerry = "SELECT * from search_decks(" + name + ", " + cards + ',' + abilities + ", " + type + ',' + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + minLands + ", " + maxLands + ", " + minCreatures + ", " + maxCreatures + ", " + minSpells + ", " + maxSpells + ", " + minArtifacts + ',' + maxArtifacts + ',' + minEnchantments + ',' + maxEnchantments + ',' + minInstants + ',' + maxInstants + ")";
+            currentQuerry = "SELECT * from udf_search_decks(" + name + ", " + cards + ", " + type + ',' + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + minLands + ", " + maxLands + ", " + minCreatures + ", " + maxCreatures + ", " + minSpells + ", " + maxSpells + ", " + minArtifacts + ',' + maxArtifacts + ',' + minEnchantments + ',' + maxEnchantments + ',' + minInstants + ',' + maxInstants + ")";
 
             setDecks(1);
         }
