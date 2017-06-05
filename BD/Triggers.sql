@@ -63,7 +63,7 @@ AS
 
 GO
 
-CREATE TRIGGER balance_check ON [User] 
+/*CREATE TRIGGER balance_check ON [User] 
 AFTER INSERT, UPDATE
 AS 
 	IF EXISTS(SELECT * FROM INSERTED WHERE balance < 0)
@@ -72,7 +72,7 @@ AS
 		ROLLBACK;
 	END
 
-GO
+GO*/
 
 CREATE TRIGGER preventEditionDeleteOrUpdate ON Edition
 INSTEAD OF DELETE, UPDATE
