@@ -105,25 +105,34 @@ namespace MTGDeckBuilder
             CardImage.Source = image;
 
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-            SqlConnection thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-            string querry = "SELECT id, name FROM Deck where creator = @email";
-            SqlCommand decksSelect = new SqlCommand(querry, thisConnection);
-            decksSelect.Parameters.Add("@email", SqlDbType.VarChar);
-            decksSelect.Parameters["@email"].Value = App.User;
-            SqlDataReader querryCommandReader = decksSelect.ExecuteReader();
-
-            decknames = new List<string>();
-            deckids = new List<int>();
-
-            while (querryCommandReader.Read())
+            using (SqlConnection conn = new SqlConnection(@cs))
+            using (SqlCommand cmd = new SqlCommand("SELECT * FROM udf_userDecks(@user)", conn))
             {
-                decknames.Add(querryCommandReader["name"].ToString());
-                deckids.Add((int)querryCommandReader["id"]);
-            }
+                cmd.CommandType = CommandType.Text;
 
-            decksCombo.ItemsSource = decknames;
-            btnDialogOk.IsEnabled = false;
+                // set up the parameters
+                cmd.Parameters.Add("@user", SqlDbType.VarChar, 255);
+
+                // set parameter values
+                cmd.Parameters["@user"].Value = App.User;
+
+                // open connection and execute stored procedure
+                conn.Open();
+                SqlDataReader queryCommandReader = cmd.ExecuteReader();
+                
+                decknames = new List<string>();
+                deckids = new List<int>();
+
+                while (queryCommandReader.Read())
+                {
+                    decknames.Add(queryCommandReader["name"].ToString());
+                    deckids.Add((int)queryCommandReader["id"]);
+                }
+
+                conn.Close();
+                decksCombo.ItemsSource = decknames;
+                btnDialogOk.IsEnabled = false;
+            }
         }
 
         public addCardDialog(BitmapImage image, String deckname, int deckID, bool isBasicLand)

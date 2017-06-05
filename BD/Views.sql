@@ -15,7 +15,7 @@ GO
 
 CREATE VIEW CardDetailed 
 AS
-	SELECT id, name, TypeOfCard.type, dbo.subType(id) AS subtype, cmc, edition, rarity, multiverseID
+	SELECT id, name, TypeOfCard.type, dbo.udf_subType(id) AS subtype, cmc, edition, rarity, multiverseID
 	FROM(	
 		SELECT Card.id, cmc, Card.name AS name, rarity, Edition.name AS edition, multiverseID
 		FROM Card

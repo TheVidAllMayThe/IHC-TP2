@@ -559,33 +559,39 @@ namespace MTGDeckBuilder
                 minPower = (min_power_box.Text);
             else
                 minPower = "null";
+
             if (!max_power_box.Text.Equals(""))
                 maxPower = (max_power_box.Text);
             else
                 maxPower = "null";
+
             if (!min_toughness_box.Text.Equals(""))
                 minTough = (min_toughness_box.Text);
             else
                 minTough = "null";
+
             if (!max_toughness_box.Text.Equals(""))
                 maxTough = (max_toughness_box.Text);
             else
                 maxTough = "null";
+
             if (!min_cmc_box.Text.Equals(""))
                 minCMC = (min_cmc_box.Text);
             else
                 minCMC = "null";
+
             if (!max_cmc_box.Text.Equals(""))
                 maxCMC = (max_cmc_box.Text);
             else
                 maxCMC = "null";
 
-            string abilities = abilities_box.Text.Equals(abilitiesStartingText) ? "null" : "'" + abilities_box.Text + "'";
+            string abilities = (abilities_box.Text.Equals(abilitiesStartingText) || abilities_box.Text.Equals("")) ? "null" : "'" + abilities_box.Text + "'";
 
-            string rarity = rarity_combo_box.Text.Equals("Any") ? "null" : "'" + rarity_combo_box.Text + "'";
+            string rarity = rarity_combo_box.Text.Equals("") ? "null" : "'" + rarity_combo_box.Text + "'";
 
-            currentQuerry = "SELECT * from udf_search_cards(" + (searchBox.Text.Equals("Name")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
-
+            Console.WriteLine(minCMC);
+            currentQuerry = "SELECT * from udf_search_cards(" + (searchBox.Text.Equals("Name")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + "," + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
+            Console.WriteLine(currentQuerry);
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
             for (int i = 0; i < 6; i++)
             {
@@ -696,6 +702,16 @@ namespace MTGDeckBuilder
                 if (int.Parse(pageTextBox.Text)<= int.Parse(maxPage.Content.ToString().Substring(1)))
                     nextPageClick(sender, e);
             }
+        }
+
+        private void typeComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            Search(sender, null);
+        }
+
+        private void rarity_combo_box_DropDownClosed(object sender, EventArgs e)
+        {
+            Search(sender, null);
         }
     }
 }

@@ -383,7 +383,6 @@ namespace MTGDeckBuilder
 
         private void Search(object sender, RoutedEventArgs e)
         {
-            String type = (typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("")) ? "null" : "'" + typeComboBox.Text + "'";
             String b, g, u, w, r;
             b = BCheckBox.IsChecked.Value ? "1" : "null";
             g = GCheckBox.IsChecked.Value ? "1" : "null";
@@ -445,7 +444,7 @@ namespace MTGDeckBuilder
             else
                 maxInstants = "null";
 
-            currentQuerry = "SELECT * from udf_search_decks(" + name + ", " + cards + ", " + type + ',' + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + minLands + ", " + maxLands + ", " + minCreatures + ", " + maxCreatures + ", " + minSpells + ", " + maxSpells + ", " + minArtifacts + ',' + maxArtifacts + ',' + minEnchantments + ',' + maxEnchantments + ',' + minInstants + ',' + maxInstants + ")";
+            currentQuerry = "SELECT * from udf_search_decks(" + name + ", " + cards + ',' + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + minLands + ", " + maxLands + ", " + minCreatures + ", " + maxCreatures + ", " + minSpells + ", " + maxSpells + ", " + minArtifacts + ',' + maxArtifacts + ',' + minEnchantments + ',' + maxEnchantments + ',' + minInstants + ',' + maxInstants + ")";
 
             setDecks(1);
         }

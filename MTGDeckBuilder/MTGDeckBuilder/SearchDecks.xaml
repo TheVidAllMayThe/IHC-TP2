@@ -44,7 +44,6 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Foreground="Beige">Color</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="5" FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Foreground="Beige">Type</TextBlock>
                 <TextBlock Grid.Row="0" Grid.Column="7" FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Foreground="Beige">Name</TextBlock>
 
                 <CheckBox Checked="Search" Unchecked="Search" x:Name="GCheckBox" Grid.Row="1" Grid.Column="0" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -66,16 +65,6 @@
                 <CheckBox Checked="Search" Unchecked="Search" x:Name="BCheckBox" Grid.Row="1" Grid.Column="4" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image  Margin="0,0,0,0" Source="Mana_B.png"  HorizontalAlignment="Center" VerticalAlignment="Center"></Image>
                 </CheckBox>
-
-                <Viewbox MaxHeight="40" Margin="0,0,0,0" Grid.Row="1" Grid.Column="5">
-                    <ComboBox Width="100" SelectionChanged="Search" x:Name="typeComboBox" IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
-                        <ComboBoxItem Content="Any"/>
-                        <ComboBoxItem Content="Casual"/>
-                        <ComboBoxItem Content="Modern"/>
-                        <ComboBoxItem Content="Vintage"/>
-                        <ComboBoxItem Content="Standard"/>
-                    </ComboBox>
-                </Viewbox>
 
                 <Viewbox MaxHeight="35" Grid.Row="1" Grid.Column="7">
                     <TextBox Keyboard.KeyDown="search_KeyboardKeyDown" x:Name="searchBox"  Margin="0,0,5,0" HorizontalAlignment="Left" Height="Auto" MinHeight="35" MinWidth="280" TextWrapping="NoWrap" Text="Name" VerticalAlignment="Center" Grid.Column="0" Foreground="#FF7D7171" Background="White" GotFocus="searchBox_GotFocus" FontSize="24" LostFocus="searchBox_LostFocus"/>
@@ -163,14 +152,14 @@
                 <TextBox Margin="5,0,0,5" Grid.Column="7" Grid.Row="1" x:Name="max_enchantments_box" Keyboard.KeyDown="search_KeyboardKeyDown" Foreground="Black" PreviewTextInput="NumberValidationTextBox" MaxHeight="20"/>
 
 
-                <TextBlock Grid.Row="2" Grid.Column="0" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min % Creatures</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="1" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max % Creatures</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="2" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min % Spells</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="3" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max % Spells</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="4" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min % Artifacts</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="5" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max % Artifacts</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="6" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min % Instants</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="7" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max % Instants</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="0" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min Creatures</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="1" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max Creatures</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="2" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min Spells</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="3" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max Spells</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="4" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min Artifacts</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="5" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max Artifacts</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="6" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Min Instants</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="7" FontSize="12" Margin="5,0,0,0" Foreground="Beige" FontStyle="Italic">Max Instants</TextBlock>
 
                 <TextBox Margin="5,0,0,5" Grid.Column="0" Grid.Row="3" x:Name="max_creatures_box" Keyboard.KeyDown="search_KeyboardKeyDown" Foreground="Black" PreviewTextInput="NumberValidationTextBox" MaxHeight="20"/>
                 <TextBox Margin="5,0,0,5" Grid.Column="1" Grid.Row="3" x:Name="min_creatures_box" Keyboard.KeyDown="search_KeyboardKeyDown" Foreground="Black" PreviewTextInput="NumberValidationTextBox" MaxHeight="20"/>

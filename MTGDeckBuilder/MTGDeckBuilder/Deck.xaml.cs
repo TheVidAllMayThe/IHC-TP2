@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Collections.ObjectModel;
+using System.Data;
 
 namespace MTGDeckBuilder
 {
@@ -111,64 +112,76 @@ namespace MTGDeckBuilder
             Image img;
             string fullFilePath;
             BitmapImage bi;
+
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
 
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
+            using (SqlConnection conn = new SqlConnection(@cs))
+            using (SqlCommand cmd = new SqlCommand("SELECT * FROM udf_handDeck(@deck)", conn))
+            {
+                cmd.CommandType = CommandType.Text;
 
-            String getData = "SELECT amount, multiverseID FROM CardInDeck JOIN Card ON CardInDeck.card = Card.id AND deck = " + deck_id + " AND isSideBoard = 0";
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+                // set up the parameters
+                cmd.Parameters.Add("@deck", SqlDbType.Int);
 
-            List<int> list = new List<int>();
-            while (dr.Read())
-            {
-                for(int i=0; i< dr.GetInt32(0); i++) list.Add(dr.GetInt32(1));
+                // set parameter values
+                cmd.Parameters["@deck"].Value = deck_id;
+                // open connection and execute stored procedure
+                conn.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                List<int> list = new List<int>();
+                while (dr.Read())
+                {
+                    for (int i = 0; i < dr.GetInt32(0); i++) list.Add(dr.GetInt32(1));
+                }
+
+                int picked;
+                for (int i = 0; i < 4 && i < starting_hand_cards && list.Count() > 0; i++)
+                {
+                    img = new Image();
+                    img.Margin = new Thickness(10, 10, 10, 10);
+                    picked = rnd.Next(list.Count);
+                    if (picked != null)
+                    {
+                        fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + list[picked] + @"&type=card";
+                    }
+                    else
+                    {
+                        fullFilePath = "magic_the_gathering.png";
+                    }
+                    list.RemoveAt(picked);
+                    bi = new BitmapImage();
+                    bi.BeginInit();
+                    bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
+                    bi.EndInit();
+                    img.Source = bi;
+                    upper_panel.Children.Add(img);
+                }
+                for (int i = 4; i < starting_hand_cards && list.Count() > 0; i++)
+                {
+                    img = new Image();
+                    img.Margin = new Thickness(10, 10, 10, 10);
+                    picked = rnd.Next(list.Count);
+                    if (picked != null)
+                    {
+                        fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + list[picked] + @"&type=card";
+                    }
+                    else
+                    {
+                        fullFilePath = "magic_the_gathering.png";
+                    }
+                    list.Remove(picked);
+                    bi = new BitmapImage();
+                    bi.BeginInit();
+                    bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
+                    bi.EndInit();
+                    img.Source = bi;
+                    lower_panel.Children.Add(img);
+                }
+
+                // read output value from @NewId
+                conn.Close();
             }
-            
-            int picked;
-            for (int i = 0; i < 4 && i < starting_hand_cards && list.Count() > 0; i++)
-            {
-                img = new Image();
-                img.Margin = new Thickness(10, 10, 10, 10);
-                picked = rnd.Next(list.Count);
-                if (picked != null)
-                {
-                    fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + list[picked] + @"&type=card";
-                }
-                else
-                {
-                    fullFilePath = "magic_the_gathering.png";
-                }
-                list.RemoveAt(picked);
-                bi = new BitmapImage();
-                bi.BeginInit();
-                bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
-                bi.EndInit();
-                img.Source = bi;
-                upper_panel.Children.Add(img);
-            }
-            for (int i = 4; i < starting_hand_cards && list.Count() > 0; i++)
-            {
-                img = new Image();
-                img.Margin = new Thickness(10, 10, 10, 10);
-                picked = rnd.Next(list.Count);
-                if (picked != null)
-                {
-                    fullFilePath = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + list[picked] + @"&type=card";
-                }
-                else
-                {
-                    fullFilePath = "magic_the_gathering.png";
-                }
-                list.Remove(picked);
-                bi = new BitmapImage();
-                bi.BeginInit();
-                bi.UriSource = new Uri(fullFilePath, UriKind.RelativeOrAbsolute);
-                bi.EndInit();
-                img.Source = bi;
-                lower_panel.Children.Add(img);
-            }
-            dr.Close();
         }
         private void addButton_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -255,13 +268,13 @@ namespace MTGDeckBuilder
             deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Land')";
+            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Land')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_lands.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Land')";
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Land')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
@@ -273,32 +286,33 @@ namespace MTGDeckBuilder
             else deck_lands_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Creature')";
+            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Creature')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Creature')";
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Creature')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
             while (dr.Read())
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                Console.WriteLine(dr["multiverseID"]);
+                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = (dr["multiverseID"] == null ? 0 : dr.GetInt32(4)) });
             }
 
             if (App.User.Equals(creator)) deck_creatures.ItemsSource = temp;
             else deck_creatures_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
+            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -310,13 +324,13 @@ namespace MTGDeckBuilder
             else deck_sorceries_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
+            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -328,13 +342,13 @@ namespace MTGDeckBuilder
             else deck_artifacts_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Instant')";
+            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Instant')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_instants.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Instant')";
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Instant')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -346,13 +360,13 @@ namespace MTGDeckBuilder
             else deck_instants_not_owner.ItemsSource = temp;
             dr.Close();
 
-            getData = "SELECT isnull(SUM(amount),0) FROM getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
+            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
             deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -370,7 +384,7 @@ namespace MTGDeckBuilder
             side_deck_number_of_cards.Content = dr.GetInt32(0).ToString();
             dr.Close();
 
-            getData = "SELECT card, name, amount, deck, multiverseID FROM getDeckCards(" + deck_id + ", 1, " + "'NULL')"; ;
+            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 1, " + "'NULL')"; ;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
 
             temp = new ObservableCollection<Card_listing>();
@@ -422,12 +436,12 @@ namespace MTGDeckBuilder
                 MessageBoxResult result = MessageBox.Show("Previously you rated this deck with " + int.Parse(userRating) + " stars. Are you sure you wanna rate this deck with " + ratingToGive + " stars?", "Rating", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if(result == MessageBoxResult.Yes)
                     {
-                        DatabaseControl.ExecuteNonQuerryCommand("EXEC rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                        DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
                     }
                 }
             }catch(InvalidOperationException io) {
                 Console.WriteLine(io);
-                DatabaseControl.ExecuteNonQuerryCommand("EXEC rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
                 MessageBox.Show("You gave this deck " + ratingToGive + " stars.", "Rating", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
@@ -457,7 +471,7 @@ namespace MTGDeckBuilder
             thisConnection = new SqlConnection(@cs);
             thisConnection.Open();
 
-            string getData = "SELECT cmc, n FROM manaCurve(" + deck_id + ")";
+            string getData = "SELECT cmc, n FROM udf_manaCurve(" + deck_id + ")";
             SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             List<KeyValuePair<int, int>> manacurveList = new List<KeyValuePair<int, int>>();
             while (dr.Read())
@@ -466,7 +480,7 @@ namespace MTGDeckBuilder
             }
             dr.Close();
 
-            getData = "SELECT rarity, perc FROM cardTypeDistribution(" + deck_id + ")";
+            getData = "SELECT rarity, perc FROM udf_cardTypeDistribution(" + deck_id + ")";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             List<KeyValuePair<String, float>> cardtypeDistributionList = new List<KeyValuePair<String, float>>();
             while (dr.Read())
@@ -475,7 +489,7 @@ namespace MTGDeckBuilder
             }
             dr.Close();
 
-            getData = "SELECT color, perc FROM manaDistribution(" + deck_id + ")";
+            getData = "SELECT color, perc FROM udf_manaDistribution(" + deck_id + ")";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             List<KeyValuePair<String, float>> manaDistributionList = new List<KeyValuePair<String, float>>();
             while (dr.Read())
@@ -485,7 +499,7 @@ namespace MTGDeckBuilder
             dr.Close();
 
 
-            getData = "SELECT color, perc FROM manasourceDistribution(" + deck_id + ")";
+            getData = "SELECT color, perc FROM udf_manasourceDistribution(" + deck_id + ")";
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             List<KeyValuePair<String, float>> manasourceDistributionList = new List<KeyValuePair<String, float>>();
             while (dr.Read())

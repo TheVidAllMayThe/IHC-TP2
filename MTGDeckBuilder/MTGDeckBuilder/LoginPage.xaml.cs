@@ -109,7 +109,6 @@ namespace MTGDeckBuilder
                     // read output value from @NewId
                     int id = Convert.ToInt32(cmd.Parameters["@r"].Value);
                     conn.Close();
-                    Console.WriteLine(id);
 
 
                     bool isRegistered = id == 1;
