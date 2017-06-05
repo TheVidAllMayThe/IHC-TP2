@@ -64,28 +64,24 @@
                     <ItemsControl x:Name="selling" HorizontalAlignment="Left" ItemTemplate="{StaticResource list_selling_cards}" />
                     <ListBox x:Name="listBox_s" ItemTemplate="{StaticResource list_selling_cards}"/>
                     <Button Grid.Column="7" Click="buyCard">Buy Card</Button>
-                </StackPanel>
-            </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <Label  Style="{StaticResource Card Title Style}" Content="Buying"/>
-                </TabItem.Header>
-                <StackPanel Orientation="Vertical">
-                    <ItemsControl x:Name="buying" HorizontalAlignment="Left" ItemTemplate="{StaticResource list_buying_cards}" />
-                    <ListBox x:Name="listBox_b" ItemTemplate="{StaticResource list_buying_cards}"/>
-                    
-                    
-                </StackPanel>
+                    <TextBox Text="Amount" x:Name="AmountToBuy"></TextBox>
 
-                <!-- Details tab content -->
+                    </StackPanel>
             </TabItem>
-            <TabItem>
-                <TabItem.Header>
-                    <Label Style="{StaticResource Card Title Style}" Content="Bidding"/>
-                </TabItem.Header>
-                <!-- Starting Hand tab content -->
-            </TabItem>
-            <TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <Label  Style="{StaticResource Card Title Style}" Content="Buying"/>
+                    </TabItem.Header>
+                    <StackPanel Orientation="Vertical">
+                        <ItemsControl x:Name="buying" HorizontalAlignment="Left" ItemTemplate="{StaticResource list_buying_cards}" />
+                        <ListBox x:Name="listBox_b" ItemTemplate="{StaticResource list_buying_cards}"/>
+                        <Button Content="Sell" Click="sellCard"></Button>
+                        <TextBox Text="Amount" x:Name="AmountToSell"></TextBox>
+                    </StackPanel>
+
+                    <!-- Details tab content -->
+                </TabItem>
+                <TabItem>
                 <TabItem.Header>
                     <Label  Style="{StaticResource Card Title Style}" Content="Personal"/>
                 </TabItem.Header>
@@ -113,7 +109,7 @@
                         </StackPanel>
                         <StackPanel Margin="40, 0, 0, 0">
                             <Label FontSize="40" Content="Buying" Foreground="White"/>
-                            <ListBox x:Name="listBox_myB" MouseLeftButtonDown="listBox_myB_MouseLeftButtonDown">
+                            <ListBox x:Name="listBox_myB" MouseLeftButtonUp="listBox_myB_MouseLeftButtonDown">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -196,7 +192,7 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                            <Button Content="Remove" Click="removeCardSell"/>
+                            <Button Content="Remove" Click="removeCardBuy"/>
                         </StackPanel>
                         <StackPanel Margin="40, 0, 0, 0">
                             <Label FontSize="30" Content="Sold" Foreground="White"/>

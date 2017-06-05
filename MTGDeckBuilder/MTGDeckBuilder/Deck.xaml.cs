@@ -23,6 +23,52 @@ namespace MTGDeckBuilder
     /// Interaction logic for Deck.xaml
     /// </summary>
     /// 
+
+    public class DeckListing
+    {
+        private int _deckID;
+        private string _deckName;
+        private int _winsOrLosses;
+
+        public int DeckID
+        {
+            get
+            {
+                return _deckID;
+            }
+
+            set
+            {
+                _deckID = value;
+            }
+        }
+
+        public string DeckName
+        {
+            get
+            {
+                return _deckName;
+            }
+
+            set
+            {
+                _deckName = value;
+            }
+        }
+
+        public int WinsOrLosses
+        {
+            get
+            {
+                return _winsOrLosses;
+            }
+
+            set
+            {
+                _winsOrLosses = value;
+            }
+        }
+    }
     public class Card_listing
     {
         private int _deck;
@@ -58,9 +104,12 @@ namespace MTGDeckBuilder
         
         public Deck(int deck_id)
         {
+            this.deck_id = deck_id;
+            
+
+
             emptyStar = new BitmapImage(new Uri("/images/empty_star.png", UriKind.Relative));
             fullStar = new BitmapImage(new Uri("/images/full_star.png", UriKind.Relative));
-            this.deck_id = deck_id;
             InitializeComponent();
             starting_hand_cards = 7;
             rnd = new Random();
@@ -596,6 +645,25 @@ namespace MTGDeckBuilder
         private void addButton_MouseLeave(object sender, MouseEventArgs e)
         {
             ((Canvas)sender).Opacity = 1;
+        }
+
+        private void setWinsOrLossesLists(){
+            ObservableCollection<DeckListing> winsList = new ObservableCollection<DeckListing>();
+            ObservableCollection<DeckListing> lossesList = new ObservableCollection<DeckListing>();
+
+            SqlDataReader dr = DatabaseControl.getDataReader("EXEC usp_getWins " + this.deck_id);
+            while (dr.Read())
+            {
+                winsList.Add(new DeckListing { DeckID = int.Parse(dr["ID"].ToString()), DeckName = dr["Name"].ToString(), WinsOrLosses = int.Parse(dr["Amount"].ToString()) });
+            }
+            dr = DatabaseControl.getDataReader("EXEC usp_getLosses " + this.deck_id);
+            while (dr.Read())
+            {
+                lossesList.Add(new DeckListing { DeckID = int.Parse(dr["ID"].ToString()), DeckName = dr["Name"].ToString(), WinsOrLosses = int.Parse(dr["Amount"].ToString()) });
+            }
+
+            wins.ItemsSource = winsList;
+            losses.ItemsSource = lossesList;
         }
     }
 }

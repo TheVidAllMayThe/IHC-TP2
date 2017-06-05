@@ -326,7 +326,47 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
+
+           
+                <TabItem>
+                    <TabItem.Header>
+                        <Label Style="{StaticResource Card Title Style}" Content="Wins/Losses"/>
+                    </TabItem.Header>
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <Label Foreground="White" FontSize="40" Content="Wins"/>
+                            <ListBox x:Name="wins">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding DeckName}"/>
+                                            <Label Content="{Binding WinsOrLosses}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical">
+                            <Label FontSize="40" Content="Losses"/>
+                            <ListBox x:Name="losses">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding DeckName}"/>
+                                            <Label Content="{Binding WinsOrLosses}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                </TabItem>
+
             </TabControl>
+               
         </Grid>
     </Grid>
     
