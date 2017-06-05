@@ -139,47 +139,48 @@ AS
 
 GO
 
-CREATE FUNCTION listings(@sell BIT, @finished BIT) RETURNS @table Table(ID int, listingid int, [User] VARCHAR(255) , StartDate Date, EndDate Date, card INT, cardname VARCHAR(MAX), priceperunit MONEY, condition VARCHAR(20), units INT)
+CREATE FUNCTION onGoingListings(@sell BIT) RETURNS TABLE
 AS
-	BEGIN
-		IF @finished = 0
-			INSERT INTO @table SELECT ID, listingid, [User], StartDate, EndDate, card, cardname, priceperunit, condition, units
-				FROM (
-					SELECT ID AS listingid, [User], StartDate, EndDate
-					FROM Listing
-					WHERE Sell = @sell AND EndDate is null) AS l
-					JOIN (
-						SELECT CardInListing.ID, Card, Condition, Units, CardName, Price_Per_Unit AS priceperunit, listing
-						FROM CardInListing
-						JOIN (
-							SELECT ID, name AS CardName
-							FROM Card) AS c
-						ON CardInListing.Card = c.id) AS ca
-					ON l.listingid = ca.Listing;
-		ELSE
-			INSERT INTO @table SELECT ID, listingid, [User], StartDate, EndDate, card, cardname, priceperunit, condition, units
-				FROM (
-					SELECT ID AS listingid, [User], StartDate, EndDate
-					FROM Listing
-					WHERE Sell = @sell AND EndDate is not null) AS l
-					JOIN (
-						SELECT CardInListing.ID, Card, Condition, Units, CardName, Price_Per_Unit AS priceperunit, listing
-						FROM CardInListing
-						JOIN (
-							SELECT ID, name AS CardName
-							FROM Card) AS c
-						ON CardInListing.Card = c.id) AS ca
-					ON l.listingid = ca.Listing;
-		RETURN;
-	END	
+	RETURN(
+		SELECT ID, listingid, [User], StartDate, card, cardname, priceperunit, condition, units
+		FROM (
+			SELECT ID AS listingid, [User], StartDate
+			FROM Listing
+			WHERE Sell = @sell) AS l
+			JOIN (
+				SELECT CardInListing.ID, Card, Condition, Units, CardName, Price_Per_unit AS priceperunit, listing
+				FROM CardInListing
+				JOIN (
+					SELECT ID, name as CardName
+					FROM Card) AS c
+				ON CardInListing.Card = c.id) AS ca
+			ON l.listingid = ca.Listing)
 
+GO
+
+CREATE FUNCTION finishedListings(@sell BIT) RETURNS TABLE
+AS
+	RETURN(
+		SELECT ID, listingid, [User], StartDate, card, cardname, priceperunit, condition, units
+		FROM (
+			SELECT ID AS listingid, [User], StartDate
+			FROM Listing
+			WHERE Sell = @sell) AS l
+			JOIN (
+				SELECT CardInListingHistory.ID, Card, Condition, Units, CardName, Price_Per_unit AS priceperunit, listing
+				FROM CardInListingHistory
+				JOIN (
+					SELECT ID, name as CardName
+					FROM Card) AS c
+				ON CardInListingHistory.Card = c.id) AS ca
+			ON l.listingid = ca.Listing)
+	
 GO
 
 CREATE FUNCTION totalListingPrice(@listingID INT) RETURNS FLOAT
 AS
 	BEGIN
 		DECLARE @sum float;
-		SELECT @sum = SUM(Price_Per_Unit*Units) as s FROM CardInListing WHERE Listing = @listingID;
-		
+		SELECT @sum = SUM(Price_Per_Unit*Units) FROM CardInListing WHERE Listing = @listingID;
 		return @sum;
 	END
