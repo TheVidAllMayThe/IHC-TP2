@@ -30,7 +30,7 @@ CREATE PROC usp_login (@user VARCHAR(255), @pass VARCHAR(max), @r BIT OUTPUT)
 AS
 BEGIN
 	DECLARE @passw VARCHAR(max) = HASHBYTES('SHA2_512', @pass)
-	IF dbo.isRegistered(@user) = 0
+	IF dbo.udf_isRegistered(@user) = 0
 	BEGIN
 		EXEC usp_register @user, @passw
 		SET @r = 1;
