@@ -9,6 +9,7 @@ GO
 CREATE TABLE [User] (
 	email VARCHAR(255) NOT NULL,
 	[password] TEXT NOT NULL,
+	balance MONEY DEFAULT 0.0 NOT NULL,
 	PRIMARY KEY (email)
 );
 
@@ -124,7 +125,6 @@ CREATE TABLE Listing(
 	ID INT IDENTITY(1,1) NOT NULL,
 	[User] VARCHAR(255) NOT NULL,
 	StartDate DATE NOT NULL,
-	EndDate DATE,
 	Sell BIT NOT NULL,
 	PRIMARY KEY (ID),
 	FOREIGN KEY([User]) REFERENCES [User](Email)
@@ -136,12 +136,20 @@ CREATE TABLE CardInListing(
 	Card INT NOT NULL,
 	Price_Per_Unit MONEY NOT NULL,
 	Units INT DEFAULT 1 NOT NULL,
-	Sold INT DEFAULT 0 NOT NULL,
 	Condition VARCHAR(20),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Listing) REFERENCES Listing(ID),
 	FOREIGN KEY (Card) REFERENCES Card(ID),
 	CHECK(Units > 0)
+);
+
+CREATE TABLE CardInListingHistory(
+	ID INT NOT NULL,
+	EndDate DATE NOT NULL,
+	SecondaryUser VARCHAR(255) NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ID) REFERENCES CardInListing(ID),
+	FOREIGN KEY (SecondaryUser) REFERENCES [User](Email)
 );
 
 CREATE TABLE ListingBid(
