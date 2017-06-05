@@ -40,3 +40,57 @@ AS
 		RAISERROR('Offer has to be greater or equal to MinimumBid',0,0);
 		ROLLBACK TRAN;	
 	END;
+
+GO
+
+CREATE TRIGGER unit_check ON CardInListing
+AFTER UPDATE
+AS
+	BEGIN TRAN;
+	IF EXISTS(SELECT * from Inserted where Units < 0)
+	BEGIN
+		RAISERROR('Can''t buy that many cards', 11, 0);
+		ROLLBACK
+	END
+	
+	IF EXISTS(SELECT * from INSERTED where Units = 0)
+	BEGIN
+		DECLARE @id INT ;
+		SELECT @id = ID FROM INSERTED;
+		DELETE FROM Listing WHERE ID = @id;
+	END
+	COMMIT
+
+GO
+
+CREATE TRIGGER balance_check ON [User] 
+AFTER INSERT, UPDATE
+AS 
+	IF EXISTS(SELECT * FROM INSERTED WHERE balance < 0)
+	BEGIN
+		RAISERROR('Can''t have negative balance!', 11, 0);
+		ROLLBACK;
+	END
+
+GO
+
+CREATE TRIGGER preventEditionDeleteOrUpdate ON Edition
+INSTEAD OF DELETE, UPDATE
+AS
+	RAISERROR('CANT UPDATE OR DELETE EXISTING EDITION',11,0);
+	
+GO
+
+CREATE TRIGGER preventCardDeleteOrUpdate ON [Card]
+INSTEAD OF DELETE, UPDATE
+AS
+	RAISERROR('CAN''T UPDATE OR DELETE EXISTING CARD',11,0);
+	
+GO
+
+CREATE TRIGGER preventCardInListingHistory ON CardInListingHistory
+INSTEAD OF DELETE, UPDATE
+AS
+	RAISERROR('CAN''T UPDATE OR DELETE EXISTING CARD',11,0);
+GO
+

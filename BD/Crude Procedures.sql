@@ -1036,7 +1036,7 @@ AS
 
 	BEGIN TRAN
 
-	SELECT [ID], [User], [StartDate], [EndDate], [Sell] 
+	SELECT [ID], [User], [StartDate], [Sell] 
 	FROM   [dbo].[Listing] 
 	WHERE  ([ID] = @ID OR @ID IS NULL) 
 
@@ -1050,7 +1050,7 @@ GO
 CREATE PROC [dbo].[usp_ListingInsert] 
     @User varchar(255),
     @StartDate date,
-    @EndDate date = NULL,
+    
     @Sell bit
 AS 
 	SET NOCOUNT ON 
@@ -1058,11 +1058,11 @@ AS
 	
 	BEGIN TRAN
 	
-	INSERT INTO [dbo].[Listing] ([User], [StartDate], [EndDate], [Sell])
-	SELECT @User, @StartDate, @EndDate, @Sell
+	INSERT INTO [dbo].[Listing] ([User], [StartDate], [Sell])
+	SELECT @User, @StartDate, @Sell
 	
 	-- Begin Return Select <- do not remove
-	SELECT [ID], [User], [StartDate], [EndDate], [Sell]
+	SELECT [ID], [User], [StartDate], [Sell]
 	FROM   [dbo].[Listing]
 	WHERE  [ID] = SCOPE_IDENTITY()
 	-- End Return Select <- do not remove
@@ -1078,7 +1078,6 @@ CREATE PROC [dbo].[usp_ListingUpdate]
     @ID int,
     @User varchar(255),
     @StartDate date,
-    @EndDate date = NULL,
     @Sell bit
 AS 
 	SET NOCOUNT ON 
@@ -1087,11 +1086,11 @@ AS
 	BEGIN TRAN
 
 	UPDATE [dbo].[Listing]
-	SET    [User] = @User, [StartDate] = @StartDate, [EndDate] = @EndDate, [Sell] = @Sell
+	SET    [User] = @User, [StartDate] = @StartDate, [Sell] = @Sell
 	WHERE  [ID] = @ID
 	
 	-- Begin Return Select <- do not remove
-	SELECT [ID], [User], [StartDate], [EndDate], [Sell]
+	SELECT [ID], [User], [StartDate],  [Sell]
 	FROM   [dbo].[Listing]
 	WHERE  [ID] = @ID	
 	-- End Return Select <- do not remove
