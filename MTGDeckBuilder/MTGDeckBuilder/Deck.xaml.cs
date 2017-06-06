@@ -104,13 +104,14 @@ namespace MTGDeckBuilder
         
         public Deck(int deck_id)
         {
+            InitializeComponent();
+            setWinsOrLossesLists();
             this.deck_id = deck_id;
             
 
 
             emptyStar = new BitmapImage(new Uri("/images/empty_star.png", UriKind.Relative));
             fullStar = new BitmapImage(new Uri("/images/full_star.png", UriKind.Relative));
-            InitializeComponent();
             starting_hand_cards = 7;
             rnd = new Random();
             showDeck();
@@ -650,6 +651,7 @@ namespace MTGDeckBuilder
         private void setWinsOrLossesLists(){
             ObservableCollection<DeckListing> winsList = new ObservableCollection<DeckListing>();
             ObservableCollection<DeckListing> lossesList = new ObservableCollection<DeckListing>();
+            ObservableCollection<DeckListing> decksL = new ObservableCollection<DeckListing>();
 
             SqlDataReader dr = DatabaseControl.getDataReader("EXEC usp_getWins " + this.deck_id);
             while (dr.Read())
@@ -662,8 +664,33 @@ namespace MTGDeckBuilder
                 lossesList.Add(new DeckListing { DeckID = int.Parse(dr["ID"].ToString()), DeckName = dr["Name"].ToString(), WinsOrLosses = int.Parse(dr["Amount"].ToString()) });
             }
 
+            dr = DatabaseControl.getDataReader("EXEC usp_DeckSelect " + "null");
+            while (dr.Read())
+            {
+                decksL.Add(new DeckListing { DeckID = int.Parse(dr["ID"].ToString()), DeckName = dr["Name"].ToString()});
+            }
+
             wins.ItemsSource = winsList;
             losses.ItemsSource = lossesList;
+            decks.ItemsSource = decksL;
+
+        }
+
+        private void winButton(object sender, RoutedEventArgs e)
+        {
+            if (decks.SelectedIndex == -1) return;
+            DatabaseControl.ExecuteNonQuerryCommand("Exec usp_addWin " + this.deck_id + ", " + ((DeckListing)decks.SelectedItem).DeckID);
+            Console.WriteLine("Exec usp_addWin " + this.deck_id + ", " + ((DeckListing)decks.SelectedItem).DeckID);
+            setWinsOrLossesLists();
+
+        }
+
+        private void loseButton(object sender, RoutedEventArgs e)
+        {
+            if (decks.SelectedIndex == -1) return;
+            DatabaseControl.ExecuteNonQuerryCommand("Exec usp_addWin " + ((DeckListing)decks.SelectedItem).DeckID + ", " + this.deck_id);
+            setWinsOrLossesLists();
+
         }
     }
 }

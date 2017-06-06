@@ -334,7 +334,7 @@
                     </TabItem.Header>
 
                     <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Vertical" Margin="40">
                             <Label Foreground="White" FontSize="40" Content="Wins"/>
                             <ListBox x:Name="wins">
                                 <ListBox.ItemTemplate>
@@ -348,9 +348,9 @@
                             </ListBox>
                         </StackPanel>
 
-                        <StackPanel Orientation="Vertical">
-                            <Label FontSize="40" Content="Losses"/>
-                            <ListBox x:Name="losses">
+                        <StackPanel Orientation="Vertical" Margin="40">
+                            <Label FontSize="40" Content="Losses" Foreground="White"/>
+                            <ListBox x:Name="losses" Foreground="White">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -361,6 +361,25 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
                         </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Margin="40">
+                            <Label FontSize="40" Content="Decks" Foreground="White"/>
+                            <ListBox x:Name="decks" Foreground="White">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding DeckID}"/>
+                                            <Label Content="{Binding DeckName}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Add Win" Click="winButton"/>
+                                <Button Content="Add Loss" Click="loseButton"/>
+                            </StackPanel>
+                        </StackPanel>
+
                     </StackPanel>
                     
                 </TabItem>

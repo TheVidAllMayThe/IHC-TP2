@@ -451,7 +451,7 @@ namespace MTGDeckBuilder
 
         private void Clear(object sender, RoutedEventArgs e)
         {
-            typeComboBox.SelectionChanged -= this.Search;
+            //typeComboBox.SelectionChanged -= this.Search;
             GCheckBox.Checked -= this.Search;
             UCheckBox.Checked -= this.Search;
             RCheckBox.Checked -= this.Search;
@@ -459,7 +459,7 @@ namespace MTGDeckBuilder
             BCheckBox.Checked -= this.Search;
             
             searchBox.Text = "Name";
-            typeComboBox.SelectedIndex = 0;
+            //typeComboBox.SelectedIndex = 0;
             GCheckBox.IsChecked = false;
             UCheckBox.IsChecked = false;
             RCheckBox.IsChecked = false;
@@ -480,7 +480,7 @@ namespace MTGDeckBuilder
             min_spells_box.Text = "";
             max_spells_box.Text = "";
 
-            typeComboBox.SelectionChanged += this.Search;
+            //typeComboBox.SelectionChanged += this.Search;
             GCheckBox.Checked += this.Search;
             UCheckBox.Checked += this.Search;
             RCheckBox.Checked += this.Search;

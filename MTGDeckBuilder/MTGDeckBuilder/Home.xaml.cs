@@ -142,6 +142,7 @@ namespace MTGDeckBuilder
             gameWindow.Show();
             MainWindow main = Application.Current.MainWindow as MainWindow;
             main.Close();
+
         }
     }
 }

@@ -190,3 +190,14 @@ CREATE TABLE OfferBid(
 	FOREIGN KEY ([User]) REFERENCES [User](Email),
 	FOREIGN KEY (Bid) REFERENCES ListingBid(ID)
 );
+
+GO
+
+CREATE TABLE Wins(
+	Winner int,
+	Loser int,
+	Amount int,
+	PRIMARY KEY (Winner, Loser),
+	FOREIGN KEY (Winner) REFERENCES Deck(ID),
+	FOREIGN KEY (Loser) REFERENCES Deck(ID)
+);

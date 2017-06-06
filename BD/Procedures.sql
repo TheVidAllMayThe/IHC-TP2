@@ -124,10 +124,6 @@ AS
 
 go
 
-use Musle
-DELETE FROM Listing;
-DELETE FROM CardInListing;
-USE Magic;
 GO
 CREATE PROC usp_addCardToListing @listing int, @card int, @price Money, @condition varchar(20)
 AS
@@ -141,7 +137,6 @@ AS
 		INSERT INTO CardInListing VALUES (@listing, @card, @price, 1, @condition);
 
 go
-
 CREATE PROC usp_rmCardToListing @listing int, @card int, @price Money, @condition varchar(20)
 AS
 	IF EXISTS(SELECT * FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price and Units > 1)
@@ -151,6 +146,37 @@ AS
 		UPDATE CardInListing SET Units = @amount - 1 where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price;
 	END
 	ELSE
-		DELETE FROM CardInListing WHERE ;
+		DELETE FROM CardInListing WHERE Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price;
 
 go
+
+CREATE PROC [dbo].[usp_getLosses] @deckID INT
+AS
+	SELECT * FROM Wins JOIN Deck ON Wins.Winner = Deck.ID WHERE Loser=@deckID;
+GO
+
+CREATE PROC [dbo].[usp_getWins] @deckID INT
+AS
+	SELECT * FROM Wins JOIN Deck ON Wins.Loser = Deck.ID WHERE Winner=@deckID;
+
+
+GO
+
+use Magic;
+go
+ALTER PROC usp_addWin @winner INT, @loser int
+AS
+	IF EXISTS(SELECT * FROM Wins WHERE (@winner = Winner AND @loser = Loser))
+	BEGIN
+		UPDATE Wins set Amount+=1 WHERE @winner = Winner AND @loser = Loser;
+		Return;
+	END
+
+	INSERT INTO Wins VALUES (@winner, @loser, 1);
+
+	INSERT INTO Wins VALUES (1, 1, 1);
+	exec usp_addWin 1,2
+
+
+
+
