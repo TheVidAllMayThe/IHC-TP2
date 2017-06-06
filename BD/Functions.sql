@@ -198,7 +198,7 @@ AS
 					JOIN Edition
 					ON six.edition =Edition.code AND (UPPER(''+Edition.name+'') LIKE UPPER('%'+@edition+'%') or @edition is null)) AS seven
 				JOIN Creature
-				ON seven.id = Creature.card AND (seven.cmc >= @MinCMC or @MinCMC is null) AND (seven.cmc <= @MaxCMC or @MaxCMC is null) AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null)  where upper(''+seven.name+'') Like upper('%'+@name+'%') or @name is null AND (Seven.rarity = @Rarity or @Rarity is null) AND (@ability is NULL OR upper(@ability) IN (SELECT upper(Ability) FROM Ability WHERE card = seven.id));
+				ON seven.id = Creature.card AND (seven.cmc >= @MinCMC or @MinCMC is null) AND (seven.cmc <= @MaxCMC or @MaxCMC is null) AND (Creature.power >= @MinPower  or @MinPower is null) AND (Creature.power <= @MaxPower  or @MaxPower is null) AND (Creature.toughness >= @MinTough  or @MinTough is null) AND (Creature.toughness <= @MaxTough  or @MaxTough is null)  where (upper(''+seven.name+'') Like upper('%'+@name+'%') or @name is null) AND (Seven.rarity = @Rarity or @Rarity is null) AND (@ability is NULL OR upper(@ability) IN (SELECT upper(Ability) FROM Ability WHERE card = seven.id));
 		ELSE
 			INSERT INTO @table SELECT distinct six.id, six.multiverseID, six.name, Edition.name as editionName, six.rarity, six.cmc
 					FROM(
