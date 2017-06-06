@@ -72,7 +72,7 @@
 
                 <Viewbox MaxHeight="40" Margin="0,0,0,0" Grid.Row="1" Grid.Column="5">
                     <ComboBox Width="100" DropDownClosed="typeComboBox_DropDownClosed" x:Name="typeComboBox" IsEditable="True" IsReadOnly="True" HorizontalAlignment="Center" Foreground="#FF665D5D">
-                        <ComboBoxItem Content="Any"/>
+                        <ComboBoxItem Content=""/>
                         <ComboBoxItem Content="Sorcery"/>
                         <ComboBoxItem Content="Planeswalker"/>
                         <ComboBoxItem Content="Plane"/>

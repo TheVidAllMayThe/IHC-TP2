@@ -336,7 +336,7 @@ namespace MTGDeckBuilder
                         SqlCommand powerselect = new SqlCommand(querry, thisConnection);
                         SqlDataReader querryCommandReader = powerselect.ExecuteReader();
                         querryCommandReader.Read();
-                        contentsOfBorder[i % 6][4].Content = "Power: " + querryCommandReader["power"];
+                        contentsOfBorder[i % 6][4].Content = "Power: " + (querryCommandReader["power"] == null ? "---" : querryCommandReader["power"]);
                         contentsOfBorder[i % 6][5].Content = "Toughness: " + querryCommandReader["toughness"];
                     }
                     else
