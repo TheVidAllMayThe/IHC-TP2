@@ -1,5 +1,3 @@
-
-
 USE Magic;
 
 GO
@@ -30,7 +28,7 @@ CREATE FUNCTION udf_getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)
 AS
 	RETURN (SELECT card, name, deck, amount, isnull(multiverseID,0) as multiverseID
 			FROM DeckCard
-			WHERE deck = @deck AND (isSideboard = @isSideboard OR @isSideboard is NULL) AND type = @type)
+			WHERE deck = @deck AND (isSideboard = @isSideboard OR @isSideboard is NULL) AND (type = @type OR @type is NULL))
 	
 
 GO
@@ -281,8 +279,7 @@ AS
 			ON l.listingid = ca.Listing)
 	
 GO
-use Magic;
-go
+
 CREATE FUNCTION udf_totalListingPrice(@listingID INT) RETURNS FLOAT
 AS
 	BEGIN
@@ -301,8 +298,6 @@ AS
 
 GO
 
-USE Magic;
-go
 CREATE FUNCTION udf_allCardsInListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(SELECT CardInListing.*, Listing.StartDate, Listing.[User], Card.name AS CardName FROM CardInListing JOIN Listing ON CardInListing.Listing = Listing.ID AND Listing.Sell = @sell JOIN Card ON Card.id = CardInListing.Card);
@@ -322,13 +317,38 @@ AS
 
 GO
 
-
-
-
-use Magic;
-go
-
 CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
 AS
 	RETURN (SELECT CardInListingHistory.*, Card.name, Card.id as cardID FROM CardInListingHistory JOIN Card ON CardInListingHistory.Card = Card.ID WHERE (Listing = @listing or @listing = NULL));
 
+GO
+
+CREATE FUNCTION udf_avgCardPrice(@card INT) RETURNS FLOAT
+AS
+	BEGIN
+		DECLARE @avg FLOAT;
+		SELECT @avg = AVG(Price_Per_Unit) 
+		FROM (SELECT Price_per_unit, Listing FROM CardInListing WHERE Card = @card) AS c
+		JOIN (SELECT id FROM Listing WHERE Sell = 1) AS l
+		ON c.Listing = l.ID;
+		RETURN isnull(@avg,0);
+	END
+
+GO
+
+CREATE FUNCTION udf_avgDeckPrice(@deck INT) RETURNS FLOAT
+AS
+	BEGIN
+		DECLARE @sum_avg_prices FLOAT;
+		SELECT @sum_avg_prices = SUM(dbo.udf_avgCardPrice(card) * amount) FROM CardInDeck WHERE deck = @deck;
+		RETURN isnull(@sum_avg_prices, 0.0);
+	END
+GO
+
+CREATE FUNCTION udf_numberOfCardsInDeck(@deck INT, @sideboard BIT, @type VARCHAR(255)) RETURNS INT
+AS
+	BEGIN
+		DECLARE @amount INT;
+		SELECT @amount = isnull(SUM(amount),0) FROM udf_getDeckCards(@deck, @sideboard, @type);
+		RETURN @amount;
+	END

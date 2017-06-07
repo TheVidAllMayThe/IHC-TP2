@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Collections.ObjectModel;
+using System.Data;
 
 namespace MTGDeckBuilder
 {
@@ -297,7 +298,7 @@ namespace MTGDeckBuilder
             try
             {
                 DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_buyOrSellCard " + l.Id + ", " + AmountToBuy.Text + ", '" + App.User + "'," + 1);
-            } catch (SqlException sqlE) { MessageBox.Show("TRIGGERED, can't buy more cards than available"); }
+            } catch (SqlException sqlE) { MessageBox.Show("Invalid amount of cards"); }
             updateVisual();
         }
 
@@ -311,7 +312,7 @@ namespace MTGDeckBuilder
 
                 DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_buyOrSellCard " + l.Id + ", " + AmountToSell.Text + ", '" + App.User + "'," + 0);
 
-            } catch(SqlException sqlE) { MessageBox.Show("TRIGGERED, can't sell more cards than requested");}
+            } catch(SqlException sqlE) { MessageBox.Show("Invalid amount of cards");}
             updateVisual();
         }
 
@@ -424,34 +425,13 @@ namespace MTGDeckBuilder
             updateVisual();
         }
 
-        private void deleteSellListing(object sender, RoutedEventArgs e)
-        {
-            int index = listBox_myS.SelectedIndex;
-            if (index != -1)
-                deleteListing(((Listing)listBox_myS.SelectedItem).Id);
-
-            listBox_myS.SelectedIndex = index;
-        }
-
-        private void deleteBuyListing(object sender, RoutedEventArgs e)
-        {
-            int index = listBox_myB.SelectedIndex;
-            if (listBox_myB.SelectedIndex != -1)
-                deleteListing(((Listing)listBox_myB.SelectedItem).Id);
-            listBox_myB.SelectedIndex = index;
-        }
-
-
-
-
-        public void deleteListing(int id)
-        {
-            DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_deleteListing " + id);
-            updateVisual();
-        }
-
         private void listBox_myS_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+
+            sellinglist.Visibility = Visibility.Visible;
+            listingbuy.Visibility = Visibility.Collapsed;
+            sellinglistbought.Visibility = Visibility.Visible;
+            listingbuysold.Visibility = Visibility.Collapsed;
             updateCardsList();
         }
 
@@ -568,8 +548,75 @@ namespace MTGDeckBuilder
 
         private void listBox_myB_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            sellinglist.Visibility = Visibility.Collapsed;
+            listingbuy.Visibility = Visibility.Visible;
+            sellinglistbought.Visibility = Visibility.Collapsed;
+            listingbuysold.Visibility = Visibility.Visible;
             updateCardsList();
            
+        }
+        private void removeListingSell(object sender, EventArgs e)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(@cs))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("usp_deleteListing", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@listing", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@listing"].Value = ((Listing) listBox_myS.SelectedItem).Id;
+                    // open connection and execute stored procedure
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }catch(SqlException sqle)
+                    {
+                        MessageBox.Show("Card(s) have already been bought or sold from this listing", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+
+            updateCardsList();
+            updateVisual();
+
+        }
+        private void removeListingBuy(object sender, EventArgs e)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(@cs))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("usp_deleteListing", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@listing", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@listing"].Value = ((Listing)listBox_myB.SelectedItem).Id;
+                    // open connection and execute stored procedure
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (SqlException sqle)
+                    {
+                        MessageBox.Show("Card(s) have already been bought or sold from this listing", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+
+            updateCardsList();
+            updateVisual();
+
         }
     }
 }

@@ -88,7 +88,7 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <StackPanel>
-                            <Label FontSize="40" Content="Selling" Foreground="White"/>
+                            <Label FontSize="40" Content="Your selling lists" Foreground="White"/>
                             <ListBox x:Name="listBox_myS" MouseLeftButtonUp="listBox_myS_MouseLeftButtonUp">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -103,12 +103,12 @@
                             
                             
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="Add" Click="newSellListing"/>
-                                <Button Content="Delete" Click="deleteSellListing"/>
-                            </StackPanel>
+                                    <Button Content="Add" Click="newSellListing"/>
+                                    <Button Content="Remove" Click="removeListingSell"/>
+                                </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="40, 0, 0, 0">
-                            <Label FontSize="40" Content="Buying" Foreground="White"/>
+                            <Label FontSize="40" Content="Your buying lists" Foreground="White"/>
                             <ListBox x:Name="listBox_myB" MouseLeftButtonUp="listBox_myB_MouseLeftButtonDown">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -120,9 +120,9 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="Add" Click="newBuyListing"/>
-                                <Button Content="Delete" Click="deleteBuyListing"/>
-                            </StackPanel>
+                                    <Button Content="Add" Click="newBuyListing"/>
+                                    <Button Content="Remove" Click="removeListingBuy"/>
+                                </StackPanel>
                         </StackPanel>
 
                         <StackPanel Margin="40, 0, 0, 0">
@@ -142,7 +142,7 @@
                             <Button Content="Add to Sell" Click="addCardSell"/>
                             <Button Content="Add to Buy" Click="addCardBuy"/>
                         </StackPanel>
-                        <StackPanel Margin="40, 0, 0, 0">
+                        <StackPanel Margin="40, 0, 0, 0" x:Name="sellinglist">
                             <Label FontSize="30" Content="Selling" Foreground="White"/>
                             <ListBox x:Name="listBox_cardsInListingSelling" ScrollViewer.CanContentScroll="True" Height="400">
                                 <ListBox.ItemTemplate>
@@ -159,7 +159,7 @@
                             </ListBox>
                             <Button Content="Remove" Click="removeCardSell"/>
                         </StackPanel>
-                        <StackPanel Margin="40, 0, 0, 0">
+                        <StackPanel x:Name="sellinglistbought" Margin="40, 0, 0, 0">
                             <Label FontSize="30" Content="Bought" Foreground="White"/>
                             <ListBox x:Name="listBox_cardsInListingSold" ScrollViewer.CanContentScroll="True" Height="400">
                                 <ListBox.ItemTemplate>
@@ -177,7 +177,7 @@
                             </ListBox>
                         </StackPanel>
                         
-                        <StackPanel Margin="40, 0, 0, 0">
+                        <StackPanel x:Name="listingbuy" Margin="40, 0, 0, 0" Visibility="Collapsed">
                             <Label FontSize="30" Content="Buying" Foreground="White"/>
                             <ListBox x:Name="listBox_cardsInListingBuy" ScrollViewer.CanContentScroll="True" Height="400">
                                 <ListBox.ItemTemplate>
@@ -194,7 +194,7 @@
                             </ListBox>
                             <Button Content="Remove" Click="removeCardBuy"/>
                         </StackPanel>
-                        <StackPanel Margin="40, 0, 0, 0">
+                        <StackPanel x:Name="listingbuysold" Margin="40, 0, 0, 0" Visibility="Collapsed">
                             <Label FontSize="30" Content="Sold" Foreground="White"/>
                             <ListBox x:Name="listBox_cardsInListingBuySold" ScrollViewer.CanContentScroll="True" Height="400">
                                 <ListBox.ItemTemplate>

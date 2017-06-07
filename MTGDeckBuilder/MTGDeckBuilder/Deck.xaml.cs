@@ -106,15 +106,14 @@ namespace MTGDeckBuilder
         {
             InitializeComponent();
             this.deck_id = deck_id;
-            setWinsOrLossesLists();
             
-
-
             emptyStar = new BitmapImage(new Uri("/images/empty_star.png", UriKind.Relative));
             fullStar = new BitmapImage(new Uri("/images/full_star.png", UriKind.Relative));
             starting_hand_cards = 7;
             rnd = new Random();
             showDeck();
+
+            setWinsOrLossesLists();
             stars = new Image[5];
             stars[0] = star0;
             stars[1] = star1;
@@ -122,15 +121,31 @@ namespace MTGDeckBuilder
             stars[3] = star3;
             stars[4] = star4;
 
-            SqlDataReader dr = DatabaseControl.getDataReader("SELECT creator FROM Deck WHERE id = " + deck_id);
-            dr.Read();
-            creator = dr["creator"].ToString();
-            Console.WriteLine(creator);
-            if (!App.User.Equals(creator)){
-                addButton.Visibility = Visibility.Hidden;
-            }
-            dr.Close();
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(@cs))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("usp_DeckSelect", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
 
+                    // set up the parameters
+                    cmd.Parameters.Add("@id", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@id"].Value = this.deck_id;
+                    // open connection and execute stored procedure
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    creator = dr["creator"].ToString();
+                    if (!App.User.Equals(creator))
+                    {
+                        addButton.Visibility = Visibility.Hidden;
+                    }
+                    dr.Close();
+                }
+            }
             setCurrentRating();
         }
 
@@ -176,6 +191,7 @@ namespace MTGDeckBuilder
                 // set parameter values
                 cmd.Parameters["@deck"].Value = deck_id;
                 // open connection and execute stored procedure
+
                 conn.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
 
@@ -238,25 +254,36 @@ namespace MTGDeckBuilder
 
             Viewbox button = sender as Viewbox;
             Card_listing card = button.DataContext as Card_listing;
-
-            SqlConnection thisConnection;
+            
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            string getData = "UPDATE CardInDeck SET amount = amount + 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
-            try
+            using (SqlConnection conn = new SqlConnection(@cs))
+            using (SqlCommand cmd = new SqlCommand("usp_addCardToDeck", conn))
             {
-                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
-            }
-            catch (SqlException sqle)
-            {
-                MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+                conn.Open();
+                cmd.CommandType = CommandType.StoredProcedure;
 
-            thisConnection.Close();
+                // set up the parameters
+                cmd.Parameters.Add("@deck", SqlDbType.Int);
+                cmd.Parameters.Add("@cardId", SqlDbType.Int);
+                cmd.Parameters.Add("@amount", SqlDbType.Int);
+                cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+
+                // set parameter values
+                cmd.Parameters["@deck"].Value = card.Deck;
+                cmd.Parameters["@cardId"].Value = card.Id;
+                cmd.Parameters["@amount"].Value = 1;
+                cmd.Parameters["@sideboard"].Value = card.IsSideDeck ? "0" : "1";
+                
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }catch (SqlException sqle)
+                {
+                    Console.WriteLine(sqle.ToString());
+                    MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
             showDeck();
         }
 
@@ -265,17 +292,35 @@ namespace MTGDeckBuilder
             Viewbox button = sender as Viewbox;
             Card_listing card = button.DataContext as Card_listing;
 
-            SqlConnection thisConnection;
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(@cs))
+            using (SqlCommand cmd = new SqlCommand("usp_addCardToDeck", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
+                // set up the parameters
+                cmd.Parameters.Add("@deck", SqlDbType.Int);
+                cmd.Parameters.Add("@cardId", SqlDbType.Int);
+                cmd.Parameters.Add("@amount", SqlDbType.Int);
+                cmd.Parameters.Add("@sideboard", SqlDbType.Int);
 
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            string getData = "UPDATE CardInDeck SET amount = amount - 1 WHERE deck = " + card.Deck + " AND card = " + card.Id + " AND isSideboard = " + (card.IsSideDeck ? "1" : "0");
-            new SqlCommand(getData, thisConnection).ExecuteNonQuery();
-
-            thisConnection.Close();
-            card.Amount -= 1;
+                // set parameter values
+                cmd.Parameters["@deck"].Value = card.Deck;
+                cmd.Parameters["@cardId"].Value = card.Id;
+                cmd.Parameters["@amount"].Value = -1;
+                cmd.Parameters["@sideboard"].Value = card.IsSideDeck ? "0" : "1";
+                
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (SqlException sqle)
+                {
+                    MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                conn.Close();
+            }
             showDeck();
         }
 
@@ -298,156 +343,387 @@ namespace MTGDeckBuilder
         public void showDeck()
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            SqlDataReader dr = DatabaseControl.getDataReader("SELECT creator FROM Deck WHERE id = " + deck_id);
-            dr.Read();
-            creator = dr["creator"].ToString();
-
-            string getData = "SELECT name FROM Deck WHERE id = " + deck_id;
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_title.Content = dr["name"];
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 0";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_cards.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Land')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_lands.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Land')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
+            using (SqlConnection conn = new SqlConnection(@cs))
             {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("usp_DeckSelect", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@id", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@id"].Value = deck_id;
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    creator = dr["creator"].ToString();
+                    deck_title.Content = dr["name"];
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("usp_DeckSelect", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@id", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@id"].Value = deck_id;
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    creator = dr["creator"].ToString();
+                    deck_title.Content = dr["name"];
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = DBNull.Value;
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_cards.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Land";
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_lands.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Creature";
+                    
+          
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Sorcery";
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Artifact";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_lands.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Instant";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_instants.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Enchantment";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 1;
+                    cmd.Parameters["@type"].Value = DBNull.Value;
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    side_deck_number_of_cards.Content = dr.GetInt32(0).ToString();
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Land";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) deck_lands.ItemsSource = temp;
+                    else deck_lands_not_owner.ItemsSource = temp;
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Creature";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) deck_creatures.ItemsSource = temp;
+                    else deck_creatures_not_owner.ItemsSource = temp;
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Sorcery";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) deck_sorceries.ItemsSource = temp;
+                    else deck_sorceries_not_owner.ItemsSource = temp;
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Artifact";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) deck_artifacts.ItemsSource = temp;
+                    else deck_artifacts_not_owner.ItemsSource = temp;
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Enchantment";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) deck_enchantments.ItemsSource = temp;
+                    else deck_enchantments_not_owner.ItemsSource = temp;
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 0;
+                    cmd.Parameters["@type"].Value = "Instant";
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) deck_instants.ItemsSource = temp;
+                    else deck_instants_not_owner.ItemsSource = temp;
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(@deck, @sideboard, @type)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 255);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    cmd.Parameters["@sideboard"].Value = 1;
+                    cmd.Parameters["@type"].Value = DBNull.Value;
+
+                    
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    ObservableCollection<Card_listing> temp = new ObservableCollection<Card_listing>();
+                    while (dr.Read())
+                    {
+                        temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
+                    }
+                    if (App.User.Equals(creator)) side_deck.ItemsSource = temp;
+                    else side_deck_not_owner.ItemsSource = temp;
+
+                    dr.Close();
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_avgDeckPrice(@deck)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+
+
+                    avgDeckPrice.Content = float.Parse(cmd.ExecuteScalar().ToString());
+                }
             }
-            if (App.User.Equals(creator)) deck_lands.ItemsSource = temp;
-            else deck_lands_not_owner.ItemsSource = temp;
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Creature')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Creature')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
-            {
-                Console.WriteLine(dr["multiverseID"]);
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = (dr["multiverseID"] == null ? 0 : dr.GetInt32(4)) });
-            }
-
-            if (App.User.Equals(creator)) deck_creatures.ItemsSource = temp;
-            else deck_creatures_not_owner.ItemsSource = temp;
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Sorcery')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
-            {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
-            }
-            if (App.User.Equals(creator)) deck_sorceries.ItemsSource = temp;
-            else deck_sorceries_not_owner.ItemsSource = temp;
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Artifact')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
-            {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
-            }
-            if (App.User.Equals(creator)) deck_artifacts.ItemsSource = temp;
-            else deck_artifacts_not_owner.ItemsSource = temp;
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Instant')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_instants.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Instant')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
-            {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
-            }
-            if (App.User.Equals(creator)) deck_instants.ItemsSource = temp;
-            else deck_instants_not_owner.ItemsSource = temp;
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 0, " + "'Enchantment')";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
-            {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = false, MultiverseId = dr.GetInt32(4) });
-            }
-            if (App.User.Equals(creator)) deck_enchantments.ItemsSource = temp;
-            else deck_enchantments_not_owner.ItemsSource = temp;
-            dr.Close();
-
-            getData = "SELECT isnull(SUM(amount),0) FROM CardInDeck WHERE deck = " + deck_id + " AND isSideBoard = 1";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            dr.Read();
-            side_deck_number_of_cards.Content = dr.GetInt32(0).ToString();
-            dr.Close();
-
-            getData = "SELECT card, name, amount, deck, multiverseID FROM udf_getDeckCards(" + deck_id + ", 1, " + "'NULL')"; ;
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            temp = new ObservableCollection<Card_listing>();
-            while (dr.Read())
-            {
-                temp.Add(new Card_listing { Id = dr.GetInt32(0), Name = dr.GetString(1), Amount = dr.GetInt32(2), Deck = dr.GetInt32(3), IsSideDeck = true, MultiverseId = dr.GetInt32(4) });
-            }
-            if (App.User.Equals(creator)) side_deck.ItemsSource = temp;
-            else side_deck_not_owner.ItemsSource = temp;
-
-            dr.Close();
-
-            thisConnection.Close();
         }
 
         private void star_MouseEnter(object sender, MouseEventArgs e)
@@ -475,7 +751,6 @@ namespace MTGDeckBuilder
            try {
                 SqlDataReader dr = DatabaseControl.getDataReader("Select rating from RatedBy where deck=" + deck_id + " and [user]='" + App.User + "'");
                 dr.Read();
-                Console.WriteLine("Select rating from RatedBy where deck=" + deck_id + " and [user]='" + App.User + "'");
                 string userRating = dr["rating"].ToString();
             if (int.Parse(userRating) == ratingToGive)
                 {

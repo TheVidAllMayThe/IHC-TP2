@@ -4,10 +4,30 @@ GO
 
 CREATE PROC usp_addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
 AS
-	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck)
+	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck AND isSideboard = @sideboard)
 		UPDATE CardInDeck SET amount = amount + @amount WHERE deck = @deck AND card = @cardId AND isSideboard = @sideboard;
 	ELSE
 		INSERT INTO CardInDeck(deck,card,amount,isSideboard) VALUES (@deck, @cardId, @amount, @sideboard);
+
+GO
+
+CREATE PROC usp_deleteDeck(@deck int)
+AS
+	DELETE FROM CardInDeck WHERE deck = @deck;
+	DELETE FROM Wins WHERE Winner = @deck OR Loser = @deck;
+	DELETE FROM Deck WHERE ID = @deck;
+
+GO
+
+CREATE PROC usp_deleteListing(@listing INT)
+AS
+	IF EXISTS(SELECT * FROM CardInListingHistory WHERE Listing = @listing)
+	BEGIN
+		RAISERROR('Card(s) from this listing have already been bought or sold',11,0);
+		ROLLBACK TRAN;
+	END
+	DELETE FROM CardInListing WHERE Listing = @listing;
+	DELETE FROM Listing WHERE ID = @listing;
 
 GO
 

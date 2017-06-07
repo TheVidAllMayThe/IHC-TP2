@@ -342,12 +342,19 @@ namespace MTGDeckBuilder
             int deckID = int.Parse(table.Rows[int.Parse(((Image)sender).Name.Substring(5)) + (currentPage - 1) * 10]["id"].ToString());
 
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
+            using (SqlConnection conn = new SqlConnection(@cs))
+            using (SqlCommand cmd = new SqlCommand("usp_deleteDeck", conn))
+            {
+                conn.Open();
+                cmd.CommandType = CommandType.StoredProcedure;
 
-            String getData = "DELETE FROM Deck WHERE id = " + deckID;
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
+                // set up the parameters
+                cmd.Parameters.Add("@deck", SqlDbType.Int);
 
+                // set parameter values
+                cmd.Parameters["@deck"].Value = deckID;
+                cmd.ExecuteNonQuery();
+            }
             setDecks(currentPage);
         }
 
