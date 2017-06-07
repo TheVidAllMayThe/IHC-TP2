@@ -162,9 +162,8 @@ AS
 
 GO
 
-use Magic;
-go
-ALTER PROC usp_addWin @winner INT, @loser int
+
+CREATE PROC usp_addWin @winner INT, @loser int
 AS
 	IF EXISTS(SELECT * FROM Wins WHERE (@winner = Winner AND @loser = Loser))
 	BEGIN
@@ -173,10 +172,5 @@ AS
 	END
 
 	INSERT INTO Wins VALUES (@winner, @loser, 1);
-
-	INSERT INTO Wins VALUES (1, 1, 1);
-	exec usp_addWin 1,2
-
-
 
 

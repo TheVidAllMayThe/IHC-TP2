@@ -99,11 +99,9 @@ AS
 		GROUP BY color;
 		RETURN;
 	END
+go
 
-GO
-Use MAGIC;
-GO
-ALTER FUNCTION udf_search_decks(@name VARCHAR(255), @card VARCHAR(MAX), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @minLands INT, @maxLands INT, @minCreatures INT, @maxCreatures INT, @minSpells INT, @maxSpells INT, @minArtifacts INT, @maxArtifacts INT, @minEnchantments INT, @maxEnchantments INT, @minInstants INT, @maxInstants INT) RETURNS @table TABLE(id INT, name VARCHAR(255), creator VARCHAR(255), rating FLOAT)
+CREATE FUNCTION udf_search_decks(@name VARCHAR(255), @card VARCHAR(MAX), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @minLands INT, @maxLands INT, @minCreatures INT, @maxCreatures INT, @minSpells INT, @maxSpells INT, @minArtifacts INT, @maxArtifacts INT, @minEnchantments INT, @maxEnchantments INT, @minInstants INT, @maxInstants INT) RETURNS @table TABLE(id INT, name VARCHAR(255), creator VARCHAR(255), rating FLOAT)
 AS
 	BEGIN
 		INSERT INTO @table SELECT distinct id, name, creator, rating
@@ -228,7 +226,7 @@ AS
 						JOIN ColorIdentity
 						ON five.id = ColorIdentity.card AND ((ColorIdentity.color = 'B' and ColorIdentity.isManaColor = 1) OR @black is null)) AS six
 					JOIN Edition
-					ON six.edition =Edition.code AND (six.cmc >= @MinCMC or @MinCMC is null) AND (six.cmc <= @MaxCMC or @MaxCMC is null) AND (UPPER(''+Edition.name+'') LIKE UPPER('%'+@edition+'%') or @edition is null) WHERE upper(six.name) Like upper('%'+@name+'%') or @name is null AND (Six.rarity = @Rarity or @Rarity is null) AND (@ability is NULL OR upper(@ability) IN (SELECT upper(Ability) FROM Ability WHERE card = six.id));
+					ON six.edition =Edition.code AND (six.cmc >= @MinCMC or @MinCMC is null) AND (six.cmc <= @MaxCMC or @MaxCMC is null) AND (UPPER(''+Edition.name+'') LIKE UPPER('%'+@edition+'%') or @edition is null) WHERE (upper(six.name) Like upper('%'+@name+'%') or @name is null) AND (Six.rarity = @Rarity or @Rarity is null) AND (@ability is NULL OR upper(@ability) IN (SELECT upper(Ability) FROM Ability WHERE card = six.id));
 		RETURN;
 	END
 

@@ -105,8 +105,8 @@ namespace MTGDeckBuilder
         public Deck(int deck_id)
         {
             InitializeComponent();
-            setWinsOrLossesLists();
             this.deck_id = deck_id;
+            setWinsOrLossesLists();
             
 
 

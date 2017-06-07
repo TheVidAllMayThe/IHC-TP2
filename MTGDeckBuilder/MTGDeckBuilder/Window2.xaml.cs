@@ -321,7 +321,7 @@ namespace MTGDeckBuilder
 
             SqlDataReader dr = DatabaseControl.getDataReader("EXEC usp_UserSelect '" + App.User + "'");
             dr.Read();
-            money.Content = "i has ale dis monis: " + dr["balance"];
+            money.Content = "Money: " + dr["balance"];
 
             SqlConnection thisConnection = new SqlConnection(@cs);
             thisConnection.Open();

@@ -116,7 +116,7 @@ namespace MTGDeckBuilder
             getData = "EXEC usp_EditionSelect " + editionKey;
             dr = new SqlCommand(getData, thisConnection).ExecuteReader();
             dr.Read();
-            legality.Content = dr["legality"];
+            legality.Content = (dr["legality"] == null ? "---": dr["legality"]);
         }
     }
 }

@@ -191,6 +191,7 @@ CREATE TABLE OfferBid(
 	FOREIGN KEY (Bid) REFERENCES ListingBid(ID)
 );
 
+use Magic;
 GO
 
 CREATE TABLE Wins(
