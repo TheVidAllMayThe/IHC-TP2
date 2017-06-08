@@ -99,45 +99,48 @@ AS
 	END
 go
 
-CREATE FUNCTION udf_search_decks(@name VARCHAR(255), @card VARCHAR(MAX), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @minLands INT, @maxLands INT, @minCreatures INT, @maxCreatures INT, @minSpells INT, @maxSpells INT, @minArtifacts INT, @maxArtifacts INT, @minEnchantments INT, @maxEnchantments INT, @minInstants INT, @maxInstants INT) RETURNS @table TABLE(id INT, name VARCHAR(255), creator VARCHAR(255), rating FLOAT)
+CREATE FUNCTION udf_search_decks(@name VARCHAR(255), @card VARCHAR(MAX), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @minLands INT, @maxLands INT, @minCreatures INT, @maxCreatures INT, @minSpells INT, @maxSpells INT, @minArtifacts INT, @maxArtifacts INT, @minEnchantments INT, @maxEnchantments INT, @minInstants INT, @maxInstants INT, @creator VARCHAR(255)) RETURNS @table TABLE(id INT, name VARCHAR(255), creator VARCHAR(255), rating FLOAT)
 AS
 	BEGIN
-		INSERT INTO @table SELECT distinct id, name, creator, rating
-		FROM(
-			SELECT id, name, creator, rating
+		IF(@card IS NULL AND @green IS NULL and @blue IS NULL and @white IS NULL and @red is NULL and @black is null and @minLands is null and @maxLands is null and @minCreatures is null and @maxCreatures is null and @minSpells is null and @maxSpells is null and @minArtifacts is null and @maxArtifacts is null and @minEnchantments is null and @maxEnchantments is null and @minInstants is null)
+			INSERT INTO @table SELECT distinct id, name, creator, rating FROM Deck WHERE (('%' + upper(name) + '%') LIKE('%' + upper(@name) + '%') OR @name is NULL) AND (creator LIKE @creator OR @creator IS NULL);
+		ELSE
+			INSERT INTO @table SELECT distinct id, name, creator, rating
 			FROM(
 				SELECT id, name, creator, rating
 				FROM(
 					SELECT id, name, creator, rating
 					FROM(
 						SELECT id, name, creator, rating
-							FROM(
-								SELECT d.id, d.name, d.creator, d.rating 
+						FROM(
+							SELECT id, name, creator, rating
 								FROM(
-									SELECT id, name, creator, rating
-									FROM Deck WHERE (upper(name) LIKE upper('%' + @name + '%') OR @name is NULL)) AS d
+									SELECT d.id, d.name, d.creator, d.rating 
+									FROM(
+										SELECT id, name, creator, rating
+										FROM Deck WHERE (upper(name) LIKE upper('%' + @name + '%') OR @name is NULL) AND (creator LIKE @creator OR @creator is NULL)) AS d
+									JOIN (
+										SELECT name, deck, amount
+										FROM CardInDeck
+										JOIN Card
+										ON CardInDeck.card = Card.id) as cid
+									ON d.id = cid.deck AND (upper(cid.name) LIKE upper('%'+@card+'%') OR @card IS NULL)) AS one
 								JOIN (
-									SELECT name, deck, amount
-									FROM CardInDeck
-									JOIN Card
-									ON CardInDeck.card = Card.id) as cid
-								ON d.id = cid.deck AND (upper(cid.name) LIKE upper('%'+@card+'%') OR @card IS NULL)) AS one
+									SELECT deck, color FROM DeckColors) AS two
+								ON one.id = two.deck AND (two.color = 'G' OR @green is NULL)) AS two
 							JOIN (
-								SELECT deck, color FROM DeckColors) AS two
-							ON one.id = two.deck AND (two.color = 'G' OR @green is NULL)) AS two
+								SELECT deck, color FROM DeckColors) AS three
+							ON two.id = three.deck AND (three.color = 'U' OR @blue is NULL)) AS three
 						JOIN (
-							SELECT deck, color FROM DeckColors) AS three
-						ON two.id = three.deck AND (three.color = 'U' OR @blue is NULL)) AS three
-					JOIN (
-						SELECT deck, color FROM DeckColors) AS four
-					ON three.id = four.deck AND (four.color = 'W' or @white is NULL)) AS four
+							SELECT deck, color FROM DeckColors) AS four
+						ON three.id = four.deck AND (four.color = 'W' or @white is NULL)) AS four
+					JOIN(
+						SELECT deck, color FROM DeckColors) AS five
+					ON four.id = five.deck AND (five.color = 'R' or @red is NULL)) AS five
 				JOIN(
-					SELECT deck, color FROM DeckColors) AS five
-				ON four.id = five.deck AND (five.color = 'R' or @red is NULL)) AS five
-			JOIN(
-				SELECT deck, color FROM DeckColors) AS six
-			ON five.id = six.deck AND (six.color = 'B' or @black is NULL)
-			WHERE (dbo.udf_amount_of_type_on_deck(deck, 'Land') >= @MinLands OR @MinLands is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @MaxLands OR @MaxLands is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Enchantment') >= @minEnchantments OR @minEnchantments is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @maxEnchantments OR @maxEnchantments is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Creature') >= @minCreatures OR @minCreatures is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Creature') >= @maxCreatures OR @maxCreatures is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Spell') >= @MinSpells OR @MinSpells is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @maxSpells OR @maxSpells is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Artifact') >= @minArtifacts OR @minArtifacts is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Artifact') >= @maxArtifacts OR @maxArtifacts is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Instant') >= @minInstants OR @minInstants is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Instant') >= @maxInstants OR @maxInstants is NULL);
+					SELECT deck, color FROM DeckColors) AS six
+				ON five.id = six.deck AND (six.color = 'B' or @black is NULL)
+				WHERE (dbo.udf_amount_of_type_on_deck(deck, 'Land') >= @MinLands OR @MinLands is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @MaxLands OR @MaxLands is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Enchantment') >= @minEnchantments OR @minEnchantments is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @maxEnchantments OR @maxEnchantments is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Creature') >= @minCreatures OR @minCreatures is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Creature') >= @maxCreatures OR @maxCreatures is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Spell') >= @MinSpells OR @MinSpells is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @maxSpells OR @maxSpells is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Artifact') >= @minArtifacts OR @minArtifacts is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Artifact') >= @maxArtifacts OR @maxArtifacts is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Instant') >= @minInstants OR @minInstants is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Instant') >= @maxInstants OR @maxInstants is NULL);
 		RETURN;
 	END
 

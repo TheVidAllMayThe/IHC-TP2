@@ -34,25 +34,31 @@ namespace MTGDeckBuilder
 
         public static void Add_Card(int cardID, String deckName, int deckID, int amount, bool sideboard, String cardName)
         {
-
-            SqlConnection thisConnection;
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            string getData = "EXEC usp_addCardToDeck " + cardID + ", " + deckID + ", " + amount + ", " + (sideboard ? 1 : 0);
-            try
+            using (SqlConnection conn = new SqlConnection(@cs))
             {
-                new SqlCommand(getData, thisConnection).ExecuteNonQuery();
-            }
-            catch (SqlException e)
-            {
-                MessageBox.Show(e.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            thisConnection.Close();
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("usp_addCardToDeck", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
 
+                    // set up the parameters
+                    cmd.Parameters.Add("@cardId", SqlDbType.Int);
+                    cmd.Parameters.Add("@deck", SqlDbType.VarChar, 255);
+                    cmd.Parameters.Add("@amount", SqlDbType.Int);
+                    cmd.Parameters.Add("@sideboard", SqlDbType.Bit);
+
+                    // set parameter values
+                    cmd.Parameters["@cardId"].Value = cardID;
+                    cmd.Parameters["@deck"].Value = deckID;
+                    cmd.Parameters["@amount"].Value = amount;
+                    cmd.Parameters["@sideboard"].Value = sideboard? 1:0;
+                    // open connection and execute stored procedure
+
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
             MessageBox.Show("Successfully added " + amount + " " + cardName + " to " + deckName);
         }
 

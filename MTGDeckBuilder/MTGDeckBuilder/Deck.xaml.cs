@@ -471,7 +471,7 @@ namespace MTGDeckBuilder
                     
                     SqlDataReader dr = cmd.ExecuteReader();
                     dr.Read();
-                    deck_number_of_lands.Content = dr.GetInt32(0).ToString();
+                    deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
                 using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
@@ -748,156 +748,238 @@ namespace MTGDeckBuilder
         private void star_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             int ratingToGive = int.Parse(((Image)sender).Name.Substring(4)) + 1;
-           try {
-                SqlDataReader dr = DatabaseControl.getDataReader("Select rating from RatedBy where deck=" + deck_id + " and [user]='" + App.User + "'");
-                dr.Read();
-                string userRating = dr["rating"].ToString();
-            if (int.Parse(userRating) == ratingToGive)
+                string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+                using (SqlConnection conn = new SqlConnection(@cs))
                 {
-                    MessageBox.Show("You already rated this deck with the same rating!", "Rating", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                MessageBoxResult result = MessageBox.Show("Previously you rated this deck with " + int.Parse(userRating) + " stars. Are you sure you wanna rate this deck with " + ratingToGive + " stars?", "Rating", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if(result == MessageBoxResult.Yes)
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("usp_RatedBySelect", conn))
                     {
-                        DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // set up the parameters
+                        cmd.Parameters.Add("@deck", SqlDbType.Int);
+                        cmd.Parameters.Add("@user", SqlDbType.VarChar, 255);
+
+                        // set parameter values
+                        cmd.Parameters["@deck"].Value = deck_id;
+                        cmd.Parameters["@user"].Value = App.User;
+                        try
+                        {
+                            SqlDataReader dr = cmd.ExecuteReader();
+                            dr.Read();
+                            string userRating = dr["rating"].ToString();
+                            if (int.Parse(userRating) != ratingToGive)
+                            {
+                                MessageBoxResult result = MessageBox.Show("Previously you rated this deck with " + int.Parse(userRating) + " stars. Are you sure you wanna rate this deck with " + ratingToGive + " stars?", "Rating", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                                if (result == MessageBoxResult.Yes)
+                                {
+                                    DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                                }
+                            }
+
+                            dr.Close();
+                    }
+                        catch (InvalidOperationException io)
+                        {
+                            Console.WriteLine(io);
+                            DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
+                            MessageBox.Show("You gave this deck " + ratingToGive + " stars.", "Rating", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        setCurrentRating();
                     }
                 }
-            }catch(InvalidOperationException io) {
-                Console.WriteLine(io);
-                DatabaseControl.ExecuteNonQuerryCommand("EXEC usp_rate '" + App.User + "', " + deck_id + ", " + ratingToGive);
-                MessageBox.Show("You gave this deck " + ratingToGive + " stars.", "Rating", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
-            setCurrentRating();
         }
 
         private void setCurrentRating()
         {
-            SqlDataReader dr = DatabaseControl.getDataReader("Select rating from Deck where id=" + deck_id);
-            dr.Read();
-            int currentRating = dr["rating"].ToString().Equals("") ? 0 : int.Parse(dr["rating"].ToString());
-            for (int i = 0; i < currentRating; i++)
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(@cs))
             {
-                stars[i].Source = fullStar;
-            }
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("usp_DeckSelect", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-            for (int i = (currentRating == 0 ? 0 : currentRating); i < 5; i++)
-            {
-                stars[i].Source = emptyStar;
+                    // set up the parameters
+                    cmd.Parameters.Add("@id", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@id"].Value = deck_id;
+                    // open connection and execute stored procedure
+
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    dr.Read();
+                    int currentRating = dr["rating"].ToString().Equals("") ? 0 : int.Parse(dr["rating"].ToString());
+                    for (int i = 0; i < currentRating; i++)
+                    {
+                        stars[i].Source = fullStar;
+                    }
+
+                    for (int i = (currentRating == 0 ? 0 : currentRating); i < 5; i++)
+                    {
+                        stars[i].Source = emptyStar;
+                    }
+                    dr.Close();
+                }
             }
         }
 
         private void showDetailCharts()
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            string getData = "SELECT cmc, n FROM udf_manaCurve(" + deck_id + ")";
-            SqlDataReader dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            List<KeyValuePair<int, int>> manacurveList = new List<KeyValuePair<int, int>>();
-            while (dr.Read())
+            using (SqlConnection conn = new SqlConnection(@cs))
             {
-                manacurveList.Add(new KeyValuePair<int, int>(dr.GetInt32(0), dr.GetInt32(1)));
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("SELECT cmc, n FROM udf_manaCurve(@deckID)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deckID", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deckID"].Value = deck_id;
+                    // open connection and execute stored procedure
+
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    List<KeyValuePair<int, int>> manacurveList = new List<KeyValuePair<int, int>>();
+                    while (dr.Read())
+                    {
+                        manacurveList.Add(new KeyValuePair<int, int>(dr.GetInt32(0), dr.GetInt32(1)));
+                    }
+                    dr.Close();
+                    manacurveChart.DataContext = manacurveList;
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT rarity, perc FROM udf_cardTypeDistribution(@deckID)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deckID", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deckID"].Value = deck_id;
+                    // open connection and execute stored procedure
+
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    List<KeyValuePair<String, float>> cardtypeDistributionList = new List<KeyValuePair<String, float>>();
+                    while (dr.Read())
+                    {
+                        cardtypeDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
+                    }
+                    dr.Close();
+                    cardtypedistributionChart.DataContext = cardtypeDistributionList;
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT color, perc FROM udf_manaDistribution(@deckID)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deckID", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deckID"].Value = deck_id;
+                    // open connection and execute stored procedure
+
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    List<KeyValuePair<String, float>> manaDistributionList = new List<KeyValuePair<String, float>>();
+                    while (dr.Read())
+                    {
+                        manaDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
+                    }
+                    dr.Close();
+                    manadistributionChart.DataContext = manaDistributionList;
+                }
+                using (SqlCommand cmd = new SqlCommand("SELECT color, perc FROM udf_manasourceDistribution(@deckID)", conn))
+                {
+                    cmd.CommandType = CommandType.Text;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deckID", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deckID"].Value = deck_id;
+                    // open connection and execute stored procedure
+
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    List<KeyValuePair<String, float>> manasourceDistributionList = new List<KeyValuePair<String, float>>();
+                    while (dr.Read())
+                    {
+                        manasourceDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
+                    }
+                    dr.Close();
+                    manasourcedistributionChart.DataContext = manasourceDistributionList;
+                }
+                using (SqlCommand cmd = new SqlCommand("usp_CardDetailedInDeck", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // set up the parameters
+                    cmd.Parameters.Add("@deck", SqlDbType.Int);
+
+                    // set parameter values
+                    cmd.Parameters["@deck"].Value = deck_id;
+                    // open connection and execute stored procedure
+
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    Label amount;
+                    Label name;
+                    Label type;
+                    Label cmc;
+                    Label edition;
+                    Label rarity;
+                    for (int i = 0; dr.Read(); i++)
+                    {
+                        amount = new Label();
+                        name = new Label();
+                        type = new Label();
+                        cmc = new Label();
+                        edition = new Label();
+                        rarity = new Label();
+                        amount.Foreground = Brushes.LightGray;
+                        name.Foreground = Brushes.LightGray;
+                        type.Foreground = Brushes.LightGray;
+                        cmc.Foreground = Brushes.LightGray;
+                        edition.Foreground = Brushes.LightGray;
+                        rarity.Foreground = Brushes.LightGray;
+
+                        amount.Content = dr.GetInt32(0);
+                        name.Content = dr.GetString(2);
+                        type.Content = dr.GetString(3) + " " + dr["subtype"];
+                        cmc.Content = dr["cmc"] == null ? "" : dr["cmc"];
+                        edition.Content = dr.GetString(5);
+                        rarity.Content = dr["rarity"] == null ? "" : dr["rarity"];
+
+                        card_detailed.RowDefinitions.Add(new RowDefinition());
+
+                        card_detailed.Children.Add(amount);
+                        Grid.SetColumn(amount, 0);
+                        Grid.SetRow(amount, i + 1);
+
+                        card_detailed.Children.Add(name);
+                        Grid.SetColumn(name, 1);
+                        Grid.SetRow(name, i + 1);
+
+                        card_detailed.Children.Add(type);
+                        Grid.SetColumn(type, 2);
+                        Grid.SetRow(type, i + 1);
+
+                        card_detailed.Children.Add(cmc);
+                        Grid.SetColumn(cmc, 3);
+                        Grid.SetRow(cmc, i + 1);
+
+                        card_detailed.Children.Add(edition);
+                        Grid.SetColumn(edition, 4);
+                        Grid.SetRow(edition, i + 1);
+
+                        card_detailed.Children.Add(rarity);
+                        Grid.SetColumn(rarity, 5);
+                        Grid.SetRow(rarity, i + 1);
+                    }
+                    dr.Close();
+                }
+                conn.Close();
             }
-            dr.Close();
-
-            getData = "SELECT rarity, perc FROM udf_cardTypeDistribution(" + deck_id + ")";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            List<KeyValuePair<String, float>> cardtypeDistributionList = new List<KeyValuePair<String, float>>();
-            while (dr.Read())
-            {
-                cardtypeDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
-            }
-            dr.Close();
-
-            getData = "SELECT color, perc FROM udf_manaDistribution(" + deck_id + ")";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            List<KeyValuePair<String, float>> manaDistributionList = new List<KeyValuePair<String, float>>();
-            while (dr.Read())
-            {
-                manaDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
-            }
-            dr.Close();
-
-
-            getData = "SELECT color, perc FROM udf_manasourceDistribution(" + deck_id + ")";
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-            List<KeyValuePair<String, float>> manasourceDistributionList = new List<KeyValuePair<String, float>>();
-            while (dr.Read())
-            {
-                manasourceDistributionList.Add(new KeyValuePair<String, float>(dr.GetString(0), dr.GetFloat(1)));
-            }
-            dr.Close();
-            
-            manacurveChart.DataContext = manacurveList;
-            cardtypedistributionChart.DataContext = cardtypeDistributionList;
-            manadistributionChart.DataContext = manaDistributionList;
-            manasourcedistributionChart.DataContext = manasourceDistributionList;
-
-
-            getData = "SELECT amount, id, name, type, cmc, edition, rarity, subtype FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = " + deck_id;
-            dr = new SqlCommand(getData, thisConnection).ExecuteReader();
-
-            Label amount;
-            Label name  ;
-            Label type  ;
-            Label cmc   ;
-            Label edition;
-            Label rarity;
-            for(int i = 0; dr.Read(); i++)
-            {
-                amount  = new Label();
-                name    = new Label();
-                type    = new Label();
-                cmc     = new Label();
-                edition = new Label();
-                rarity  = new Label();
-                amount.Foreground = Brushes.LightGray;
-                name.Foreground = Brushes.LightGray;
-                type.Foreground = Brushes.LightGray;
-                cmc.Foreground = Brushes.LightGray;
-                edition.Foreground = Brushes.LightGray;
-                rarity.Foreground = Brushes.LightGray;
-
-                amount.Content = dr.GetInt32(0);
-                name.Content = dr.GetString(2);
-                type.Content = dr.GetString(3) + " " + dr["subtype"];
-                cmc.Content = dr["cmc"] == null ? "": dr["cmc"];
-                edition.Content = dr.GetString(5);
-                rarity.Content = dr["rarity"] == null ? "" : dr["rarity"];
-
-                card_detailed.RowDefinitions.Add(new RowDefinition());
-
-                card_detailed.Children.Add(amount);
-                Grid.SetColumn(amount, 0);
-                Grid.SetRow(amount, i + 1);
-
-                card_detailed.Children.Add(name);
-                Grid.SetColumn(name, 1);
-                Grid.SetRow(name, i + 1);
-
-                card_detailed.Children.Add(type);
-                Grid.SetColumn(type, 2);
-                Grid.SetRow(type, i+1);
-
-                card_detailed.Children.Add(cmc);
-                Grid.SetColumn(cmc, 3);
-                Grid.SetRow(cmc, i + 1);
-
-                card_detailed.Children.Add(edition);
-                Grid.SetColumn(edition, 4);
-                Grid.SetRow(edition, i + 1);
-
-                card_detailed.Children.Add(rarity);
-                Grid.SetColumn(rarity, 5);
-                Grid.SetRow(rarity, i+1);
-            }
-            
-            dr.Close();
         }
 
         private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

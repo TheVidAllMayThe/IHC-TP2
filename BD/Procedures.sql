@@ -11,6 +11,12 @@ AS
 
 GO
 
+CREATE PROC usp_CardDetailedInDeck(@deck INT)
+AS
+	SELECT amount, id, name, type, cmc, edition, rarity, subtype FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = @deck;
+
+GO
+
 CREATE PROC usp_deleteDeck(@deck int)
 AS
 	DELETE FROM CardInDeck WHERE deck = @deck;

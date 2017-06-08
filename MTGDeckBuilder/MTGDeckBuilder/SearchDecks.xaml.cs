@@ -26,8 +26,8 @@ namespace MTGDeckBuilder
     {
 
         DataTable table;
-        string currentQuerry;
-        SqlConnection thisConnection;
+        SqlCommand currentCommand;
+        SqlConnection conn;
         int currentPage;
         Label[] titles;
         Label[] creators;
@@ -36,18 +36,78 @@ namespace MTGDeckBuilder
         Image[] stars;
         Image[] trash;
         BitmapImage trashBitMap;
+        Boolean isUser;
+
         public SearchDecks()
         {
             InitializeComponent();
-            currentQuerry = "SELECT * FROM Deck";
+            this.isUser = false;
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            if (this.conn == null) this.conn = new SqlConnection(@cs);
+            conn.Open();
+            if (currentCommand == null)
+            {
+                currentCommand = new SqlCommand("SELECT * FROM udf_search_decks(@name, @card, @green, @blue, @white, @red, @black, @minLands, @maxLands, @minCreatures, @maxCreatures, @minSpells, @maxSpells, @minArtifacts, @maxArtifacts, @minEnchantments, @maxEnchantments, @minInstants, @maxInstants, @creator)", conn);
+                currentCommand.CommandType = CommandType.Text;
+                currentCommand.Parameters.Add("@name", SqlDbType.VarChar, 255);
+                currentCommand.Parameters.Add("@card", SqlDbType.VarChar, -1);
+                currentCommand.Parameters.Add("@green", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@blue", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@white", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@red", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@black", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@minLands", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxLands", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minCreatures", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxCreatures", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minSpells", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxSpells", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minArtifacts", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxArtifacts", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minEnchantments", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxEnchantments", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minInstants", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxInstants", SqlDbType.Int);
+                currentCommand.Parameters.Add("@creator", SqlDbType.VarChar, 255);
+            }
             addButtonViewBox.Visibility = Visibility.Hidden;
             construct(false);
+            Search(null, null);
         }
 
         public SearchDecks(string user) {
+            this.isUser = true;
             InitializeComponent();
-            currentQuerry = "SELECT * FROM Deck where (creator = '" + user + "')";
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            if (this.conn == null) this.conn = new SqlConnection(@cs);
+            conn.Open();
+            if (currentCommand == null)
+            {
+                currentCommand = new SqlCommand("SELECT * FROM udf_search_decks(@name, @card, @green, @blue, @white, @red, @black, @minLands, @maxLands, @minCreatures, @maxCreatures, @minSpells, @maxSpells, @minArtifacts, @maxArtifacts, @minEnchantments, @maxEnchantments, @minInstants, @maxInstants, @creator)", conn);
+                currentCommand.CommandType = CommandType.Text;
+                currentCommand.Parameters.Add("@name", SqlDbType.VarChar, 255);
+                currentCommand.Parameters.Add("@card", SqlDbType.VarChar, -1);
+                currentCommand.Parameters.Add("@green", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@blue", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@white", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@red", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@black", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@minLands", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxLands", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minCreatures", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxCreatures", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minSpells", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxSpells", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minArtifacts", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxArtifacts", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minEnchantments", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxEnchantments", SqlDbType.Int);
+                currentCommand.Parameters.Add("@minInstants", SqlDbType.Int);
+                currentCommand.Parameters.Add("@maxInstants", SqlDbType.Int);
+                currentCommand.Parameters.Add("@creator", SqlDbType.VarChar, 255);
+            }
             construct(true);
+            Search(null, null);
         }
 
         private void construct(bool isMyDecks)
@@ -126,7 +186,6 @@ namespace MTGDeckBuilder
                 if (!isMyDecks)
                     trashGrid.Visibility = Visibility.Collapsed;
             }
-            setDecks(1);
         }
         private void searchBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -141,26 +200,7 @@ namespace MTGDeckBuilder
         {
 
         }
-
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (abilities_box.Text.Equals("Abilities/Creatures..."))
-            {
-
-                abilities_box.Foreground = Brushes.Black;
-                abilities_box.Text = "";
-            }
-        }
-
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (abilities_box.Text.Trim().Equals(""))
-            {
-                abilities_box.Foreground = Brushes.Gray;
-                abilities_box.Text = "Abilities/Creatures...";
-            }
-        }
-
+        
         private void searchBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (searchBox.Text.Trim().Equals(""))
@@ -223,14 +263,9 @@ namespace MTGDeckBuilder
         private void setDecks(int i)
         {
             string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
-
-            SqlConnection thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
-
-            SqlCommand selectDeck = new SqlCommand(currentQuerry, thisConnection);
-
+            
             table = new DataTable("decks");
-            SqlDataAdapter adapt = new SqlDataAdapter(selectDeck);
+            SqlDataAdapter adapt = new SqlDataAdapter(currentCommand);
             adapt.Fill(table);
 
             setPage(i);
@@ -241,7 +276,6 @@ namespace MTGDeckBuilder
             
             int maxPageInt = table.Rows.Count / 10 + (table.Rows.Count % 10 == 0 ? 0 : 1);
             currentPage = page;
-            Console.WriteLine(currentQuerry);
 
             for (int i = 0; i<10; i++)
             {
@@ -334,7 +368,6 @@ namespace MTGDeckBuilder
                 previousPage.IsEnabled = false;
             else
                 previousPage.IsEnabled = true;
-            
         }
 
         private void deleteDeck(object sender, MouseButtonEventArgs e)
@@ -390,69 +423,60 @@ namespace MTGDeckBuilder
 
         private void Search(object sender, RoutedEventArgs e)
         {
-            String b, g, u, w, r;
-            b = BCheckBox.IsChecked.Value ? "1" : "null";
-            g = GCheckBox.IsChecked.Value ? "1" : "null";
-            u = UCheckBox.IsChecked.Value ? "1" : "null";
-            w = WCheckBox.IsChecked.Value ? "1" : "null";
-            r = RCheckBox.IsChecked.Value ? "1" : "null";
+            if (!BCheckBox.IsChecked.Value) currentCommand.Parameters["@green"].Value = DBNull.Value;
+            else currentCommand.Parameters["@green"].Value = 1;
+            if (!UCheckBox.IsChecked.Value) currentCommand.Parameters["@blue"].Value = DBNull.Value;
+            else currentCommand.Parameters["@blue"].Value = 1;
+            if (!WCheckBox.IsChecked.Value) currentCommand.Parameters["@white"].Value = DBNull.Value;
+            else currentCommand.Parameters["@white"].Value = 1;
+            if (!RCheckBox.IsChecked.Value) currentCommand.Parameters["@red"].Value = DBNull.Value;
+            else currentCommand.Parameters["@red"].Value = 1;
+            if (!BCheckBox.IsChecked.Value) currentCommand.Parameters["@black"].Value = DBNull.Value;
+            else currentCommand.Parameters["@black"].Value = 1;
 
-            String name = (searchBox.Text.Equals("Name") || searchBox.Text.Equals("") ? "null" : "'" + searchBox.Text + "'");
-            String cards = (cards_box.Text.Equals("Cards") || cards_box.Text.Equals("")) ? "null" : "'" + cards_box.Text + "'";
-            String abilities = (abilities_box.Text.Equals("Abilities") || abilities_box.Text.Equals("")) ? "null" : "'" + abilities_box.Text + "'";
-            String minLands, maxLands, minCreatures, maxCreatures, minSpells, maxSpells, minArtifacts, maxArtifacts, minEnchantments, maxEnchantments, minInstants, maxInstants;
-            
-            if (!min_lands_box.Text.Equals(""))
-                minLands = (min_lands_box.Text);
-            else
-                minLands = "null";
-            if (!max_lands_box.Text.Equals(""))
-                maxLands = (max_lands_box.Text);
-            else
-                maxLands = "null";
-            if (!min_creatures_box.Text.Equals(""))
-                minCreatures = (min_creatures_box.Text);
-            else
-                minCreatures = "null";
-            if (!max_creatures_box.Text.Equals(""))
-                maxCreatures = (max_creatures_box.Text);
-            else
-                maxCreatures = "null";
-            if (!min_spells_box.Text.Equals(""))
-                minSpells = (min_spells_box.Text);
-            else
-                minSpells = "null";
-            if (!max_spells_box.Text.Equals(""))
-                maxSpells = (max_spells_box.Text);
-            else
-                maxSpells = "null";
-            if (!min_artifacts_box.Text.Equals(""))
-                minArtifacts = (min_artifacts_box.Text);
-            else
-                minArtifacts = "null";
-            if (!max_artifacts_box.Text.Equals(""))
-                maxArtifacts = (max_artifacts_box.Text);
-            else
-                maxArtifacts = "null";
-            if (!min_enchantments_box.Text.Equals(""))
-                minEnchantments = (min_enchantments_box.Text);
-            else
-                minEnchantments = "null";
-            if (!max_enchantments_box.Text.Equals(""))
-                maxEnchantments = (max_enchantments_box.Text);
-            else
-                maxEnchantments = "null";
-            if (!min_instants_box.Text.Equals(""))
-                minInstants = (min_instants_box.Text);
-            else
-                minInstants = "null";
-            if (!max_instants_box.Text.Equals(""))
-                maxInstants = (max_instants_box.Text);
-            else
-                maxInstants = "null";
+            if (searchBox.Text.Equals("Name") || searchBox.Text.Equals("")) currentCommand.Parameters["@name"].Value = DBNull.Value;
+            else currentCommand.Parameters["@name"].Value = searchBox.Text;
+            if(cards_box.Text.Equals("Card") || cards_box.Text.Equals("")) currentCommand.Parameters["@card"].Value = DBNull.Value;
+            else currentCommand.Parameters["@card"].Value = cards_box.Text;
 
-            currentQuerry = "SELECT * from udf_search_decks(" + name + ", " + cards + ',' + g + ", " + u + ", " + w + ", " + r + ", " + b + ", " + minLands + ", " + maxLands + ", " + minCreatures + ", " + maxCreatures + ", " + minSpells + ", " + maxSpells + ", " + minArtifacts + ',' + maxArtifacts + ',' + minEnchantments + ',' + maxEnchantments + ',' + minInstants + ',' + maxInstants + ")";
+            if (min_lands_box.Text.Equals("")) currentCommand.Parameters["@minLands"].Value = DBNull.Value;
+            else currentCommand.Parameters["@minLands"].Value = int.Parse(min_lands_box.Text);
 
+            if (max_lands_box.Text.Equals("")) currentCommand.Parameters["@maxLands"].Value = DBNull.Value;
+            else currentCommand.Parameters["@maxLands"].Value = int.Parse(max_lands_box.Text);
+
+            if (min_creatures_box.Text.Equals("")) currentCommand.Parameters["@minCreatures"].Value = DBNull.Value;
+            else currentCommand.Parameters["@minCreatures"].Value = int.Parse(min_creatures_box.Text);
+
+            if (max_creatures_box.Text.Equals("")) currentCommand.Parameters["@maxCreatures"].Value = DBNull.Value;
+            else currentCommand.Parameters["@maxCreatures"].Value = int.Parse(max_creatures_box.Text);
+
+            if (min_spells_box.Text.Equals("")) currentCommand.Parameters["@minSpells"].Value = DBNull.Value;
+            else currentCommand.Parameters["@minSpells"].Value = int.Parse(min_spells_box.Text);
+
+            if (max_spells_box.Text.Equals("")) currentCommand.Parameters["@maxSpells"].Value = DBNull.Value;
+            else currentCommand.Parameters["@maxSpells"].Value = int.Parse(max_spells_box.Text);
+
+            if (min_artifacts_box.Text.Equals("")) currentCommand.Parameters["@minArtifacts"].Value = DBNull.Value;
+            else currentCommand.Parameters["@minArtifacts"].Value = int.Parse(min_artifacts_box.Text);
+
+            if (max_artifacts_box.Text.Equals("")) currentCommand.Parameters["@maxArtifacts"].Value = DBNull.Value;
+            else currentCommand.Parameters["@maxArtifacts"].Value = int.Parse(max_artifacts_box.Text);
+
+            if (min_enchantments_box.Text.Equals("")) currentCommand.Parameters["@minEnchantments"].Value = DBNull.Value;
+            else currentCommand.Parameters["@minEnchantments"].Value = int.Parse(min_enchantments_box.Text);
+
+            if (max_enchantments_box.Text.Equals("")) currentCommand.Parameters["@maxEnchantments"].Value = DBNull.Value;
+            else currentCommand.Parameters["@maxEnchantments"].Value = int.Parse(max_enchantments_box.Text);
+
+            if (min_instants_box.Text.Equals("")) currentCommand.Parameters["@minInstants"].Value = DBNull.Value;
+            else currentCommand.Parameters["@minInstants"].Value = int.Parse(min_instants_box.Text);
+
+            if (max_instants_box.Text.Equals("")) currentCommand.Parameters["@maxInstants"].Value = DBNull.Value;
+            else currentCommand.Parameters["@maxInstants"].Value = int.Parse(max_instants_box.Text);
+
+            if (!this.isUser) currentCommand.Parameters["@creator"].Value = DBNull.Value;
+            else currentCommand.Parameters["@creator"].Value = App.User;
             setDecks(1);
         }
 
@@ -472,8 +496,7 @@ namespace MTGDeckBuilder
             RCheckBox.IsChecked = false;
             WCheckBox.IsChecked = false;
             BCheckBox.IsChecked = false;
-            abilities_box.Text = "Abilities";
-            cards_box.Text = "Cards";
+            cards_box.Text = "Card";
             min_lands_box.Text = "";
             max_lands_box.Text = "";
             min_instants_box.Text = "";

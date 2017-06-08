@@ -20,14 +20,11 @@ namespace MTGDeckBuilder
 
     public partial class SearchCards : Page
     {
-
-        
-        SqlConnection thisConnection;
-        Border[] borders;
+Border[] borders;
         Label[] titles;
         Label[][] contentsOfBorder;
         Image[] images;
-        String currentQuerry;
+        SqlCommand currentCommand;
         DataTable table;
         BitmapImage[] bis;
         private string abilitiesStartingText;
@@ -35,9 +32,13 @@ namespace MTGDeckBuilder
         public int Deck_id;
         public string Deck_name;
         private Canvas[] canvas;
+        private SqlConnection conn;
         public SearchCards(int Deck_id = -1, string Deck_name = "")
         {
             InitializeComponent();
+            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+            if (this.conn == null) this.conn = new SqlConnection(@cs);
+            this.conn.Open();
             this.Deck_id = Deck_id;
             this.Deck_name = Deck_name;
 
@@ -186,34 +187,45 @@ namespace MTGDeckBuilder
                 contentsOfBorder[k] = tmp;
 
             }
-            if (currentQuerry == null)
+            if (currentCommand == null)
             {
-                currentQuerry = "SELECT id, multiverseID, Card.name as cardName, Edition.name as editionName, rarity, cmc FROM Card join Edition on edition = code ORDER BY ID DESC";
-                setCards();
+                currentCommand = new SqlCommand("SELECT * FROM udf_search_cards (@name, @type, @green, @blue, @white, @red, @black, @ability, @edition, @MinPower, @MaxPower, @MinTough, @MaxTough, @MinCMC, @MaxCMC, @Rarity)", conn);
+                currentCommand.CommandType = CommandType.Text;
+                currentCommand.Parameters.Add("@name", SqlDbType.VarChar, -1);
+                currentCommand.Parameters.Add("@type", SqlDbType.VarChar, 255);
+                currentCommand.Parameters.Add("@green", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@blue", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@white", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@red", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@black", SqlDbType.Bit);
+                currentCommand.Parameters.Add("@ability", SqlDbType.VarChar, 255);
+                currentCommand.Parameters.Add("@edition", SqlDbType.VarChar, 255);
+                currentCommand.Parameters.Add("@MinPower", SqlDbType.Int);
+                currentCommand.Parameters.Add("@MaxPower", SqlDbType.Int);
+                currentCommand.Parameters.Add("@MinTough", SqlDbType.Int);
+                currentCommand.Parameters.Add("@MaxTough", SqlDbType.Int);
+                currentCommand.Parameters.Add("@MinCMC", SqlDbType.Int);
+                currentCommand.Parameters.Add("@MaxCMC", SqlDbType.Int);
+                currentCommand.Parameters.Add("@Rarity", SqlDbType.VarChar, 255);
+                Search(null, null);
             }
-           
         }
 
         private void setCards()
-        {
-            string cs = ConfigurationManager.ConnectionStrings["magicConnect"].ConnectionString;
+        {   
+            using(currentCommand)
+            {
 
-            thisConnection = new SqlConnection(@cs);
-            thisConnection.Open();
+                table = new DataTable("cards");
+                SqlDataAdapter adapt = new SqlDataAdapter(currentCommand);
+                adapt.Fill(table);
+                text_block_context.Text = Deck_id > 0 ? "Searching cards for '" : "Search";
+                text_block_deck.Text = Deck_name;
+                text_block_results.Text = Deck_id > 0 ? "' results = " + table.Rows.Count : " results = " + table.Rows.Count;
 
-            
-            SqlCommand selectCard = new SqlCommand(currentQuerry, thisConnection);
-
-            table = new DataTable("cards");
-            SqlDataAdapter adapt = new SqlDataAdapter(selectCard);
-            adapt.Fill(table);
-            text_block_context.Text = Deck_id > 0 ? "Searching cards for '" : "Search";
-            text_block_deck.Text = Deck_name;
-            text_block_results.Text = Deck_id > 0 ? "' results = " + table.Rows.Count : " results = " + table.Rows.Count;
-
-            bis = new BitmapImage[table.Rows.Count];
-
-            setPage(1);
+                bis = new BitmapImage[table.Rows.Count];
+                setPage(1);
+            }
         }
 
         private void setPage(int page)
@@ -289,55 +301,88 @@ namespace MTGDeckBuilder
 
                     contentsOfBorder[i % 6][1].Content = table.Rows[i]["rarity"];
 
-                    var querry = "SELECT * FROM TypeOfCard where card = " + table.Rows[i]["id"];
-                    SqlCommand selectTypes = new SqlCommand(querry, thisConnection);
-                    DataTable types = new DataTable("types");
-                    SqlDataAdapter adapt = new SqlDataAdapter(selectTypes);
-
-                    adapt.Fill(types);
-
-                    if (types.Rows.Count == 0)
-                        contentsOfBorder[i % 6][2].Content = "---";
-                    else
+                    using (SqlCommand cmd = new SqlCommand("usp_TypeOfCardSelect", conn))
                     {
-                        contentsOfBorder[i % 6][2].Content = "";
-                        foreach (DataRow row in types.Rows)
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // set up the parameters
+                        cmd.Parameters.Add("@card", SqlDbType.Int);
+                        cmd.Parameters.Add("@type", SqlDbType.Int);
+
+                        // set parameter values
+                        cmd.Parameters["@card"].Value = table.Rows[i]["id"];
+                        cmd.Parameters["@type"].Value = DBNull.Value;
+
+                        DataTable types = new DataTable("types");
+                        SqlDataAdapter adapt = new SqlDataAdapter(cmd);
+
+                        adapt.Fill(types);
+
+                        if (types.Rows.Count == 0)
+                            contentsOfBorder[i % 6][2].Content = "---";
+                        else
                         {
-                            contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString() + row["type"] + ", ";
+                            contentsOfBorder[i % 6][2].Content = "";
+                            foreach (DataRow row in types.Rows)
+                            {
+                                contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString() + row["type"] + ", ";
+                            }
+                            contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString().Substring(0, contentsOfBorder[i % 6][2].Content.ToString().Length - 2);
                         }
-                        contentsOfBorder[i % 6][2].Content = contentsOfBorder[i % 6][2].Content.ToString().Substring(0, contentsOfBorder[i % 6][2].Content.ToString().Length - 2);
                     }
-
-                    querry = "SELECT * FROM SubTypeOfCard where card = " + table.Rows[i]["id"];
-                    selectTypes = new SqlCommand(querry, thisConnection);
-                    DataTable subtypes = new DataTable("types");
-                    adapt = new SqlDataAdapter(selectTypes);
-                    adapt.Fill(subtypes);
-
-                    if (types.Rows.Count == 0)
-                        contentsOfBorder[i % 6][3].Content = "---";
-                    else
+                    using (SqlCommand cmd = new SqlCommand("usp_SubtypeOfCardSelect", conn))
                     {
-                        contentsOfBorder[i % 6][3].Content = "";
-                        foreach (DataRow row in subtypes.Rows)
-                        {
-                            contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString() + row["subtype"] + ", ";
-                        }
-                        
-                        if (contentsOfBorder[i % 6][3].Content.ToString().Trim().Equals(""))
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // set up the parameters
+                        cmd.Parameters.Add("@card", SqlDbType.Int);
+                        cmd.Parameters.Add("@subtype", SqlDbType.Int);
+
+                        // set parameter values
+                        cmd.Parameters["@card"].Value = table.Rows[i]["id"];
+                        cmd.Parameters["@subtype"].Value = DBNull.Value;
+
+                        DataTable types = new DataTable("types");
+
+                        DataTable subtypes = new DataTable("types");
+                        SqlDataAdapter adapt = new SqlDataAdapter(cmd);
+                        adapt.Fill(subtypes);
+
+                        if (types.Rows.Count == 0)
                             contentsOfBorder[i % 6][3].Content = "---";
                         else
-                            contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString().Substring(0, contentsOfBorder[i % 6][3].Content.ToString().Length - 2);
+                        {
+                            contentsOfBorder[i % 6][3].Content = "";
+                            foreach (DataRow row in subtypes.Rows)
+                            {
+                                contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString() + row["subtype"] + ", ";
+                            }
+
+                            if (contentsOfBorder[i % 6][3].Content.ToString().Trim().Equals(""))
+                                contentsOfBorder[i % 6][3].Content = "---";
+                            else
+                                contentsOfBorder[i % 6][3].Content = contentsOfBorder[i % 6][3].Content.ToString().Substring(0, contentsOfBorder[i % 6][3].Content.ToString().Length - 2);
+                        }
                     }
 
                     if (contentsOfBorder[i % 6][2].ToString().Contains("Creature"))
                     {
-                        querry = "SELECT * FROM Creature where card = " + table.Rows[i]["id"];
-                        SqlCommand powerselect = new SqlCommand(querry, thisConnection);
-                        SqlDataReader querryCommandReader = powerselect.ExecuteReader();
-                        querryCommandReader.Read();
-                        contentsOfBorder[i % 6][4].Content = "Power: " + (querryCommandReader["power"] == null ? "---" : querryCommandReader["power"]);
-                        contentsOfBorder[i % 6][5].Content = "Toughness: " + querryCommandReader["toughness"];
+                        using (SqlCommand cmd = new SqlCommand("usp_CreatureSelect", conn))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+
+                            // set up the parameters
+                            cmd.Parameters.Add("@card", SqlDbType.Int);
+
+                            // set parameter values
+                            cmd.Parameters["@card"].Value = table.Rows[i]["id"];
+
+                            SqlDataReader dr = cmd.ExecuteReader();
+                            dr.Read();
+                            contentsOfBorder[i % 6][4].Content = "Power: " + (dr["power"] == null ? "---" : dr["power"]);
+                            contentsOfBorder[i % 6][5].Content = "Toughness: " + dr["toughness"];
+                            dr.Close();
+                        }
                     }
                     else
                     {
@@ -541,57 +586,57 @@ namespace MTGDeckBuilder
         }
 
         private void Search(object sender, RoutedEventArgs e)
-        {
-            String type = (typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("")) ? "null": "'"+typeComboBox.Text+ "'";
-            String b, g, u, w, r;
-            b = BCheckBox.IsChecked.Value ? "1":"null";
-            g = GCheckBox.IsChecked.Value ? "1":"null";
-            u = UCheckBox.IsChecked.Value ? "1":"null";
-            w = WCheckBox.IsChecked.Value ? "1":"null";
-            r = RCheckBox.IsChecked.Value ? "1":"null";
+        {   
+            // set parameter values
+            if (searchBox.Text.Equals("Name") || searchBox.Text.Equals("")) currentCommand.Parameters["@name"].Value = DBNull.Value;
+            else currentCommand.Parameters["@name"].Value = searchBox.Text;
+
+            if (typeComboBox.Text.Equals("Any") || typeComboBox.Text.Equals("")) currentCommand.Parameters["@type"].Value = DBNull.Value;
+            else currentCommand.Parameters["@type"].Value = typeComboBox.Text;
+
+            if (!GCheckBox.IsChecked.Value) currentCommand.Parameters["@green"].Value = DBNull.Value;
+            else currentCommand.Parameters["@green"].Value = 1;
+
+            if (!UCheckBox.IsChecked.Value) currentCommand.Parameters["@blue"].Value = DBNull.Value;
+            else currentCommand.Parameters["@blue"].Value = 1;
+
+            if (!WCheckBox.IsChecked.Value) currentCommand.Parameters["@white"].Value = DBNull.Value;
+            else currentCommand.Parameters["@white"].Value = 1;
+
+            if (!RCheckBox.IsChecked.Value) currentCommand.Parameters["@red"].Value = DBNull.Value;
+            else currentCommand.Parameters["@red"].Value = 1;
+
+            if (!BCheckBox.IsChecked.Value) currentCommand.Parameters["@black"].Value = DBNull.Value;
+            else currentCommand.Parameters["@black"].Value = 1;
+
+            if (abilities_box.Text.Equals(abilitiesStartingText) || abilities_box.Text.Equals("")) currentCommand.Parameters["@ability"].Value = DBNull.Value;
+            else currentCommand.Parameters["@ability"].Value = abilities_box.Text;
+
+            if (edition_box.Text.Equals("Edition") || edition_box.Text.Equals("")) currentCommand.Parameters["@edition"].Value = DBNull.Value;
+            else currentCommand.Parameters["@edition"].Value = edition_box.Text;
             
-            String edition = (edition_box.Text.Equals("Edition") || edition_box.Text.Equals("")) ? "null": "'" + edition_box.Text + "'";
-            String minPower, maxPower, minTough, maxTough, minCMC, maxCMC;
-
+            if (min_power_box.Text.Equals("")) currentCommand.Parameters["@MinPower"].Value = DBNull.Value;
+            else currentCommand.Parameters["@MinPower"].Value = int.Parse(min_power_box.Text);
             
+            if (max_power_box.Text.Equals("")) currentCommand.Parameters["@MaxPower"].Value = DBNull.Value;
+            else currentCommand.Parameters["@MaxPower"].Value = int.Parse(max_power_box.Text);
+            
+            if (min_toughness_box.Text.Equals("")) currentCommand.Parameters["@MinTough"].Value = DBNull.Value;
+            else currentCommand.Parameters["@MinTough"].Value = int.Parse(min_toughness_box.Text);
 
-            if (!min_power_box.Text.Equals(""))
-                minPower = (min_power_box.Text);
-            else
-                minPower = "null";
+            if (max_toughness_box.Text.Equals("")) currentCommand.Parameters["@MaxTough"].Value = DBNull.Value;
+            else currentCommand.Parameters["@MaxTough"].Value = int.Parse(max_toughness_box.Text);
 
-            if (!max_power_box.Text.Equals(""))
-                maxPower = (max_power_box.Text);
-            else
-                maxPower = "null";
+            if (min_cmc_box.Text.Equals("")) currentCommand.Parameters["@MinCMC"].Value = DBNull.Value;
+            else currentCommand.Parameters["@MinCMC"].Value = int.Parse(min_cmc_box.Text);
 
-            if (!min_toughness_box.Text.Equals(""))
-                minTough = (min_toughness_box.Text);
-            else
-                minTough = "null";
+            if (max_cmc_box.Text.Equals("")) currentCommand.Parameters["@MaxCMC"].Value = DBNull.Value;
+            else currentCommand.Parameters["@MaxCMC"].Value = int.Parse(max_cmc_box.Text);
 
-            if (!max_toughness_box.Text.Equals(""))
-                maxTough = (max_toughness_box.Text);
-            else
-                maxTough = "null";
 
-            if (!min_cmc_box.Text.Equals(""))
-                minCMC = (min_cmc_box.Text);
-            else
-                minCMC = "null";
+            if (rarity_combo_box.Text.Equals("") || rarity_combo_box.Text.Equals("Any")) currentCommand.Parameters["@Rarity"].Value = DBNull.Value;
+            else currentCommand.Parameters["@Rarity"].Value = rarity_combo_box.Text;
 
-            if (!max_cmc_box.Text.Equals(""))
-                maxCMC = (max_cmc_box.Text);
-            else
-                maxCMC = "null";
-
-            string abilities = (abilities_box.Text.Equals(abilitiesStartingText) || abilities_box.Text.Equals("")) ? "null" : "'" + abilities_box.Text + "'";
-
-            string rarity = rarity_combo_box.Text.Equals("") ? "null" : "'" + rarity_combo_box.Text + "'";
-
-            Console.WriteLine(minCMC);
-            currentQuerry = "SELECT * from udf_search_cards(" + (searchBox.Text.Equals("Name")? "null" : "'" + searchBox.Text + "'") + ", " + type + ", " + g + ", " + u + ", " + w + ", " + r + ", " + b + "," + abilities + ", " + edition + ", " + minPower + ", " + maxPower + ", " + minTough + ", " + maxTough + ", " + minCMC + ", " + maxCMC + ", " + rarity + ")";
-            Console.WriteLine(currentQuerry);
             BitmapImage image = new BitmapImage(new Uri("/magic_the_gathering.png", UriKind.Relative));
             for (int i = 0; i < 6; i++)
             {

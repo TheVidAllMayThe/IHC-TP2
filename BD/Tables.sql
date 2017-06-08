@@ -82,7 +82,7 @@ CREATE TABLE Deck(
 );
 
 CREATE TABLE CardInDeck(
-	[card] INTEGER UNIQUE NOT NULL,
+	[card] INTEGER NOT NULL,
 	deck INTEGER NOT NULL,
 	amount INTEGER NOT NULL,
 	isSideboard BIT NOT NULL,
