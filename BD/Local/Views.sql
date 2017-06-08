@@ -1,5 +1,8 @@
+USE Magic;
 
-Alter VIEW DeckColors
+GO
+
+CREATE VIEW DeckColors
 AS
 	SELECT color, deck
 	FROM ColorIdentity 
@@ -10,9 +13,9 @@ AS
 
 GO
 
-Alter VIEW CardDetailed 
+CREATE VIEW CardDetailed 
 AS
-	SELECT id, name, TypeOfCard.type, Magic.udf_subType(id) AS subtype, cmc, edition, rarity, multiverseID
+	SELECT id, name, TypeOfCard.type, dbo.udf_subType(id) AS subtype, cmc, edition, rarity, multiverseID
 	FROM(	
 		SELECT Card.id, cmc, Card.name AS name, rarity, Edition.name AS edition, multiverseID
 		FROM Card
@@ -23,7 +26,7 @@ AS
 
 GO
 
-Alter VIEW DeckCard
+CREATE VIEW DeckCard
 AS
 	SELECT deck, card, name, type, amount, multiverseID, isSideboard
 	FROM (SELECT deck, card, amount, isSideboard

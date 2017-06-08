@@ -1,4 +1,4 @@
---Use Magic;
+Use Magic;
 
 CREATE INDEX ability_card ON Ability(card);
 CREATE INDEX CardInDeck_card ON CardInDeck(card);

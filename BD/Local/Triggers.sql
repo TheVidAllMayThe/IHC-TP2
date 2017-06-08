@@ -1,3 +1,7 @@
+USE Magic;
+
+GO
+
 CREATE TRIGGER valid_amount_cards ON CardInDeck
 AFTER UPDATE, INSERT
 AS

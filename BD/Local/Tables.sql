@@ -1,10 +1,11 @@
-CREATE SCHEMA Magic;
+CREATE DATABASE Magic;
 
 GO
 
-ALTER USER p2g1 WITH DEFAULT_SCHEMA = Magic;
+USE Magic;
 
-go
+GO
+
 CREATE TABLE [User] (
 	email VARCHAR(255) NOT NULL,
 	[password] TEXT NOT NULL,
@@ -190,6 +191,8 @@ CREATE TABLE OfferBid(
 	FOREIGN KEY (Bid) REFERENCES ListingBid(ID)
 );
 
+use Magic;
+GO
 
 CREATE TABLE Wins(
 	Winner int,

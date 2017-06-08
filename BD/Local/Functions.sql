@@ -1,7 +1,8 @@
+USE Magic;
 
 GO
 
-Create FUNCTION udf_isRegistered(@email varchar(255)) RETURNS BIT
+CREATE FUNCTION udf_isRegistered(@email varchar(255)) RETURNS BIT
 AS
 BEGIN
 	IF EXISTS(SELECT * FROM [User] WHERE email = @email)
@@ -11,19 +12,19 @@ END
 
 GO
 
-Create FUNCTION udf_userDecks(@user VARCHAR(255)) RETURNS TABLE
+CREATE FUNCTION udf_userDecks(@user VARCHAR(255)) RETURNS TABLE
 AS
 	RETURN(SELECT id, name FROM Deck WHERE creator = @user);
 
 GO
 
-Create FUNCTION udf_handDeck(@deck INT) RETURNS TABLE
+CREATE FUNCTION udf_handDeck(@deck INT) RETURNS TABLE
 AS
 	RETURN (SELECT amount, multiverseID FROM CardInDeck JOIN Card ON CardInDeck.card = Card.id AND deck = @deck AND isSideBoard = 0);
 
 GO
 
-Create FUNCTION udf_getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) RETURNS TABLE
+CREATE FUNCTION udf_getDeckCards(@deck INT, @isSideboard BIT, @type VARCHAR(255)) RETURNS TABLE
 AS
 	RETURN (SELECT card, name, deck, amount, isnull(multiverseID,0) as multiverseID
 			FROM DeckCard
@@ -32,7 +33,7 @@ AS
 
 GO
 
-Create FUNCTION udf_manaCurve (@deckID int) Returns Table
+CREATE FUNCTION udf_manaCurve (@deckID int) Returns Table
 AS
 	RETURN (SELECT cmc, SUM(amount) AS n
 			FROM (SELECT card, amount FROM CardInDeck WHERE deck = @deckID) AS cid
@@ -41,7 +42,7 @@ AS
 			GROUP BY cmc)
 GO
 
-Create FUNCTION udf_cardTypeDistribution (@deckID int) Returns @table TABLE(rarity VARCHAR(255), perc real)
+CREATE FUNCTION udf_cardTypeDistribution (@deckID int) Returns @table TABLE(rarity VARCHAR(255), perc real)
 AS
 	BEGIN
 		DECLARE @total INT;
@@ -58,7 +59,7 @@ AS
 	END
 GO
 
-Create FUNCTION udf_manaDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
+CREATE FUNCTION udf_manaDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
 AS
 	BEGIN
 		DECLARE @total INT;
@@ -76,7 +77,7 @@ AS
 
 GO
 
-Create FUNCTION udf_manasourceDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
+CREATE FUNCTION udf_manasourceDistribution (@deckID int) Returns @table TABLE(color VARCHAR(20), perc real)
 AS
 	BEGIN
 		DECLARE @total INT;
@@ -98,7 +99,7 @@ AS
 	END
 go
 
-Create FUNCTION udf_search_decks(@name VARCHAR(255), @card VARCHAR(MAX), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @minLands INT, @maxLands INT, @minCreatures INT, @maxCreatures INT, @minSpells INT, @maxSpells INT, @minArtifacts INT, @maxArtifacts INT, @minEnchantments INT, @maxEnchantments INT, @minInstants INT, @maxInstants INT, @creator VARCHAR(255)) RETURNS @table TABLE(id INT, name VARCHAR(255), creator VARCHAR(255), rating FLOAT)
+CREATE FUNCTION udf_search_decks(@name VARCHAR(255), @card VARCHAR(MAX), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @minLands INT, @maxLands INT, @minCreatures INT, @maxCreatures INT, @minSpells INT, @maxSpells INT, @minArtifacts INT, @maxArtifacts INT, @minEnchantments INT, @maxEnchantments INT, @minInstants INT, @maxInstants INT, @creator VARCHAR(255)) RETURNS @table TABLE(id INT, name VARCHAR(255), creator VARCHAR(255), rating FLOAT)
 AS
 	BEGIN
 		IF(@card IS NULL AND @green IS NULL and @blue IS NULL and @white IS NULL and @red is NULL and @black is null and @minLands is null and @maxLands is null and @minCreatures is null and @maxCreatures is null and @minSpells is null and @maxSpells is null and @minArtifacts is null and @maxArtifacts is null and @minEnchantments is null and @maxEnchantments is null and @minInstants is null)
@@ -139,13 +140,13 @@ AS
 				JOIN(
 					SELECT deck, color FROM DeckColors) AS six
 				ON five.id = six.deck AND (six.color = 'B' or @black is NULL)
-				WHERE (Magic.udf_amount_of_type_on_deck(deck, 'Land') >= @MinLands OR @MinLands is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Land') <= @MaxLands OR @MaxLands is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Enchantment') >= @minEnchantments OR @minEnchantments is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Land') <= @maxEnchantments OR @maxEnchantments is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Creature') >= @minCreatures OR @minCreatures is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Creature') >= @maxCreatures OR @maxCreatures is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Spell') >= @MinSpells OR @MinSpells is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Land') <= @maxSpells OR @maxSpells is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Artifact') >= @minArtifacts OR @minArtifacts is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Artifact') >= @maxArtifacts OR @maxArtifacts is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Instant') >= @minInstants OR @minInstants is NULL) AND (Magic.udf_amount_of_type_on_deck(deck, 'Instant') >= @maxInstants OR @maxInstants is NULL);
+				WHERE (dbo.udf_amount_of_type_on_deck(deck, 'Land') >= @MinLands OR @MinLands is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @MaxLands OR @MaxLands is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Enchantment') >= @minEnchantments OR @minEnchantments is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @maxEnchantments OR @maxEnchantments is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Creature') >= @minCreatures OR @minCreatures is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Creature') >= @maxCreatures OR @maxCreatures is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Spell') >= @MinSpells OR @MinSpells is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Land') <= @maxSpells OR @maxSpells is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Artifact') >= @minArtifacts OR @minArtifacts is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Artifact') >= @maxArtifacts OR @maxArtifacts is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Instant') >= @minInstants OR @minInstants is NULL) AND (dbo.udf_amount_of_type_on_deck(deck, 'Instant') >= @maxInstants OR @maxInstants is NULL);
 		RETURN;
 	END
 
 GO
 
-Create FUNCTION udf_amount_of_type_on_deck(@deck INT, @type VARCHAR(MAX)) RETURNS INT
+CREATE FUNCTION udf_amount_of_type_on_deck(@deck INT, @type VARCHAR(MAX)) RETURNS INT
 AS
 	BEGIN
 		DECLARE @amount INT;
@@ -160,7 +161,7 @@ AS
 
 GO
 
-Create FUNCTION udf_search_cards (@name VARCHAR(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @ability VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) RETURNS @table TABLE(id INT, multiverseID INT, cardName VARCHAR(MAX), editionName VARCHAR(255), rarity VARCHAR(255), cmc INT)
+CREATE FUNCTION udf_search_cards (@name VARCHAR(255), @type VARCHAR(255), @green BIT, @blue BIT, @white BIT, @red BIT, @black BIT, @ability VARCHAR(255), @edition VARCHAR(255), @MinPower INT, @MaxPower INT, @MinTough INT, @MaxTough INT, @MinCMC Int, @MaxCMC Int, @Rarity VARCHAR(255)) RETURNS @table TABLE(id INT, multiverseID INT, cardName VARCHAR(MAX), editionName VARCHAR(255), rarity VARCHAR(255), cmc INT)
 AS
 	BEGIN
 		IF (@MinPower is not NULL OR @MaxPower is not NULL OR @MinTough is not NULL OR @MaxTough is NOT NULL)
@@ -232,7 +233,7 @@ AS
 
 GO
 
-Create FUNCTION udf_subType(@card INT) RETURNS VARCHAR(MAX)
+CREATE FUNCTION udf_subType(@card INT) RETURNS VARCHAR(MAX)
 AS
 	BEGIN
 		DECLARE @subtype VARCHAR(MAX);
@@ -244,7 +245,7 @@ AS
 
 GO
 
-Create FUNCTION udf_onGoingListings(@sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_onGoingListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(
 		SELECT ID, listingid, [User], StartDate, card, cardname, priceperunit, condition, units
@@ -263,7 +264,7 @@ AS
 
 GO
 
-Create FUNCTION udf_finishedListings(@sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_finishedListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(
 		SELECT ID, listingid, [User], StartDate, card, cardname, priceperunit, condition, units
@@ -282,7 +283,7 @@ AS
 	
 GO
 
-Create FUNCTION udf_totalListingPrice(@listingID INT) RETURNS FLOAT
+CREATE FUNCTION udf_totalListingPrice(@listingID INT) RETURNS FLOAT
 AS
 	BEGIN
 		DECLARE @sum float;
@@ -294,38 +295,38 @@ AS
 
 GO
 
-Create FUNCTION udf_userListings(@user VARCHAR(255), @sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_userListings(@user VARCHAR(255), @sell BIT) RETURNS TABLE
 AS
 	RETURN(SELECT * FROM Listing WHERE [User] = @user AND Sell = @sell);
 
 GO
 
-Create FUNCTION udf_allCardsInListings(@sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_allCardsInListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(SELECT CardInListing.*, Listing.StartDate, Listing.[User], Card.name AS CardName FROM CardInListing JOIN Listing ON CardInListing.Listing = Listing.ID AND Listing.Sell = @sell JOIN Card ON Card.id = CardInListing.Card);
 
 GO
 
-Create FUNCTION udf_allCardsInHistoryListings(@sell BIT) RETURNS TABLE
+CREATE FUNCTION udf_allCardsInHistoryListings(@sell BIT) RETURNS TABLE
 AS
 	RETURN(SELECT CardInListingHistory.*, Listing.StartDate, Listing.[User], Card.name AS CardName FROM CardInListingHistory JOIN Listing ON CardInListingHistory.Listing = Listing.ID AND Listing.Sell = @sell JOIN Card ON Card.id = CardInListingHistory.Card);
 GO
 
 
 
-Create FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
+CREATE FUNCTION udf_cardInListing(@listing INT) RETURNS TABLE
 AS
 	RETURN(SELECT CardInListing.*, Card.name, Card.id as cardID FROM CardInListing JOIN Card ON CardInListing.Card = Card.ID WHERE (Listing = @listing OR @listing = NULL));
 
 GO
 
-Create FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
+CREATE FUNCTION udf_cardInListingHistory(@listing INT) RETURNS TABLE
 AS
 	RETURN (SELECT CardInListingHistory.*, Card.name, Card.id as cardID FROM CardInListingHistory JOIN Card ON CardInListingHistory.Card = Card.ID WHERE (Listing = @listing or @listing = NULL));
 
 GO
 
-Create FUNCTION udf_avgCardPrice(@card INT) RETURNS FLOAT
+CREATE FUNCTION udf_avgCardPrice(@card INT) RETURNS FLOAT
 AS
 	BEGIN
 		DECLARE @avg FLOAT;
@@ -338,16 +339,16 @@ AS
 
 GO
 
-Create FUNCTION udf_avgDeckPrice(@deck INT) RETURNS FLOAT
+CREATE FUNCTION udf_avgDeckPrice(@deck INT) RETURNS FLOAT
 AS
 	BEGIN
 		DECLARE @sum_avg_prices FLOAT;
-		SELECT @sum_avg_prices = SUM(Magic.udf_avgCardPrice(card) * amount) FROM CardInDeck WHERE deck = @deck;
+		SELECT @sum_avg_prices = SUM(dbo.udf_avgCardPrice(card) * amount) FROM CardInDeck WHERE deck = @deck;
 		RETURN isnull(@sum_avg_prices, 0.0);
 	END
 GO
 
-Create FUNCTION udf_numberOfCardsInDeck(@deck INT, @sideboard BIT, @type VARCHAR(255)) RETURNS INT
+CREATE FUNCTION udf_numberOfCardsInDeck(@deck INT, @sideboard BIT, @type VARCHAR(255)) RETURNS INT
 AS
 	BEGIN
 		DECLARE @amount INT;
