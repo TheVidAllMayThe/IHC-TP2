@@ -1,7 +1,7 @@
 
-GO
 
-Create PROC usp_addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
+
+CREATE PROC usp_addCardToDeck(@cardId int, @deck int, @amount int, @sideboard BIT)
 AS
 	IF EXISTS(SELECT * FROM CardInDeck WHERE card = @cardId AND deck = @deck AND isSideboard = @sideboard)
 		UPDATE CardInDeck SET amount = amount + @amount WHERE deck = @deck AND card = @cardId AND isSideboard = @sideboard;
@@ -10,13 +10,13 @@ AS
 
 GO
 
-Create PROC usp_CardDetailedInDeck(@deck INT)
+CREATE PROC usp_CardDetailedInDeck(@deck INT)
 AS
 	SELECT amount, id, name, type, cmc, edition, rarity, subtype FROM CardDetailed JOIN CardInDeck ON CardDetailed.id = CardInDeck.card AND CardInDeck.deck = @deck;
 
 GO
 
-Create PROC usp_deleteDeck(@deck int)
+CREATE PROC usp_deleteDeck(@deck int)
 AS
 	DELETE FROM CardInDeck WHERE deck = @deck;
 	DELETE FROM Wins WHERE Winner = @deck OR Loser = @deck;
@@ -24,7 +24,7 @@ AS
 
 GO
 
-Create PROC usp_deleteListing(@listing INT)
+CREATE PROC usp_deleteListing(@listing INT)
 AS
 	IF EXISTS(SELECT * FROM CardInListingHistory WHERE Listing = @listing)
 	BEGIN
@@ -36,24 +36,24 @@ AS
 
 GO
 
-Create PROC usp_CardSelect @id int
-AS 
-	
-	SELECT id, name, rarity, edition, artist, imageName, gathererID, multiverseID, manaCost, text, cmc 
+CREATE PROC usp_CardSelect @id int
+AS
+
+	SELECT id, name, rarity, edition, artist, imageName, gathererID, multiverseID, manaCost, text, cmc
 	FROM   Card
-	WHERE  (id = @id OR @id IS NULL) 
+	WHERE  (id = @id OR @id IS NULL)
 
 GO
 
-Create PROC usp_FlavorSelect @card int
-AS 
-	SELECT card, flavor 
-	FROM   Flavor 
-	WHERE  (card = @card OR @card IS NULL) 
+CREATE PROC usp_FlavorSelect @card int
+AS
+	SELECT card, flavor
+	FROM   Flavor
+	WHERE  (card = @card OR @card IS NULL)
 
 GO
 
-Create PROC usp_rate @user VARCHAR(255), @deckID INT, @rating FLOAT
+CREATE PROC usp_rate @user VARCHAR(255), @deckID INT, @rating FLOAT
 AS
 	IF EXISTS(SELECT * FROM RatedBy WHERE deck = @deckID AND [user] = @user)
 		UPDATE RatedBy SET rating = @rating where (deck=@deckID and [user] = @user);
@@ -62,20 +62,20 @@ AS
 
 GO
 
-Create PROC usp_register(@user VARCHAR(255), @password TEXT)
+CREATE PROC usp_register(@user VARCHAR(255), @password TEXT)
 AS
 	INSERT INTO [User](email, password) VALUES (@user, @password);
 
 GO
 
-Create PROC usp_addDeck(@deck_name VARCHAR(255), @user VARCHAR(255), @r INT OUTPUT)
+CREATE PROC usp_addDeck(@deck_name VARCHAR(255), @user VARCHAR(255), @r INT OUTPUT)
 AS
 	INSERT INTO Deck(name,creator) VALUES (@deck_name, @user);
 	SELECT @r = id FROM Deck WHERE creator = @user AND name = @deck_name;
 
 GO
 
-Create PROC usp_login (@user VARCHAR(255), @pass VARCHAR(max), @r BIT OUTPUT) 
+CREATE PROC usp_login (@user VARCHAR(255), @pass VARCHAR(max), @r BIT OUTPUT)
 AS
 BEGIN
 	DECLARE @passw VARCHAR(max) = HASHBYTES('SHA2_512', @pass)
@@ -85,7 +85,7 @@ BEGIN
 		SET @r = 1;
 		RETURN;
 	END
-	
+
 	DECLARE @passw2 VARCHAR(max);
 	SELECT @passw2 = password FROM [User] WHERE email = @user
 	IF @passw = @passw2
@@ -99,19 +99,19 @@ END
 
 GO
 
-Create PROC usp_sellingListingsSelect
+CREATE PROC usp_sellingListingsSelect
 AS
 	SELECT * FROM Listing WHERE Sell = 1;
 
 
 GO
 
-Create PROC usp_buyOrSellCard (@cardinlisting INT, @amount INT, @user VARCHAR(255), @sell BIT)
+CREATE PROC usp_buyOrSellCard (@cardinlisting INT, @amount INT, @user VARCHAR(255), @sell BIT)
 AS
 	BEGIN TRAN
-		
+
 		DECLARE @primaryuser VARCHAR(255), @isSell BIT, @priceperunit MONEY;
-		
+
 		SELECT @primaryuser = [User], @isSell = Sell, @priceperunit = Price_Per_Unit
 		FROM (SELECT ID, [User], Sell FROM LISTING) AS l
 		JOIN (SELECT listing, Price_Per_Unit FROM CardInListing WHERE ID = @cardinlisting) AS cid
@@ -122,9 +122,10 @@ AS
 			RAISERROR('You cannot buy/sell these cards', 11, 0);
 			ROLLBACK TRAN;
 		END
-		
-		INSERT INTO CardInListingHistory (Listing, Card, Price_Per_Unit, Units, Condition, EndDate, SecondaryUser) SELECT Listing, Card, Price_Per_Unit, @amount, Condition, getdate(), @user FROM CardInListing;
-		
+
+		INSERT INTO CardInListingHistory (Listing, Card, Price_Per_Unit, Units, Condition, EndDate, SecondaryUser)
+		SELECT Listing, Card, Price_Per_Unit, @amount, Condition, getdate(), @user FROM CardInListing;
+
 		DECLARE @max INT;
 		SELECT @max = Units FROM CardInListing WHERE ID = @cardinlisting;
 		IF (@amount > @max)
@@ -132,7 +133,7 @@ AS
 			RAISERROR('Not a valid amount of cards', 11, 0);
 			ROLLBACK TRAN;
 		END
-		
+
 		UPDATE CardInListing SET Units = Units - @amount WHERE ID = @cardinlisting;
 
 		IF (@sell = 1)
@@ -150,7 +151,7 @@ AS
 go
 
 GO
-Create PROC usp_addCardToListing @listing int, @card int, @price Money, @condition varchar(20)
+CREATE PROC usp_addCardToListing @listing int, @card int, @price Money, @condition varchar(20)
 AS
 	IF EXISTS(SELECT * FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price)
 	BEGIN
@@ -161,8 +162,10 @@ AS
 	ELSE
 		INSERT INTO CardInListing VALUES (@listing, @card, @price, 1, @condition);
 
+
+
 go
-Create PROC usp_rmCardToListing @listing int, @card int, @price Money, @condition varchar(20)
+CREATE PROC usp_rmCardToListing @listing int, @card int, @price Money, @condition varchar(20)
 AS
 	IF EXISTS(SELECT * FROM CardInListing where Listing = @listing and Card = @card and Condition = @condition and Price_Per_Unit = @price and Units > 1)
 	BEGIN
@@ -175,12 +178,12 @@ AS
 
 go
 
-Create PROC [Magic].[usp_getLosses] @deckID INT
+CREATE PROC [Magic].[usp_getLosses] @deckID INT
 AS
 	SELECT * FROM Wins JOIN Deck ON Wins.Winner = Deck.ID WHERE Loser=@deckID;
 GO
 
-Create PROC [Magic].[usp_getWins] @deckID INT
+CREATE PROC [Magic].[usp_getWins] @deckID INT
 AS
 	SELECT * FROM Wins JOIN Deck ON Wins.Loser = Deck.ID WHERE Winner=@deckID;
 
@@ -188,7 +191,7 @@ AS
 GO
 
 
-Create PROC usp_addWin @winner INT, @loser int
+CREATE PROC usp_addWin @winner INT, @loser int
 AS
 	IF EXISTS(SELECT * FROM Wins WHERE (@winner = Winner AND @loser = Loser))
 	BEGIN
@@ -198,4 +201,78 @@ AS
 
 	INSERT INTO Wins VALUES (@winner, @loser, 1);
 
+go
 
+CREATE PROC [Magic].[usp_SubtypeOfCardSelect]
+    @card int,
+    @subtype varchar(255)
+AS
+
+
+	SELECT [card], [subtype]
+	FROM   [Magic].[SubtypeOfCard]
+	WHERE  ([card] = @card OR @card IS NULL)
+	       AND ([subtype] = @subtype OR @subtype IS NULL)
+
+	go
+
+
+	CREATE PROC [Magic].[usp_TypeOfCardSelect]
+	    @card int,
+	    @type varchar(255)
+
+		SELECT [card], [type]
+		FROM   [Magic].[TypeOfCard]
+		WHERE  ([card] = @card OR @card IS NULL)
+		       AND ([type] = @type OR @type IS NULL)
+
+
+
+go
+
+CREATE PROC [Magic].[usp_CreatureSelect]
+    @card int
+AS
+
+	SELECT [card], [power], [toughness]
+	FROM   [Magic].[Creature]
+	WHERE  ([card] = @card OR @card IS NULL)
+
+
+	go
+
+	CREATE PROC [Magic].[usp_EditionSelect]
+	    @code varchar(255)
+	AS
+
+		SELECT [code], [name], [legality], [mkm_id], [gathererCode], [releaseDate]
+		FROM   [Magic].[Edition]
+		WHERE  ([code] = @code OR @code IS NULL)
+
+
+go
+
+CREATE PROC [Magic].[usp_TagOfDeckSelect]
+    @deck int,
+    @tag varchar(50)
+AS
+
+	SELECT [deck], [tag]
+	FROM   [Magic].[TagOfDeck]
+	WHERE  ([deck] = @deck OR @deck IS NULL)
+	       AND ([tag] = @tag OR @tag IS NULL)
+
+
+
+	go
+
+
+	CREATE PROC [Magic].[usp_RatedBySelect]
+	    @deck int,
+	    @user varchar(255)
+	AS
+
+		SELECT [deck], [user], [rating]
+		FROM   [Magic].[RatedBy]
+		WHERE  ([deck] = @deck OR @deck IS NULL)
+		       AND ([user] = @user OR @user IS NULL)

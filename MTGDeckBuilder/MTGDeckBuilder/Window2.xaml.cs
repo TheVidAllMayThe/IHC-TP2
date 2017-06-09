@@ -248,7 +248,6 @@ namespace MTGDeckBuilder
             }
         }
     }
-
     public class Card2
     {
         private string _name;

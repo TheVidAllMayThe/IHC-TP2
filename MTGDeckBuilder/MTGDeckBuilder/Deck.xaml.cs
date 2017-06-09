@@ -266,23 +266,23 @@ namespace MTGDeckBuilder
                 cmd.Parameters.Add("@deck", SqlDbType.Int);
                 cmd.Parameters.Add("@cardId", SqlDbType.Int);
                 cmd.Parameters.Add("@amount", SqlDbType.Int);
-                cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                cmd.Parameters.Add("@sideboard", SqlDbType.Bit);
 
                 // set parameter values
                 cmd.Parameters["@deck"].Value = card.Deck;
                 cmd.Parameters["@cardId"].Value = card.Id;
                 cmd.Parameters["@amount"].Value = 1;
-                cmd.Parameters["@sideboard"].Value = card.IsSideDeck ? "0" : "1";
+                cmd.Parameters["@sideboard"].Value = card.IsSideDeck;
                 
-                try
-                {
+                //try
+                //{
                     cmd.ExecuteNonQuery();
-                }catch (SqlException sqle)
-                {
-                    Console.WriteLine(sqle.ToString());
-                    MessageBox.Show(sqle.Message.Split('.')[2], "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                //}catch (SqlException sqle)
+                //{
+                  //  Console.WriteLine(sqle.ToString());
+                   // MessageBox.Show(sqle.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                   // return;
+                //}
             }
             showDeck();
         }
@@ -302,13 +302,13 @@ namespace MTGDeckBuilder
                 cmd.Parameters.Add("@deck", SqlDbType.Int);
                 cmd.Parameters.Add("@cardId", SqlDbType.Int);
                 cmd.Parameters.Add("@amount", SqlDbType.Int);
-                cmd.Parameters.Add("@sideboard", SqlDbType.Int);
+                cmd.Parameters.Add("@sideboard", SqlDbType.Bit);
 
                 // set parameter values
                 cmd.Parameters["@deck"].Value = card.Deck;
                 cmd.Parameters["@cardId"].Value = card.Id;
                 cmd.Parameters["@amount"].Value = -1;
-                cmd.Parameters["@sideboard"].Value = card.IsSideDeck ? "0" : "1";
+                cmd.Parameters["@sideboard"].Value = card.IsSideDeck;
                 
                 try
                 {
