@@ -172,7 +172,7 @@ namespace MTGDeckBuilder
                     legality.Content = (dr["legality"] == null ? "---" : dr["legality"]);
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_avgCardPrice(@card)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_avgCardPrice(@card)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 

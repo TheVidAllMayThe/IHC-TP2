@@ -420,7 +420,7 @@ namespace MTGDeckBuilder
             ObservableCollection<Listing> listings = new ObservableCollection<Listing>(); 
             while (ndr.Read()) {
 
-                SqlDataReader dr2 = new SqlCommand("SELECT dbo.udf_totalListingPrice(" + ndr["ID"] + ")", thisConnection).ExecuteReader();
+                SqlDataReader dr2 = new SqlCommand("SELECT Magic.udf_totalListingPrice(" + ndr["ID"] + ")", thisConnection).ExecuteReader();
                 dr2.Read();
                 listings.Add(new Listing { Id = int.Parse(ndr["ID"].ToString()), StartDate = (ndr["StartDate"] == null ? "null" : ndr["StartDate"].ToString()), TotalPrice = (dr2.GetValue(0) == null ? 0.0 : dr2.GetDouble(0))});
             }
@@ -447,8 +447,8 @@ namespace MTGDeckBuilder
 
             for (int i = 0; (ndr.Read()); i++)
             {
-                SqlDataReader dr2 = new SqlCommand("SELECT dbo.udf_totalListingPrice(" + ndr["ID"] + ")", thisConnection).ExecuteReader();
-                Console.WriteLine("SELECT dbo.udf_totalListingPrice(" + ndr["ID"] + ")");
+                SqlDataReader dr2 = new SqlCommand("SELECT Magic.udf_totalListingPrice(" + ndr["ID"] + ")", thisConnection).ExecuteReader();
+                Console.WriteLine("SELECT Magic.udf_totalListingPrice(" + ndr["ID"] + ")");
                 dr2.Read();
                 double totalPrice = dr2.GetDouble(0); 
                     

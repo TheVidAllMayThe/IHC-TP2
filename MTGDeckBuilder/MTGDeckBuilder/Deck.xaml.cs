@@ -377,7 +377,7 @@ namespace MTGDeckBuilder
                     deck_title.Content = dr["name"];
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -396,7 +396,7 @@ namespace MTGDeckBuilder
                     deck_number_of_cards.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -415,7 +415,7 @@ namespace MTGDeckBuilder
                     deck_number_of_lands.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -435,7 +435,7 @@ namespace MTGDeckBuilder
                     deck_number_of_creatures.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -454,7 +454,7 @@ namespace MTGDeckBuilder
                     deck_number_of_sorceries.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -474,7 +474,7 @@ namespace MTGDeckBuilder
                     deck_number_of_artifacts.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -494,7 +494,7 @@ namespace MTGDeckBuilder
                     deck_number_of_instants.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -514,7 +514,7 @@ namespace MTGDeckBuilder
                     deck_number_of_enchantments.Content = dr.GetInt32(0).ToString();
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_numberOfCardsInDeck(@deck, @sideboard, @type)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 
@@ -710,7 +710,7 @@ namespace MTGDeckBuilder
 
                     dr.Close();
                 }
-                using (SqlCommand cmd = new SqlCommand("SELECT dbo.udf_avgDeckPrice(@deck)", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT Magic.udf_avgDeckPrice(@deck)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
 

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Border  BorderThickness="1.5" CornerRadius="8,0,0,0">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+
+    <Viewbox Grid.RowSpan="7" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <Image Source="magic_the_gathering.png" VerticalAlignment="Center" HorizontalAlignment="Center"  Margin="10,10,10,10"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--name--" Style="{StaticResource Card Title Style}"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--type--" Style="{StaticResource Card Property Style}"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--subtype--" Style="{StaticResource Card Property Style}"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--colors--" Style="{StaticResource Card Property Style}"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--cmc--" Style="{StaticResource Card Property Style}"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--power--" Style="{StaticResource Card Property Style}"/>
+    </Viewbox>
+
+    <Viewbox  Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left">
+      <Label Content="--toughness--" Style="{StaticResource Card Property Style}"/>
+    </Viewbox>
+  </Grid>
+</Border>

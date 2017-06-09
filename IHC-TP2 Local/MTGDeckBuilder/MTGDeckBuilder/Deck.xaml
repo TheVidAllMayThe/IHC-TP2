@@ -1,0 +1,398 @@
+﻿<Page x:Class="MTGDeckBuilder.Deck"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MTGDeckBuilder"
+      xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+      mc:Ignorable="d" 
+      d:DesignHeight="740" d:DesignWidth="1350"
+      Title="Deck"
+      Background="Black">
+
+    <Page.Resources>
+        <TextBlock x:Key="manacurveChartTitle" Text="Mana Curve" Foreground="White"/>
+        <TextBlock x:Key="cardTypeDistributonTitle" Text="Card Type Distribution" Foreground="White"/>
+        <TextBlock x:Key="manaDistributionTitle" Text="Mana Distribution" Foreground="White"/>
+        <TextBlock x:Key="manaSourceDistributionTitle" Text="Mana Source Distribution"  Foreground="White"/>
+
+        
+        
+        <Style x:Key="ChartTitleStyle" TargetType="chartingToolkit:Chart">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            
+        </Style>
+
+        <DataTemplate x:Key="deck_list_template">
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Label Foreground="LightGray" FontSize="16"  Content="{Binding Amount}"/>
+                    <Label Foreground="LightGray" FontSize="16" Content="x "/>
+                    <Label Foreground="LightGray" MouseEnter="showImage"  FontSize="16" Content="{Binding Name}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Viewbox MouseUp="addButton_MouseUp" MaxHeight="15" Grid.Column="1" Grid.Row="9" Margin="0,0,20,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                        <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" Width="50" Height="50">
+                            <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="45.5" X2="25" Y2="4.5" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
+                            <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
+                        </Canvas>
+                    </Viewbox>
+
+                    <Viewbox MouseUp="removeButton_MouseUp" MaxHeight="20" Grid.Column="1" Grid.Row="9" Margin="0,0,10,0" HorizontalAlignment="Right" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform" >
+                        <Canvas Background="Transparent" MouseEnter="addButton_MouseEnter" MouseLeave="addButton_MouseLeave" Width="50" Height="50">
+                            <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="4.5" Y1="25" X2="45.5" Y2="25" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
+                        </Canvas>
+                    </Viewbox>
+                </StackPanel>
+            </Grid>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="deck_list_template_no_buttons">
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Label Foreground="LightGray" FontSize="16"  Content="{Binding Amount}"/>
+                    <Label Foreground="LightGray" FontSize="16" Content="x "/>
+                    <Label Foreground="LightGray" MouseEnter="showImage"  FontSize="16" Content="{Binding Name}"/>
+                </StackPanel>
+            </Grid>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="deck_list_detailed_template">
+            <Grid HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Amount}" Grid.Column="0" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Name}" Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Type}" Grid.Column="2" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Cmc}" Grid.Column="3" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Edition}" Grid.Column="4" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label Style="{StaticResource Card Property Style}" Content="{Binding Rarity}" Grid.Column="5" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+    </Page.Resources>
+    
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="magic_generic_16.jpg" Opacity="0.6"></ImageBrush>
+        </Grid.Background>
+        <!-- Tabs -->
+        <Grid>
+            <TabControl SelectionChanged="tabControl_SelectionChanged" Background="Transparent">
+                <TabItem>
+                    <TabItem.Header>
+                        <Label Style="{StaticResource Card Title Style}" Content="Deck"/>
+                    </TabItem.Header>
+
+                    <!-- Deck tab content -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Row="1" Grid.Column="2" x:Name="addButton" HorizontalAlignment="Right" Click="search_cards" Width="100" Height="30" Margin="10,10,10,10">Add Card</Button>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Label Content="Main(" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                <Label x:Name="deck_number_of_cards" Content="60" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                            </StackPanel>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Background="Black" Opacity="0.4" Grid.ColumnSpan="2" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2">
+                                            <Label Content="Lands(" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                            <Label x:Name="deck_number_of_lands" Content="21" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                            <Label Content=")" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                        </StackPanel>
+                                        <ItemsControl x:Name="deck_lands" HorizontalAlignment="Left" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_lands_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
+
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2">
+                                            <Label Style="{StaticResource Card Title Style}" Content="Creatures(" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_creatures" Content="26" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                        </StackPanel>
+                                        <ItemsControl x:Name="deck_creatures" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_creatures_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
+
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="2">
+                                            <Label Style="{StaticResource Card Title Style}" Content="Enchantments(" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_enchantments" Content="1" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                        </StackPanel>
+                                        <ItemsControl x:Name="deck_enchantments" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_enchantments_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="1">
+                                    <StackPanel Orientation="Vertical" Grid.Column="1">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Label Style="{StaticResource Card Title Style}" Content="Sorceries(" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_sorceries" Content="8" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                        </StackPanel>
+                                        <ItemsControl x:Name="deck_sorceries" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_sorceries_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
+
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Label Style="{StaticResource Card Title Style}" Content="Artifacts(" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_artifacts" Content="8" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                        </StackPanel>
+                                        <ItemsControl x:Name="deck_artifacts" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_artifacts_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
+
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Label Style="{StaticResource Card Title Style}" Content="Instants(" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" x:Name="deck_number_of_instants" Content="4" FontSize="20"/>
+                                            <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                                        </StackPanel>
+                                        <ItemsControl x:Name="deck_instants" ItemTemplate="{StaticResource deck_list_template}" />
+                                        <ItemsControl x:Name="deck_instants_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}" />
+                                    </StackPanel>
+                                </Grid>                           
+                            </Grid>
+                        </Grid>
+                        
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Label Style="{StaticResource Card Title Style}" Content="Sideboard(" FontSize="20"/>
+                                <Label Style="{StaticResource Card Title Style}" x:Name="side_deck_number_of_cards" Content="60" FontSize="20"/>
+                                <Label Style="{StaticResource Card Title Style}" Content=")" FontSize="20"/>
+                            </StackPanel>
+                            <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+                            <StackPanel Grid.Row="1" Orientation="Vertical">
+                                <ItemsControl x:Name="side_deck" ItemTemplate="{StaticResource deck_list_template}"/>
+                                <ItemsControl x:Name="side_deck_not_owner" ItemTemplate="{StaticResource deck_list_template_no_buttons}"/>
+                            </StackPanel>
+                            
+                        </Grid>
+                        
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="0.1*"/>
+                            </Grid.RowDefinitions>
+                            <Border Background="Black" Opacity="0.4" Grid.Row="1" Margin="10,0,10,10" CornerRadius="8,8,8,8"/>
+                            <Label Grid.Row="0" x:Name="deck_title" HorizontalAlignment="Center" Content="First Black and White Deck" Style="{StaticResource Card Title Style}" FontSize="24"/>
+                            <Image Grid.Row="1" x:Name="image" Source="magic_the_gathering.png" Grid.Column="2" Margin="10,10,10,10"></Image>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Label Grid.Row="2" Content="Average Price" HorizontalAlignment="Center" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                                <Label Grid.Row="2" x:Name="avgDeckPrice" HorizontalAlignment="Center" Content="First Black and White Deck" Style="{StaticResource Card Title Style}" FontSize="20"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Viewbox>
+                                    <Label Content="Rate: " Style="{StaticResource Card Title Style}"/>
+                                </Viewbox>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp" x:Name="star0" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/images/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star1" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/images/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star2" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/images/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star3" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/images/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                                <Image MouseLeftButtonUp="star_MouseLeftButtonUp"  x:Name="star4" MouseLeave="star_MouseLeave" MouseEnter="star_MouseEnter" Source="/images/empty_star.png" Margin="5,10,5,10" Stretch="UniformToFill"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="details">
+                    <TabItem.Header>
+                        <Label Style="{StaticResource Card Title Style}" Content="Details"/>
+                    </TabItem.Header>
+
+                    <!-- Details tab content -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="0"  Margin="10,10,10,10" Title="{StaticResource manacurveChartTitle}" Name="manacurveChart">
+                            <chartingToolkit:ColumnSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                            <chartingToolkit:Chart.Axes>
+                                <chartingToolkit:LinearAxis Interval="1" Orientation="Y">
+                                    <chartingToolkit:LinearAxis.Foreground >
+                                        White
+                                    </chartingToolkit:LinearAxis.Foreground>
+                                </chartingToolkit:LinearAxis>
+                                <chartingToolkit:LinearAxis Interval="1" Orientation="X">
+                                    <chartingToolkit:LinearAxis.Foreground >
+                                        White
+                                    </chartingToolkit:LinearAxis.Foreground>
+                                </chartingToolkit:LinearAxis>
+                            </chartingToolkit:Chart.Axes>
+                        </chartingToolkit:Chart>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="0" Grid.Column="1"  Margin="10,10,10,10" Title="{StaticResource cardTypeDistributonTitle}" Name="cardtypedistributionChart" >
+                            <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        </chartingToolkit:Chart>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="0"  Margin="10,10,10,10" Title="{StaticResource manaDistributionTitle}" Name="manadistributionChart" >
+                            <chartingToolkit:PieSeries DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                        </chartingToolkit:Chart>
+                        <chartingToolkit:Chart Background="Transparent" Grid.Row="1" Grid.Column="1"  Margin="10,10,10,10"  Title="{StaticResource manaSourceDistributionTitle}" Name="manasourcedistributionChart" >
+                            <chartingToolkit:PieSeries Foreground="Green" DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}" />
+                            
+                        </chartingToolkit:Chart>
+
+                        <Border Margin="20,20,20,20" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Background="Black" Opacity="0.6"  HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <StackPanel Margin="10,10,10,10"  Orientation="Vertical" >
+                            <Grid x:Name="card_detailed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Column="0" Style="{StaticResource Card Title Style}"></Label>
+                                <Label Grid.Column="1"  Style="{StaticResource Card Title Style}" Margin="0,-1,0,1">Name</Label>
+                                <Label Grid.Column="2" Style="{StaticResource Card Title Style}">Type</Label>
+                                <Label Grid.Column="3" Style="{StaticResource Card Title Style}">CMC</Label>
+                                <Label Grid.Column="4" Style="{StaticResource Card Title Style}">Edition</Label>
+                                <Label Grid.Column="5" Style="{StaticResource Card Title Style}">Rarity</Label>
+                            </Grid>
+                        </StackPanel>
+                        </Border>
+                     </Grid>
+                    
+                </TabItem>
+                <TabItem x:Name="starting_hand">
+                    <TabItem.Header>
+                        <Label Style="{StaticResource Card Title Style}" Content="Starting Hand"/>
+                    </TabItem.Header>
+
+                    <!-- Starting Hand tab content -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel x:Name="upper_panel" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        </StackPanel>
+                        <StackPanel x:Name="lower_panel" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Margin="10,10,10,10" Click="New_Hand" Height="30" Width="90">New Hand</Button>
+                            <Button Margin="10,10,10,10" Click="Mulligan" Height="30" Width="90">Mulligan</Button>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
+           
+                <TabItem>
+                    <TabItem.Header>
+                        <Label Style="{StaticResource Card Title Style}" Content="Wins/Losses"/>
+                    </TabItem.Header>
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical" Margin="40">
+                            <Label Foreground="White" FontSize="40" Content="Wins"/>
+                            <ListBox x:Name="wins">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding DeckName}"/>
+                                            <Label Content="{Binding WinsOrLosses}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Margin="40">
+                            <Label FontSize="40" Content="Losses" Foreground="White"/>
+                            <ListBox x:Name="losses" Foreground="White">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding DeckName}"/>
+                                            <Label Content="{Binding WinsOrLosses}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical" Margin="40">
+                            <Label FontSize="40" Content="Decks" Foreground="White"/>
+                            <ListBox x:Name="decks" Foreground="White">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding DeckID}"/>
+                                            <Label Content="{Binding DeckName}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Add Win" Click="winButton"/>
+                                <Button Content="Add Loss" Click="loseButton"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </StackPanel>
+                    
+                </TabItem>
+
+            </TabControl>
+               
+        </Grid>
+    </Grid>
+    
+    
+</Page>
